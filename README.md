@@ -1,6 +1,6 @@
 # main_project
-前端後端共用這個儲存庫。 
-Create branches 的部分要做好不要亂掉！
+前端後端共用這個儲存庫。
+Create branches 的部分要做好！
 
 統一命名：
 
