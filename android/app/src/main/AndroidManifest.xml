@@ -1,8 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" /> <!--使用相機功能(camera: ^0.10.0)要設定的權限-->
+    <!--Location-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> 
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
     <application
-        android:label="Dr. W"
+        android:label="wounddetection"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,6 +37,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyCDjOjWfvAM9JpXwMRdJVhKL77lCOfvezs"/> <!--要取用google map的apikey-->
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
