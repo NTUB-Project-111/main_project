@@ -1,11 +1,11 @@
 {
-    "name": "main_project",
-    "short_name": "main_project",
+    "name": "wounddetection",
+    "short_name": "wounddetection",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Graduation Topics",
+    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
