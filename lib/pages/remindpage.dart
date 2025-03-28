@@ -63,9 +63,9 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
         // 設定標題列 (Header)
         preferredSize: Size.fromHeight(60), // 設定高度
         child: HeaderPage1(
-          title: "傷口紀錄冊", // 設定標題
+          title: "護理提醒", // 設定標題
           icon: Icon(
-            MyFlutterApp.bell, // 設定圖示（這裡要改成設定的icon
+            Icons.brightness_high,
             size: 23,
             color: Color(0xFF589399),
           ),
@@ -74,13 +74,13 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
 
       body: Padding(
         padding:
-            const EdgeInsets.symmetric(vertical: 25, horizontal: 16), // 設定內距
+            const EdgeInsets.symmetric(vertical: 16, horizontal: 16), // 設定內距
         child: Column(
           mainAxisSize: MainAxisSize.min, // 限制 `Column` 高度
           children: List.generate(reminders.length, (index) {
             // 依據提醒數量生成項目
             return Container(
-              margin: const EdgeInsets.only(bottom: 18), // 設定間距
+              margin: const EdgeInsets.only(bottom: 10), // 設定間距
               decoration: BoxDecoration(
                 color: Colors.white, // 設定背景顏色
                 borderRadius: BorderRadius.circular(20), // 圓角設定
@@ -90,7 +90,7 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
               width: 380,
               child: AnimatedSize(
                 // 增加動畫效果
-                duration: const Duration(milliseconds: 250), // 設定動畫時間
+                duration: const Duration(milliseconds: 200), // 設定動畫時間
                 curve: Curves.easeInOut, // 設定動畫曲線
                 child: reminders[index]["isPressed"]
                     ? _buildEditableView(index) // 若 `isPressed == true` 顯示可編輯模式
@@ -167,55 +167,68 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
   }
 
   Widget _buildEditableView(int index) {
-    // 顯示可編輯提醒
     return Stack(
+      clipBehavior: Clip.none,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+        Container(
+          padding: const EdgeInsets.all(5), // 設定內距
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  _buildImage(),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("拍攝日：20XX/XX/XX", style: textStyle),
-                        const SizedBox(height: 3),
-                        Text("傷口類型：割傷", style: textStyle),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            Text('換藥頻率：', style: textStyle),
-                            Expanded(
-                              child: _buildDropdownButton2(
-                                value: reminders[index]["selectedDay"],
-                                items: ['周一', '周二', '周三', '周四', '周五'],
-                                onChanged: (newValue) =>
-                                    updateDay(index, newValue!),
-                              ),
+              // 圖片容器
+              Container(
+                padding: const EdgeInsets.all(5),
+                child: _buildImage(),
+              ),
+              const SizedBox(width: 10),
+              // 文字與選單
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("拍攝日：20XX/XX/XX", style: textStyle),
+                      const SizedBox(height: 5),
+                      Text("傷口類型：割傷", style: textStyle),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Text('換藥頻率：', style: textStyle),
+                          Flexible(
+                            child: _buildDropdownButton2(
+                              value: reminders[index]["selectedDay"] ?? '周一',
+                              items: ['周一', '周二', '周三', '周四', '周五'],
+                              onChanged: (newValue) =>
+                                  updateDay(index, newValue!),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        _buildEditableTimeFields(index),
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      _buildEditableTimeFields(index),
+                    ],
                   ),
-                ],
+                ),
               ),
             ],
           ),
         ),
+        // Positioned 必須放在 Stack 內
         Positioned(
-          top: -8,
+          top: -5,
           right: -5,
           child: IconButton(
-            onPressed: () => toggleEditMode(index), // 切換回靜態模式
-            icon: const Icon(Icons.check, size: 18, color: Colors.red),
+            onPressed: () {
+              if (index >= 0 && index < reminders.length) {
+                toggleEditMode(index);
+              }
+            },
+            icon: const Icon(
+              Icons.check,
+              size: 18,
+              color: Colors.red,
+            ),
           ),
         ),
       ],
@@ -304,7 +317,8 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
     required ValueChanged<String?> onChanged,
   }) {
     return Container(
-      height: 30,
+      height: 30, // 頻率下拉選單的高度--加Container調整寬度
+      width: 150,
       padding: const EdgeInsets.symmetric(horizontal: 10), // 設定內邊距
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5), // 設定圓角
