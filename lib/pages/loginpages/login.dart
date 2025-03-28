@@ -28,12 +28,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(20), // 設置圓角
+                    // borderRadius: BorderRadius.circular(20), // 設置圓角
                     child: Image.asset(
-                      'assets/logo.jpeg',
-                      width: 194,
-                      height: 181,
-                      fit: BoxFit.cover,
+                      'images/icon_2.png',
+                      height: 100,
+                      fit: BoxFit.fitHeight,
                     ),
                   ),
                   const SizedBox(width: 20),
@@ -50,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       Text(
-                        "WoundCC",
+                        " Dr.W",
                         style: TextStyle(
                           fontFamily: 'Rubik Dirt',
                           fontSize: 35,
