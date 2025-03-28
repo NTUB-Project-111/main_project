@@ -26,7 +26,7 @@ class IntroScreen extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.asset(
-                      'assets/icon.jpeg', // ✅ 替換為你的 APP ICON
+                      'images/icon_2.png', // ✅ 替換為你的 APP ICON
                       width: 120,
                       height: 120,
                       fit: BoxFit.cover,
