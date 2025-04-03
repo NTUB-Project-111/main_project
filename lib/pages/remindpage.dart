@@ -55,12 +55,24 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
     });
   }
 
-  void toggleDeleteView(int index) {
+  void toggleDeleteViewForAll() {
     setState(() {
+      isDeleteMode = !isDeleteMode; // 切換刪除模式
       for (var i = 0; i < reminders.length; i++) {
-        reminders[i]["isDeleteView"] =
-            (i == index) ? !reminders[i]["isDeleteView"] : false;
+        reminders[i]["isDeleteView"] = isDeleteMode; // 根據狀態設置
       }
+    });
+  }
+
+  Widget buildReminderItem(int index) {
+    return _buildDeleteView(index); // 確保這裡回傳一個 Widget
+  }
+
+  bool isDeleteMode = false; // 控制刪除模式的開關
+
+  void toggleDeleteMode() {
+    setState(() {
+      isDeleteMode = !isDeleteMode; // 切換狀態
     });
   }
 
@@ -105,26 +117,29 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
               size: 23,
               color: Color(0xFF589399),
             ),
-            onPressed: () => toggleDeleteView(0), // 切換狀態
+            onPressed: () => toggleDeleteViewForAll(), // 切換狀態
           ),
         ],
       ),
 
       body: Padding(
-        padding:
-            const EdgeInsets.symmetric(vertical: 16, horizontal: 16), // 設定內距
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // 限制 `Column` 高度
-          children: List.generate(reminders.length, (index) {
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        child: ListView.separated(
+          shrinkWrap: true, // 限制高度
+          itemCount: reminders.length,
+          separatorBuilder: (context, index) =>
+              const SizedBox(height: 15), // 設定間距
+          itemBuilder: (context, index) {
             return reminders[index]["isDeleteView"]
-                ? _buildDeleteView(index) // 如果 `isDeleteView` 為 `true`，顯示刪除視圖
+                ? _buildDeleteView(index)
                 : Container(
-                    margin: const EdgeInsets.only(bottom: 10), // 設定間距
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                          color: const Color(0xFF589399), width: 1.5),
+                        color: const Color(0xFF589399),
+                        width: 1.5,
+                      ),
                     ),
                     width: 380,
                     child: AnimatedSize(
@@ -135,7 +150,7 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
                           : _buildStaticView(index),
                     ),
                   );
-          }),
+          },
         ),
       ),
     );
@@ -385,54 +400,80 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
   }
 
   Widget _buildDeleteView(int index) {
-    return Container(
-      padding: const EdgeInsets.all(10), // 設定內距
-      decoration: BoxDecoration(
-        color: Colors.white, // 背景顏色
-        borderRadius: BorderRadius.circular(20), // 圓角
-        border: Border.all(color: const Color(0xFF589399), width: 2), // 外框
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // 傷口圖片
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10), // 圓角圖片
-            child: _buildImage(),
-          ),
-          const SizedBox(width: 15), // 設定間距
-          // 文字區塊
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      mainAxisSize: MainAxisSize.min, // 讓 Row 只佔所需的空間
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // 主要內容區塊
+        Expanded(
+          // 確保主要內容可以正確顯示
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFF589399), width: 2),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("拍攝日：20XX/XX/XX", style: textStyle),
-                const SizedBox(height: 5),
-                Text("傷口類型：${reminders[index]["woundType"]}", style: textStyle),
-                const SizedBox(height: 5),
-                Text(
-                  "換藥時間：${reminders[index]["selectedDay"]} "
-                  "${reminders[index]["selectedHour"]}:${reminders[index]["selectedMinute"].toString().padLeft(2, '0')}",
-                  style: textStyle,
+                // 傷口圖片
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: SizedBox(
+                    width: 100, // 限制圖片大小
+                    height: 100,
+                    child: _buildImage(),
+                  ),
+                ),
+                const SizedBox(width: 20), // 設定間距
+
+                // 文字區塊
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("拍攝日：20XX/XX/XX", style: textStyle),
+                      const SizedBox(height: 3),
+                      Text("傷口類型：${reminders[index]["woundType"]}",
+                          style: textStyle),
+                      const SizedBox(height: 3),
+                      Text(
+                        "換藥時間：${reminders[index]["selectedDay"]} "
+                        "${reminders[index]["selectedHour"]}:${reminders[index]["selectedMinute"].toString().padLeft(2, '0')}",
+                        style: textStyle,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-          // 刪除按鈕
-          IconButton(
+        ),
+
+        const SizedBox(width: 15), // 設定主要內容與按鈕的間距
+
+        // 刪除按鈕區塊
+        Container(
+          width: 35,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.red,
+          ),
+          child: IconButton(
             onPressed: () {
               if (index >= 0 && index < reminders.length) {
-                toggleDeleteView(index);
+                setState(() {
+                  reminders.removeAt(index); // 移除對應索引的提醒
+                });
               }
             },
             icon: const Icon(Icons.close, color: Colors.white, size: 20),
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.red, // 紅色背景
-              shape: const CircleBorder(), // 圓形
-            ),
+            padding: const EdgeInsets.all(5), // 減少內距，使按鈕更小
+            constraints: const BoxConstraints(), // 移除默認的按鈕大小限制
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
