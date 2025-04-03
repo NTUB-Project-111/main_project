@@ -7,8 +7,10 @@
     <list default="true" id="037d5f08-0e16-457f-b485-fc66d01a98ca" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/my_flutter_app_icons.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/my_flutter_app_icons.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/nursing_reminder/components/reminder_card.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/nursing_reminder/components/wound_info_card.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/nursing_reminder/nursing_reminder_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/tabs/recordpage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/tabs/recordpage.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
