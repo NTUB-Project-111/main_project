@@ -35,21 +35,27 @@ class _PersonalContainPageState extends State<PersonalContainPage> {
             InkWell(
               onTap: () {
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => const TakePicuturePage()));
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const TakePicuturePage()));
               },
               splashColor: const Color(0xFFDFF6F7), // 點擊時的顏色
               highlightColor: const Color(0xFFDFF6F7), // 長按時的顏色
               borderRadius: BorderRadius.circular(15), // 可選，讓漣漪圓角更自然
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 decoration: const BoxDecoration(
-                    border: Border(bottom: BorderSide(color: Color(0xFF669FA5)))),
+                    border:
+                        Border(bottom: BorderSide(color: Color(0xFF669FA5)))),
                 width: double.infinity,
                 child: const Row(
                   children: [
                     Icon(MyFlutterApp.camera, color: Color(0xFF589399)),
                     SizedBox(width: 15),
-                    Text("相機拍攝", style: TextStyle(color: Color(0xFF589399), fontSize: 14)),
+                    Text("相機拍攝",
+                        style:
+                            TextStyle(color: Color(0xFF589399), fontSize: 14)),
                   ],
                 ),
               ),
@@ -62,13 +68,16 @@ class _PersonalContainPageState extends State<PersonalContainPage> {
               highlightColor: const Color(0xFFDFF6F7), // 長按時的顏色
               borderRadius: BorderRadius.circular(15), // 可選，讓漣漪圓角更自然
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 width: double.infinity,
                 child: const Row(
                   children: [
                     Icon(MyFlutterApp.picture, color: Color(0xFF589399)),
                     SizedBox(width: 15),
-                    Text("相簿選擇", style: TextStyle(color: Color(0xFF589399), fontSize: 14)),
+                    Text("相簿選擇",
+                        style:
+                            TextStyle(color: Color(0xFF589399), fontSize: 14)),
                   ],
                 ),
               ),
@@ -134,7 +143,8 @@ class _PersonalContainPageState extends State<PersonalContainPage> {
               //使用者資訊表
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.symmetric(horizontal: 26, vertical: 22),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 26, vertical: 22),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -150,25 +160,30 @@ class _PersonalContainPageState extends State<PersonalContainPage> {
                     Container(
                       height: 60,
                       decoration: const BoxDecoration(
-                          border:
-                              Border(bottom: BorderSide(color: Color.fromRGBO(242, 254, 255, 1)))),
+                          border: Border(
+                              bottom: BorderSide(
+                                  color: Color.fromRGBO(242, 254, 255, 1)))),
                       padding: const EdgeInsets.fromLTRB(28, 0, 10, 0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('我的暱稱',
-                              style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                              style: TextStyle(
+                                  fontSize: 15, color: Color(0xFF669FA5))),
                           Row(
                             children: [
                               const Text('[使用者暱稱]',
                                   style: TextStyle(
-                                      fontSize: 13, color: Color.fromARGB(255, 140, 140, 140))),
+                                      fontSize: 13,
+                                      color:
+                                          Color.fromARGB(255, 140, 140, 140))),
                               IconButton(
                                   onPressed: () {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => const ChangeNamePage()));
+                                            builder: (context) =>
+                                                const ChangeNamePage()));
                                   },
                                   icon: const Icon(Icons.arrow_forward_ios,
                                       size: 15, color: Color(0xFF669FA5)))
@@ -184,27 +199,36 @@ class _PersonalContainPageState extends State<PersonalContainPage> {
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('生日', style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                          Text('生日',
+                              style: TextStyle(
+                                  fontSize: 15, color: Color(0xFF669FA5))),
                           Text('[yyyy/mm/dd]',
                               style: TextStyle(
-                                  fontSize: 13, color: Color.fromARGB(255, 140, 140, 140))),
+                                  fontSize: 13,
+                                  color: Color.fromARGB(255, 140, 140, 140))),
                         ],
                       ),
                     ),
                     Container(
                       height: 60,
                       decoration: const BoxDecoration(
-                          border: Border(top: BorderSide(color: Color.fromRGBO(242, 254, 255, 1)))),
+                          border: Border(
+                              top: BorderSide(
+                                  color: Color.fromRGBO(242, 254, 255, 1)))),
                       padding: const EdgeInsets.symmetric(horizontal: 28),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('電子信箱', style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                          Text('電子信箱',
+                              style: TextStyle(
+                                  fontSize: 15, color: Color(0xFF669FA5))),
                           Row(
                             children: [
                               Text('[xxx@gmail.com]',
                                   style: TextStyle(
-                                      fontSize: 13, color: Color.fromARGB(255, 140, 140, 140))),
+                                      fontSize: 13,
+                                      color:
+                                          Color.fromARGB(255, 140, 140, 140))),
                               // IconButton(
                               //   onPressed: () {},
                               //   icon: const Icon(Icons.arrow_forward_ios,size: 15, color: Color(0xFF669FA5))

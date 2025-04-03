@@ -8,6 +8,8 @@ import 'package:wounddetection/pages/intropages/intro.dart';
 
 import 'dart:io';
 
+// import 'package:wounddetection/pages/remindpage.dart';
+
 class MyHttpOverrides extends HttpOverrides {
   // @override
   // HttpClient createHttpClient(SecurityContext? context) {
