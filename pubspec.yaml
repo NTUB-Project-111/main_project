@@ -106,6 +106,10 @@ flutter:
     - family: MyFlutterApp
       fonts:
         - asset: fonts/MyFlutterApp.ttf
+      
+    - family: FontAwesome5
+      fonts:
+        - asset: fonts/FontAwesome5.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:

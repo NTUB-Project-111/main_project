@@ -61,5 +61,4 @@ class MyFlutterApp {
   static const IconData hospital_alt = IconData(0xf47d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData book_medical = IconData(0xf7e6, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData brightness_high = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-
 }

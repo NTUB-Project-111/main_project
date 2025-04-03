@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 // import './pages/tabs.dart';
 
 // import './pages/registerpage.dart';
-import 'package:wounddetection/pages/intropages/intro.dart';
-// import 'package:wounddetection/pages/loginpages/login.dart';
+// import 'package:wounddetection/pages/intropages/intro.dart';
+import 'package:wounddetection/pages/loginpages/login.dart';
 
 import 'dart:io';
 
@@ -37,8 +37,8 @@ class MyApp extends StatelessWidget {
       // home: TotalPage(),
       // home: RecordPage(),
       // home: RegistrationPage(),
-      // home: LoginScreen(),
-      home: IntroScreen(),
+      home: LoginScreen(),
+      // home: IntroScreen(),
     );
   }
 }
