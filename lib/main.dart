@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 // import './pages/tabs.dart';
 
 // import './pages/registerpage.dart';
-// import 'package:wounddetection/pages/intropages/intro.dart';
+import 'package:wounddetection/pages/intropages/intro.dart';
 // import 'package:wounddetection/pages/loginpages/login.dart';
 
 import 'dart:io';
 
-import 'package:wounddetection/pages/remindpage.dart';
+// import 'package:wounddetection/pages/remindpage.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   // @override
@@ -33,12 +33,12 @@ class MyApp extends StatelessWidget {
       // home:HospitalListPage(),
 
       // home: Tabs(),
-      home : RemindPage(),
+      // home : RemindPage(),
       // home: TotalPage(),
       // home: RecordPage(),
       // home: RegistrationPage(),
       // home: LoginScreen(),
-      // home: IntroScreen(),
+      home: IntroScreen(),
     );
   }
 }
