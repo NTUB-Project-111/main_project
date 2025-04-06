@@ -127,7 +127,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             text: "返回登入畫面",
             style: TextStyle(
               color: Color(0xFF669FA5),
-              fontSize: 16,
+              fontSize: 13,
               decoration: TextDecoration.underline, // 加上底線
               decorationColor: Color(0xFF669FA5), // 設定底線顏色
             ),
