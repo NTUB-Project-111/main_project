@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
       // home: RecordPage(),
       // home: RegistrationPage(),
       // home: LoginScreen(),
+      //home:NearbyHospitalScreen(),
       home: IntroScreen(),
     );
   }
