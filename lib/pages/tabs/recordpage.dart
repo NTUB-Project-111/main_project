@@ -12,7 +12,8 @@ class RecordPage extends StatefulWidget {
   State<RecordPage> createState() => _RecordPageState();
 }
 
-class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateMixin {
+class _RecordPageState extends State<RecordPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController; //等一下才要賦予值，所以是late型態
 
   //是生命週期函數
@@ -53,8 +54,10 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
                 children: [
                   Text(
                     "#Tag",
-                    style:
-                        TextStyle(color: Color(0xFF589399), height: 3, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Color(0xFF589399),
+                        height: 3,
+                        fontWeight: FontWeight.bold),
                   )
                 ],
               ),
@@ -148,7 +151,10 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
           children: [
             const Text(
               "近期傷口",
-              style: TextStyle(color: Color(0xFF589399), fontWeight: FontWeight.w700, height: 3),
+              style: TextStyle(
+                  color: Color(0xFF589399),
+                  fontWeight: FontWeight.w700,
+                  height: 3),
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -200,7 +206,8 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
               // _showWoundDialog();
             },
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ReportPage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const ReportPage()));
             },
           ),
           Text(
@@ -225,11 +232,13 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
           children: [
             Text(
               '$y年',
-              style: const TextStyle(color: Color(0xFF589399), fontWeight: FontWeight.w700),
+              style: const TextStyle(
+                  color: Color(0xFF589399), fontWeight: FontWeight.w700),
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const TotalPage()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const TotalPage()));
               },
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
@@ -284,7 +293,8 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.grey, borderRadius: BorderRadius.circular(10)),
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(10)),
 
                               // margin: const EdgeInsets.only(right: 5),
                             ),
@@ -292,7 +302,8 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.grey, borderRadius: BorderRadius.circular(10)),
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(10)),
                               margin: const EdgeInsets.only(left: 10),
                             ),
                           ),
