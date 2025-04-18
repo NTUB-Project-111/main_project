@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wounddetection/pages/tabs.dart';
 import 'package:wounddetection/pages/tabs/personpage.dart';
 import '../headers/header_2.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -51,9 +52,13 @@ class _ChangePsPageState extends State<ChangePsPage> {
     if (success) {
       DatabaseHelper.userInfo['password'] = newPassword;
       Fluttertoast.showToast(msg: "修改成功");
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => const PersonPage()),
+      // );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const PersonPage()),
+        MaterialPageRoute(builder: (context) => const Tabs(currentIndex: 4,)),
       );
     } else {
       Fluttertoast.showToast(msg: "修改失敗，請稍後再試");
