@@ -4,7 +4,9 @@ import 'package:intl/intl.dart'; // 用來格式化日期
 import 'dart:io'; // 用於處理文件
 
 class PersonalInfoSection extends StatefulWidget {
-  const PersonalInfoSection({super.key});
+  final Function(Map<String, dynamic>) onDataChanged;
+
+  const PersonalInfoSection({super.key, required this.onDataChanged});
   @override
   // ignore: library_private_types_in_public_api
   _PersonalInfoSectionState createState() => _PersonalInfoSectionState();
@@ -15,20 +17,45 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _birthdateController = TextEditingController();
   DateTime? _selectedDate;
-  final DateFormat _dateFormat = DateFormat('yyyy/MM/dd');
+  final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
   File? _profileImage;
+
+  Map<String, dynamic> getPersonalInfo() {
+    return {
+      'name': _nameController.text,
+      'birthday': _birthdateController.text,
+      'gender': _selectedGender,
+      'profileImage': _profileImage,
+    };
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.addListener(_sendData);
+    _birthdateController.addListener(_sendData);
+  }
+
+  void _sendData() {
+    widget.onDataChanged({
+      'name': _nameController.text,
+      'birthday': _birthdateController.text,
+      'gender': _selectedGender,
+      'profileImage': _profileImage, // 只回傳路徑，避免直接傳 `File`
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '個人資料',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
-            color: const Color(0xFF669FA5),
+            color: Color(0xFF669FA5),
             letterSpacing: 2,
           ),
         ),
@@ -49,7 +76,7 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                   const SizedBox(height: 16),
                   _buildTextField(
                     label: '生日',
-                    hint: 'YYYY/MM/DD',
+                    hint: 'YYYY-MM-DD',
                     controller: _birthdateController,
                     readOnly: true, // 禁止手動輸入
                     onTap: _pickDate, // 點擊開啟月曆
@@ -110,7 +137,7 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               color: Color(0xFF669FA5),
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -126,8 +153,7 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                 child: TextFormField(
                   controller: controller, // **這裡加上 controller**
                   style: const TextStyle(
-                      color: Color.fromARGB(255, 61, 103, 108),
-                      fontSize: 15), // 輸入文字大小
+                      color: Color.fromARGB(255, 61, 103, 108), fontSize: 15), // 輸入文字大小
                   decoration: InputDecoration(
                     hintText: hint,
                     hintStyle: const TextStyle(
@@ -135,7 +161,6 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                       fontSize: 14, // 提示字體
                     ),
                     border: InputBorder.none,
-                    
                   ),
                   readOnly: readOnly, // 生日欄位不能手動輸入
                 ),
@@ -158,9 +183,8 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
         return Theme(
           data: ThemeData.light().copyWith(
             primaryColor: const Color(0xFF669FA5),
-            colorScheme: ColorScheme.light(primary: const Color(0xFF669FA5)),
-            buttonTheme:
-                const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            colorScheme: const ColorScheme.light(primary: Color(0xFF669FA5)),
+            buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
           ),
           child: child!,
         );
@@ -184,6 +208,7 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
       setState(() {
         _profileImage = File(image.path);
       });
+      _sendData();
     }
   }
 
@@ -199,10 +224,10 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween, // 均勻分布性別選項
         children: [
-          Text(
+          const Text(
             '性別',
             style: TextStyle(
-              color: const Color(0xFF669FA5),
+              color: Color(0xFF669FA5),
               fontSize: 16,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.6,
@@ -228,14 +253,28 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
     return Row(
       children: [
         SizedBox(
-          width: 28, // 調整寬度
-          height: 28, // 調整高度
+          width: 28,
+          height: 28,
           child: Radio<String>(
-            value: gender,
-            groupValue: _selectedGender,
+            value: gender, // UI 顯示的選項 "男", "女", "其他"
+            groupValue: _selectedGender == "M"
+                ? "男"
+                : _selectedGender == "F"
+                    ? "女"
+                    : _selectedGender == "Other"
+                        ? "其他"
+                        : null, // 確保 groupValue 與 value 一致
             onChanged: (String? value) {
               setState(() {
-                _selectedGender = value;
+                // 轉換 UI 選項為存儲值
+                if (value == "男") {
+                  _selectedGender = "M";
+                } else if (value == "女") {
+                  _selectedGender = "F";
+                } else if (value == "其他") {
+                  _selectedGender = "Other";
+                }
+                _sendData(); // 更新數據
               });
             },
             fillColor: WidgetStateProperty.resolveWith<Color>((states) {
@@ -245,9 +284,9 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
         ),
         Text(
           gender,
-          style: TextStyle(
-            color: const Color(0xFF669FA5),
-            fontSize: 14, // 適配容器的文字大小
+          style: const TextStyle(
+            color: Color(0xFF669FA5),
+            fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
         ),

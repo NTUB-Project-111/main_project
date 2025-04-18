@@ -1,33 +1,68 @@
 import 'package:flutter/material.dart';
-
-
+import 'package:wounddetection/feature/database.dart';
+import '../../feature/healingtime.dart';
 
 class ResultPage5 extends StatefulWidget {
-  const ResultPage5({super.key});
+  final Function(String) onDataChanged;
+  final String woundtype;
+  const ResultPage5({super.key, required this.woundtype, required this.onDataChanged});
 
   @override
   State<ResultPage5> createState() => _ResultPage5State();
 }
 
 class _ResultPage5State extends State<ResultPage5> {
+  String? _healingTime;
+
   final TextEditingController infoEditimg = TextEditingController();
   String? selectedTag;
-  List<String> injuryParts = ["右手臂", "左手臂", "右腿", "左腿", "右腳", "左腳", "背部", "肩膀", "臀部", "臉部", "腹部"];
+  List<String> injuryParts = [
+    "右手",
+    "左手",
+    "右手臂",
+    "左手臂",
+    "右腿",
+    "左腿",
+    "右腳",
+    "左腳",
+    "頸部",
+    "背部",
+    "肩膀",
+    "臀部",
+    "臉部",
+    "腹部"
+  ];
   List<String> woundReactions = ["紅腫", "疼痛", "出血", "發熱", "化膿"];
   List<String> selectedInjuryParts = [];
   List<String> selectedWoundReactions = [];
   bool _open = false;
+  bool isShow = false;
   Icon icon = const Icon(
     Icons.arrow_drop_down_rounded,
     color: Color(0xFF589399),
     size: 30,
   );
+  void _updateHealingTime() {
+    String oktime = _healingTime?.replaceAll("天", "") ?? "";
+    DatabaseHelper.record['oktime'] = oktime;
+    widget.onDataChanged(oktime); // 把資料回傳給 ResultPage
+  }
+
+  void _showButton() {
+    setState(() {
+      isShow = (infoEditimg.text.isNotEmpty ||
+          selectedInjuryParts.isNotEmpty ||
+          selectedWoundReactions.isNotEmpty);
+    });
+  }
+
   // 標籤顯示的 UI
   Widget _buildTagChip(String text, List<String> list) {
     return GestureDetector(
       onTap: () {
         setState(() {
           list.remove(text);
+          _showButton();
         });
       },
       child: Container(
@@ -62,7 +97,7 @@ class _ResultPage5State extends State<ResultPage5> {
                 '自我紀錄',
                 style: TextStyle(
                   color: Color(0xFF589399),
-                  fontSize: 22,
+                  fontSize: 20,
                 ),
               ),
               Text(
@@ -112,20 +147,19 @@ class _ResultPage5State extends State<ResultPage5> {
                   onPressed: () {
                     setState(() {
                       _open = !_open;
-                      icon = _open
-                          ? const Icon(
-                              Icons.arrow_drop_up_rounded,
-                              color: Color(0xFF589399),
-                              size: 30,
-                            )
-                          : const Icon(
-                              Icons.arrow_drop_down_rounded,
-                              color: Color(0xFF589399),
-                              size: 30,
-                            );
                     });
                   },
-                  icon: icon,
+                  icon: _open
+                      ? const Icon(
+                          Icons.arrow_drop_up_rounded,
+                          color: Color(0xFF589399),
+                          size: 30,
+                        )
+                      : const Icon(
+                          Icons.arrow_drop_down_rounded,
+                          color: Color(0xFF589399),
+                          size: 30,
+                        ),
                   padding: EdgeInsets.zero,
                 )
               ],
@@ -141,20 +175,39 @@ class _ResultPage5State extends State<ResultPage5> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: const [BoxShadow(color: Color(0x4D000000), blurRadius: 1)]),
-                child: Expanded(
-                  child: TextField(
-                      controller: infoEditimg,
-                      keyboardType: TextInputType.text,
-                      maxLines: 10,
-                      maxLength: 370,
-                      decoration: const InputDecoration(
-                          hintStyle: TextStyle(color: Color(0xFFA5A1A1), fontSize: 13, height: 1.4),
-                          hintText: '根據上面所選擇的標籤進行細項說明/撰寫自己當下發生的狀況/心情紀錄...等',
-                          border: InputBorder.none)
-                      // border: OutlineInputBorder(
-                      //   borderSide: BorderSide(color: Color(0x4D000000) )
-                      // )),
-                      ),
+                // child: Expanded(
+                //   child: TextField(
+                //     controller: infoEditimg,
+                //     keyboardType: TextInputType.text,
+                //     maxLines: 10,
+                //     maxLength: 370,
+                //     decoration: const InputDecoration(
+                //         hintStyle: TextStyle(color: Color(0xFFA5A1A1), fontSize: 13, height: 1.4),
+                //         hintText: '詳細說明發生傷口狀態、造成原因、大小、深度，例如:由美工刀造成、大小約5公分、出血量不多',
+                //         border: InputBorder.none),
+                //     onChanged: (value) {
+                //       setState(() {
+                //         _showButton();
+                //         DatabaseHelper.record['recording'] = value;
+                //       });
+                //     }, // 每次輸入時更新資料
+                //   ),
+                // ),
+                child: TextField(
+                  controller: infoEditimg,
+                  keyboardType: TextInputType.text,
+                  maxLines: 10,
+                  maxLength: 370,
+                  decoration: const InputDecoration(
+                      hintStyle: TextStyle(color: Color(0xFFA5A1A1), fontSize: 13, height: 1.4),
+                      hintText: '詳細說明發生傷口狀態、造成原因、大小、深度，例如:由美工刀造成、大小約5公分、出血量不多',
+                      border: InputBorder.none),
+                  onChanged: (value) {
+                    setState(() {
+                      _showButton();
+                      DatabaseHelper.record['recording'] = value;
+                    });
+                  }, // 每次輸入時更新資料
                 ),
               ),
               Visibility(
@@ -206,17 +259,18 @@ class _ResultPage5State extends State<ResultPage5> {
                               setState(() {
                                 if (selected) {
                                   selectedInjuryParts.add(part);
+                                  DatabaseHelper.record['part'] = selectedInjuryParts;
                                 } else {
                                   selectedInjuryParts.remove(part);
+                                  DatabaseHelper.record['part'] = selectedInjuryParts;
                                 }
                               });
+                              _showButton();
                             },
                           );
                         }).toList(),
                       ),
                       const SizedBox(height: 15),
-
-                      // 傷口反饋標題
                       const Text(
                         "傷口狀態",
                         style: TextStyle(
@@ -249,10 +303,13 @@ class _ResultPage5State extends State<ResultPage5> {
                               setState(() {
                                 if (selected) {
                                   selectedWoundReactions.add(reaction);
+                                  DatabaseHelper.record['rection'] = selectedWoundReactions;
                                 } else {
                                   selectedWoundReactions.remove(reaction);
+                                  DatabaseHelper.record['rection'] = selectedWoundReactions;
                                 }
                               });
+                              _showButton();
                             },
                           );
                         }).toList(),
@@ -263,7 +320,48 @@ class _ResultPage5State extends State<ResultPage5> {
               ),
             ],
           ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: isShow
+                  ? () async {
+                      // 按鈕按下時的邏輯
+                      if (isShow) {
+                        _healingTime = await HealingTime.getOktime(
+                            DatabaseHelper.record['type'].toString(),
+                            // widget.woundtype,
+                            selectedInjuryParts.toString(),
+                            selectedWoundReactions.toString(),
+                            infoEditimg.text);
 
+                        _updateHealingTime();
+                        // Navigator.pop(context);
+                      }
+                    }
+                  : null, // 未選擇標籤或詳細說明時按鈕禁用
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(
+                  isShow ? const Color(0xFF589399) : const Color(0xFFBED7DA), //#BED7DA
+                ),
+                padding: WidgetStateProperty.all(
+                  const EdgeInsets.symmetric(vertical: 12),
+                ),
+                minimumSize: WidgetStateProperty.all(const Size(355, 0)),
+                shape: WidgetStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              child: isShow
+                  ? const Text('開始分析', style: TextStyle(fontSize: 16, color: Colors.white))
+                  : const Text(
+                      '填寫自我紀錄，獲取更精準的癒合時間',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+            ),
+          )
         ],
       ),
     );

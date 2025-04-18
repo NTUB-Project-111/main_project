@@ -2,20 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 // import '../wound.dart'; // 引入分析頁面的檔案
 import 'dart:io';
+import '../../feature/database.dart';
 import '../../my_flutter_app_icons.dart';
-import 'package:image_picker/image_picker.dart';
-
-import '../resultpage.dart';
 import 'personalcontain.dart';
 
-class TakePicuturePage extends StatefulWidget {
-  const TakePicuturePage({super.key});
+class TakePicturePage extends StatefulWidget {
+  final String userId;
+  const TakePicturePage({super.key, required this.userId});
 
   @override
-  _TakePicuturePageState createState() => _TakePicuturePageState();
+  _TakePicturePageState createState() => _TakePicturePageState();
 }
 
-class _TakePicuturePageState extends State<TakePicuturePage> {
+class _TakePicturePageState extends State<TakePicturePage> {
   int selectedIndex = 0;
   double progress = 0;
   late List<CameraDescription> _cameras;
@@ -73,21 +72,6 @@ class _TakePicuturePageState extends State<TakePicuturePage> {
     super.dispose();
   }
 
-  Future<void> _takePhoto() async {
-    if (_controller == null || !_controller!.value.isInitialized) return;
-
-    try {
-      final image = await _controller!.takePicture();
-      print("圖片儲存於：${image.path}");
-      setState(() {
-        _image = File(image.path);
-      });
-      _showConfirmationDialog(); // 顯示確認對話框
-    } catch (e) {
-      print("拍照失敗：$e");
-    }
-  }
-
   void _switchCamera() {
     if (_cameras.length > 1) {
       setState(() {
@@ -100,21 +84,28 @@ class _TakePicuturePageState extends State<TakePicuturePage> {
     }
   }
 
-  void _navigateToPersonalPage(File image) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        // builder: (context) => WoundAnalysisPage(image: image), // 傳遞圖片
-        builder: (context) => PersonalContainPage(image: image), // 傳遞圖片
-      ),
-    );
-    
+  Future<void> _takePhoto() async {
+    if (_controller == null || !_controller!.value.isInitialized) return;
+
+    try {
+      final image = await _controller!.takePicture();
+      print("圖片儲存於：${image.path}");
+
+      setState(() {
+        _image = File(image.path);
+      });
+
+      // 確認照片後回傳圖片檔案
+      _showConfirmationDialog();
+    } catch (e) {
+      print("拍照失敗：$e");
+    }
   }
 
-  // 顯示確認對話框
+// 顯示確認對話框
   void _showConfirmationDialog() {
     showDialog(
-      barrierDismissible: false, // 禁止點擊外部區域關閉對話框
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) => AlertDialog(
         shape: RoundedRectangleBorder(
@@ -136,8 +127,6 @@ class _TakePicuturePageState extends State<TakePicuturePage> {
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(15),
@@ -155,9 +144,18 @@ class _TakePicuturePageState extends State<TakePicuturePage> {
                 backgroundColor: const Color(0xFF589399),
                 side: BorderSide.none,
               ),
-              onPressed: () {
-                Navigator.pop(context); // 關閉對話框
-                _navigateToPersonalPage(_image!); // 跳轉到分析頁面
+              onPressed: () async {
+                if (_image != null) {
+                  try {
+                    await DatabaseHelper.updateImage(widget.userId, _image!);
+                    DatabaseHelper.userInfo = (await DatabaseHelper.getUserInfo())!;
+                    print("成功更新圖片到資料庫");
+                  } catch (e) {
+                    print("更新圖片失敗: $e");
+                  }
+                }
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => const PersonalContainPage()));
               },
               child: const Text(
                 '確認',
@@ -194,7 +192,6 @@ class _TakePicuturePageState extends State<TakePicuturePage> {
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {

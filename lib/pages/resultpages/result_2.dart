@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 class ResultPage2 extends StatefulWidget {
   final String woundType;
   final File image;
-  const ResultPage2({super.key, required this.woundType, required this.image});
+  final Text oktime;
+  const ResultPage2(
+      {super.key, required this.woundType, required this.image, required this.oktime});
 
   @override
   State<ResultPage2> createState() => _ResultPage2State();
@@ -54,44 +56,36 @@ class _ResultPage2State extends State<ResultPage2> {
               ),
               Text(
                 widget.woundType,
-                style: const TextStyle(color: Color(0xFF589399),fontSize: 50,),
-              ),
-              // FittedBox(
-              //   fit: BoxFit.scaleDown, // 讓字體縮小
-              //   child: Text(
-              //     widget.woundType,
-              //     textAlign: TextAlign.center,
-              //     style: const TextStyle(color: Color(0xFF589399), fontSize: 50),
-              //   ),
-              // ),
-              const SizedBox(
-                width: 180,
-                child: Row(
-                  children: [
-                    Text(
-                      '預計癒合時間',
-                      style: TextStyle(
-                        color: Color(0xFF589399),
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      ' X~X ',
-                      style: TextStyle(
-                        color: Color(0xFF589399),
-                        fontSize: 26,
-                      ),
-                    ),
-                    Text(
-                      '天',
-                      style: TextStyle(
-                        color: Color(0xFF589399),
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
+                style: const TextStyle(
+                  color: Color(0xFF589399),
+                  fontSize: 48,
                 ),
               ),
+              widget.oktime != ""
+                  ? SizedBox(
+                      width: 180,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            '預計',
+                            style: TextStyle(
+                              color: Color(0xFF589399),
+                              fontSize: 16,
+                            ),
+                          ),
+                          widget.oktime,
+                          const Text(
+                            '天癒合',
+                            style: TextStyle(
+                              color: Color(0xFF589399),
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox()
             ],
           ),
         ],

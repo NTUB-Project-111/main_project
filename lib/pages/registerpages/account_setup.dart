@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AccountSetupSection extends StatefulWidget {
-  const AccountSetupSection({super.key});
+  final Function(Map<String, dynamic>) onDataChanged;
+  const AccountSetupSection({super.key, required this.onDataChanged});
 
   @override
   _AccountSetupSectionState createState() => _AccountSetupSectionState();
@@ -10,14 +11,33 @@ class AccountSetupSection extends StatefulWidget {
 
 class _AccountSetupSectionState extends State<AccountSetupSection> {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _verificationCodeController =
-      TextEditingController();
+  final TextEditingController _verificationCodeController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   bool _isVerificationEnabled = false; // 控制驗證碼輸入框
+
+  Map<String, dynamic> getAccountInfo() {
+    return {
+      'email': _emailController.text,
+      'password': _passwordController.text,
+    };
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_sendData);
+    _passwordController.addListener(_sendData);
+  }
+
+  void _sendData() {
+    widget.onDataChanged({
+      'email': _emailController.text,
+      'password': _passwordController.text,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,9 +85,8 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF669FA5),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 9, vertical: 11),
-                  textStyle: TextStyle(
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 11),
+                  textStyle: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),
@@ -75,7 +94,7 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   '傳送驗證碼',
                   style: TextStyle(color: Colors.white),
                 ),
@@ -108,12 +127,9 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
                       }
                     : null, // 沒有啟用時按鈕無效
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isVerificationEnabled
-                      ? const Color(0xFF669FA5)
-                      : Colors.grey,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 9, vertical: 10),
-                  textStyle: TextStyle(
+                  backgroundColor: _isVerificationEnabled ? const Color(0xFF669FA5) : Colors.grey,
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 10),
+                  textStyle: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 2.25,
@@ -122,7 +138,7 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   '驗證',
                   style: TextStyle(color: Colors.white),
                 ),
@@ -156,11 +172,9 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
             hint: '需與上面密碼一致',
             controller: _confirmPasswordController,
             isPassword: true,
-            validator: (value) =>
-                _validateConfirmPassword(value, _passwordController.text),
+            validator: (value) => _validateConfirmPassword(value, _passwordController.text),
             onChanged: (value) {
-              final validationMessage =
-                  _validateConfirmPassword(value, _passwordController.text);
+              final validationMessage = _validateConfirmPassword(value, _passwordController.text);
               if (validationMessage != null) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(validationMessage)),
@@ -199,8 +213,8 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
             alignment: Alignment.centerLeft, // 讓標籤靠左
             child: Text(
               label,
-              style: TextStyle(
-                color: const Color(0xFF669FA5),
+              style: const TextStyle(
+                color: Color(0xFF669FA5),
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -214,13 +228,10 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
                 controller: controller,
                 obscureText: isPassword,
                 enabled: isEnabled,
-                keyboardType:
-                    isNumeric ? TextInputType.number : TextInputType.text,
-                inputFormatters:
-                    isNumeric ? [FilteringTextInputFormatter.digitsOnly] : [],
-                style: TextStyle(
-                    fontSize: 15,
-                    color: Color.fromARGB(255, 61, 103, 108)), // 調整輸入文字大小與標籤一致
+                keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+                inputFormatters: isNumeric ? [FilteringTextInputFormatter.digitsOnly] : [],
+                style: const TextStyle(
+                    fontSize: 15, color: Color.fromARGB(255, 61, 103, 108)), // 調整輸入文字大小與標籤一致
                 textAlignVertical: TextAlignVertical.center, // 讓輸入內容垂直居中
                 decoration: InputDecoration(
                   hintText: hint,
@@ -245,8 +256,7 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
     if (value == null || value.isEmpty) {
       return '請輸入 Email';
     }
-    final emailRegex =
-        RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
     if (!emailRegex.hasMatch(value)) {
       return '請輸入有效的 Email 格式';
     }

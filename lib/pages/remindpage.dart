@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart'; // 引入 Flutter 的 UI 套件
 import 'package:dropdown_button2/dropdown_button2.dart'; // 引入第三方下拉選單套件
+import 'package:intl/intl.dart';
 import '../my_flutter_app_icons.dart'; // 引入自訂義的圖示
 import 'headers/header_1.dart'; // 引入標頭檔
-import './tabs.dart'; // 引入底部導覽列的頁面
+import '../feature/database.dart';
+import './tabs.dart';
 
 class RemindPage extends StatefulWidget {
   // 定義一個可變狀態的頁面
@@ -14,30 +16,41 @@ class RemindPage extends StatefulWidget {
 
 class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
   // `_RemindPageState` 負責處理頁面的狀態變更，`TickerProviderStateMixin` 用於動畫
+  List<Map<String, dynamic>>? userRecords = DatabaseHelper.allRecords;
+  List<Map<String, dynamic>>? calls = DatabaseHelper.allCalls;
+  List<Map<String, dynamic>> reminders = [];
+  List<Map<String, dynamic>>? userCalls = DatabaseHelper.remindRecords;
+  List<Map<String, dynamic>>? distinctCalls;
+  List<Map<String, dynamic>> remindlist = [];
 
-  List<Map<String, dynamic>> reminders = [
-    // 定義提醒事項的清單
-    {
-      "isPressed": false, // 是否為編輯模式
-      "selectedDay": "周一", // 預設換藥日
-      "selectedHour": 17, // 預設小時
-      "selectedMinute": 30, // 預設分鐘
-      "isDeleteView": false, // 是否顯示刪除視圖
-    },
-    {
-      "isPressed": false,
-      "selectedDay": "周二",
-      "selectedHour": 15,
-      "selectedMinute": 45,
-      "isDeleteView": false,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // print(userCalls?)
+    if (userCalls != 'null' && userCalls != '[]') {
+      createReminders();
+    }
+  }
+
+  void createReminders() {
+    reminders = userCalls!.where((call) => call["ifcall"] == "Y").map((call) {
+      return {
+        "date": call["date"],
+        "type": call["type"],
+        "img": call["photo"],
+        "isPressed": false,
+        "selectedFreq": call["freq"],
+        "selectedHour": int.parse(call["time"].split(":")[0]), // 假設是 "14:30" 類型
+        "selectedMinute": int.parse(call["time"].split(":")[1]),
+        "isDeleteView": false,
+      };
+    }).toList();
+  }
 
   void toggleEditMode(int index) {
     // 切換是否為編輯模式
     setState(() {
-      reminders[index]["isPressed"] =
-          !reminders[index]["isPressed"]; // 取反 `isPressed`
+      reminders[index]["isPressed"] = !reminders[index]["isPressed"]; // 取反 `isPressed`
     });
   }
 
@@ -45,13 +58,19 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
     // 更新時間
     setState(() {
       reminders[index][field] = value; // 修改選定的時間（時或分）
+      if (field == "selectedHour") {
+        userCalls?[index]["time"] = "${value.toString()}:${reminders[index]["selectedMinute"]}";
+      } else {
+        userCalls?[index]["time"] = "${reminders[index]["selectedHour"]}:${value.toString()}";
+      }
     });
   }
 
-  void updateDay(int index, String newDay) {
-    // 更新換藥日
+  void updateDay(int index, String newFreq) {
+    // 更新換藥頻率
     setState(() {
-      reminders[index]["selectedDay"] = newDay; // 修改選定的星期
+      reminders[index]["selectedFreq"] = newFreq; // 修改選定的頻率
+      userCalls?[index]["freq"] = newFreq;
     });
   }
 
@@ -76,6 +95,52 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
     });
   }
 
+  void _createRemind(String starttime, String oktime, String freq, String time) {
+    late List<String> oktimelist;
+
+    DateTime today = DateTime.now();
+
+    oktimelist = oktime.split("~");
+    if (oktimelist.length != 2) {
+      print("oktime 格式錯誤: $oktime");
+      return;
+    }
+
+    int okday = int.parse(oktimelist[1]);
+    final freqMap = {
+      "每天": 1,
+      "兩天一次": 2,
+      "三天一次": 3,
+      "每週": 7,
+    };
+    final freqStr = freq;
+    final freqDays = freqMap[freqStr] ?? 0;
+    if (freqDays == 0) {
+      print("無效的頻率: $freqStr");
+      return;
+    }
+
+    List<String> parts = starttime.split('-');
+    if (parts.length != 3) {
+      print("日期格式錯誤: $starttime");
+      return;
+    }
+    int year = int.parse(parts[0]);
+    int month = int.parse(parts[1]);
+    int day = int.parse(parts[2]);
+
+    DateTime startDate = DateTime(year, month, day);
+    DateTime endDate = startDate.add(Duration(days: okday));
+    DateTime remindDate = today.add(Duration(days: freqDays));
+
+    while (!remindDate.isAfter(endDate)) {
+      String formattedDay = DateFormat('yyyy-MM-dd').format(remindDate);
+      remindlist.add({"day": formattedDay, "time": time});
+      remindDate = remindDate.add(Duration(days: freqDays));
+    }
+    print(remindlist);
+  }
+
 //UI頁面
   @override
   Widget build(BuildContext context) {
@@ -85,18 +150,87 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
       appBar: AppBar(
         toolbarHeight: 50, // 調整高度
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back, // 返回鍵圖示
-            color: Color(0xFF589399), // 修改顏色
-          ),
-          onPressed: () {
-            Navigator.pop(context); // 返回上一頁
-          },
-        ),
+            icon: const Icon(
+              MyFlutterApp.icon_park_solid__back, // 返回鍵圖示
+              color: Color(0xFF589399), // 修改顏色
+            ),
+            onPressed: () async {
+              for (var call in userCalls!) {
+                bool handled = false; // 每筆 call 最多處理一次
+                if (call["ifcall"] == 'N') {
+                  await DatabaseHelper.updateRecord(
+                    call["id_record"].toString(),
+                    call["fk_userid"].toString(),
+                    "N",
+                  );
+                }
+                int index = 0;
+                for (var remind in calls!) {
+                  if (call["id_record"] == remind["fk_record_id"]) {
+                    // 優先處理 freq 不同
+                    if (call["freq"] != remind["freq"]) {
+                      DatabaseHelper.allCalls[index]["freq"] = call["freq"];
+                      if (!handled) {
+                        _createRemind(call["date"], call["oktime"], call["freq"], call["time"]);
+                        if (remindlist.isNotEmpty) {
+                          // print("fk_userid${call["fk_userid"].toString()}");
+                          // print("id_record${call["id_record"].toString()}");
+                          DatabaseHelper.deleteRemind(call["fk_userid"].toString(), call["id_record"].toString());
+                          for (var remind in remindlist) {
+                            bool result = await DatabaseHelper.addRemind(call["fk_userid"].toString(),
+                                call["id_record"].toString(), remind["day"], remind["time"], call["freq"]);
+                            if (!result) {
+                              print("新增提醒失敗: $remind");
+                            }
+                          }
+                        } else {
+                          print("提醒為空");
+                        }
+                        debugPrint("頻率不同 -> 處理 ${call["id_record"]}");
+                        handled = true;
+                      }
+                    }
+                    // 只有時間不同才處理 B
+                    else if (call["time"] != remind["time"]) {
+                      DatabaseHelper.allCalls[index]["time"] = call["time"];
+                      if (!handled) {
+                        await DatabaseHelper.updateCallTime(call["id_record"].toString(),
+                            call["fk_userid"].toString(), call["time"]);
+                        debugPrint("時間不同 -> 處理 ${call["id_record"]}");
+                        handled = true;
+                      }
+                    }
+                  }
+                  index += 1;
+                }
+              }
+              Navigator.pop(context);
+              // print(userCalls);
+            }
+
+            // onPressed: () async {
+            //   for (var call in userCalls!) {
+            //     if (call["ifcall"] == 'N') {
+            //       await DatabaseHelper.updateRecord(
+            //           call["id_record"].toString(), call["fk_userid"].toString(), "N");
+            //     }
+            //     for (var remind in calls!) {
+            //       if (call["id_record"] == remind["fk_record_id"] && call["freq"] != remind["freq"]) {
+
+            //       } else if (call["id_record"] == remind["fk_record_id"] &&
+            //           call["time"] != remind["time"]) {
+
+            //       }
+            //     }
+            //   }
+            //   Navigator.pop(context);
+            //   print(userCalls);
+            // },
+            ),
         title: const Text(
           "護理提醒",
           style: TextStyle(
-            fontSize: 20, // 更改字體大小
+            fontSize: 18, // 更改字體大小
             color: Color(0xFF589399), // 更改字體顏色
             fontWeight: FontWeight.bold, // 設定字體粗細
           ),
@@ -106,14 +240,14 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
           child: Container(
-            color: Color(0xFF589399), // 設定底線顏色
-            height: 2.5, // 設定底線高度
+            color: const Color(0xFF589399), // 設定底線顏色
+            height: 2, // 設定底線高度
           ),
         ),
         actions: [
           IconButton(
             icon: const Icon(
-              Icons.brightness_high,
+              Icons.settings,
               size: 23,
               color: Color(0xFF589399),
             ),
@@ -127,8 +261,7 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
         child: ListView.separated(
           shrinkWrap: true, // 限制高度
           itemCount: reminders.length,
-          separatorBuilder: (context, index) =>
-              const SizedBox(height: 15), // 設定間距
+          separatorBuilder: (context, index) => const SizedBox(height: 15), // 設定間距
           itemBuilder: (context, index) {
             return reminders[index]["isDeleteView"]
                 ? _buildDeleteView(index)
@@ -157,22 +290,27 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
   }
 
 //傷口照片放置區
-  Widget _buildImage() {
+  Widget _buildImage(String img) {
     // 建立顯示圖片的區塊
     return ClipRRect(
       // 使用 ClipRRect 來創建圓角矩形
       borderRadius: BorderRadius.circular(20), // 設定圓角
       child: Container(
         // 建立一個容器來模擬圖片
-        width: 100,
-        height: 100,
+        width: 90,
+        height: 90,
         color: Colors.grey, // 設定背景顏色為灰色（預設圖片）
+        child: Image.network(
+          Uri.parse(DatabaseHelper.baseUrl).resolve(img).toString(),
+          width: 90,
+          height: 90,
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
 
-  final TextStyle textStyle =
-      const TextStyle(fontSize: 13, color: Color(0xFF2e6d74));
+  final TextStyle textStyle = const TextStyle(fontSize: 13, color: Color(0xFF2e6d74));
 
   Widget _buildStaticView(int index) {
     // 顯示靜態提醒
@@ -184,18 +322,18 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center, // 底對齊
             children: [
-              _buildImage(), // 呼叫 `_buildImage()` 生成圖片區塊
+              _buildImage(reminders[index]["img"]), // 呼叫 `_buildImage()` 生成圖片區塊
               const SizedBox(width: 20), // 設定間距
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start, // 左對齊
                   children: [
-                    Text("拍攝日：20XX/XX/XX", style: textStyle), // 假資料
+                    Text("拍攝日：${reminders[index]["date"]}", style: textStyle), // 假資料
                     const SizedBox(height: 3),
-                    Text("傷口類型：割傷", style: textStyle), // 假資料
+                    Text("傷口類型：${reminders[index]["type"]}", style: textStyle), // 假資料
                     const SizedBox(height: 3),
                     Text(
-                      "換藥時間：${reminders[index]["selectedDay"]} "
+                      "換藥時間：${reminders[index]["selectedFreq"]} "
                       "${reminders[index]["selectedHour"]}:${reminders[index]["selectedMinute"].toString().padLeft(2, '0')}",
                       style: textStyle,
                     ),
@@ -211,8 +349,7 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
           right: -5,
           child: IconButton(
             onPressed: () => toggleEditMode(index), // 切換為編輯模式
-            icon: const Icon(Icons.edit,
-                size: 18, color: Color.fromRGBO(53, 53, 53, 1)), // 設定圖示
+            icon: const Icon(Icons.edit, size: 18, color: Color.fromRGBO(53, 53, 53, 1)), // 設定圖示
           ),
         ),
       ],
@@ -231,7 +368,7 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
               // 圖片容器
               Container(
                 padding: const EdgeInsets.all(5),
-                child: _buildImage(),
+                child: _buildImage(reminders[index]["img"]),
               ),
               const SizedBox(width: 10),
               // 文字與選單
@@ -241,19 +378,18 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("拍攝日：20XX/XX/XX", style: textStyle),
+                      Text("拍攝日：${reminders[index]["date"]}", style: textStyle),
                       const SizedBox(height: 5),
-                      Text("傷口類型：割傷", style: textStyle),
+                      Text("傷口類型：${reminders[index]["type"]}", style: textStyle),
                       const SizedBox(height: 5),
                       Row(
                         children: [
                           Text('換藥頻率：', style: textStyle),
                           Flexible(
                             child: _buildDropdownButton2(
-                              value: reminders[index]["selectedDay"] ?? '周一',
-                              items: ['周一', '周二', '周三', '周四', '周五'],
-                              onChanged: (newValue) =>
-                                  updateDay(index, newValue!),
+                              value: reminders[index]["selectedFreq"] ?? '每天',
+                              items: ['每天', '兩天一次', '三天一次', '每週'],
+                              onChanged: (newValue) => updateDay(index, newValue!),
                             ),
                           ),
                         ],
@@ -298,22 +434,18 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
           value: reminders[index]["selectedHour"], // 目前選擇的小時
           min: 0, // 最小值為 0
           max: 23, // 最大值為 23
-          onChanged: (value) =>
-              updateTime(index, "selectedHour", value), // 更新選擇的小時
+          onChanged: (value) => updateTime(index, "selectedHour", value), // 更新選擇的小時
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 5), // 設定水平間距
-          child: Text(':',
-              style: TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.bold)), // 顯示冒號（:）
+          child: Text(':', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), // 顯示冒號（:）
         ),
         _buildTimeSelector(
           // 時間選擇器（分鐘）
           value: reminders[index]["selectedMinute"], // 目前選擇的分鐘
           min: 0, // 最小值為 0
           max: 59, // 最大值為 59
-          onChanged: (value) =>
-              updateTime(index, "selectedMinute", value), // 更新選擇的分鐘
+          onChanged: (value) => updateTime(index, "selectedMinute", value), // 更新選擇的分鐘
         ),
       ],
     );
@@ -370,26 +502,37 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
     required ValueChanged<String?> onChanged,
   }) {
     return Container(
-      height: 30, // 頻率下拉選單的高度--加Container調整寬度
+      height: 30,
       width: 150,
-      padding: const EdgeInsets.symmetric(horizontal: 10), // 設定內邊距
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5), // 設定圓角
-        border: Border.all(color: Color(0xFF589399)), // 設定邊框顏色
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: const Color(0xFF589399)),
       ),
-      child: DropdownButton<String>(
+      child: DropdownButton2<String>(
+        alignment: Alignment.center,
         value: value,
-        dropdownColor: Colors.white, // 設定下拉選單背景色
-        style: const TextStyle(color: Colors.red), // 選中項目的文字顏色
-        isExpanded: true, // 讓選單展開時不會被擠壓
-        underline: SizedBox.shrink(), // 移除底線
+        // dropdownDirection: DropdownDirection.down, // 指定向下展開
+        dropdownStyleData: DropdownStyleData(
+          width: 150,
+          elevation: 0, //無陰影
+          offset: const Offset(-10, -1),
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xFF589399)),
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+          ),
+        ),
+        isExpanded: true,
+        underline: const SizedBox.shrink(),
+        style: const TextStyle(color: Colors.red),
         items: items.map(
           (item) {
             return DropdownMenuItem<String>(
               value: item,
               child: Text(
                 item,
-                style: textStyle, // 設定選項文字顏色
+                style: textStyle,
               ),
             );
           },
@@ -421,9 +564,9 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: SizedBox(
-                    width: 100, // 限制圖片大小
-                    height: 100,
-                    child: _buildImage(),
+                    width: 90, // 限制圖片大小
+                    height: 90,
+                    child: _buildImage(reminders[index]["img"]),
                   ),
                 ),
                 const SizedBox(width: 20), // 設定間距
@@ -433,13 +576,12 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("拍攝日：20XX/XX/XX", style: textStyle),
+                      Text("拍攝日：${reminders[index]["date"]}", style: textStyle),
                       const SizedBox(height: 3),
-                      Text("傷口類型：${reminders[index]["woundType"]}",
-                          style: textStyle),
+                      Text("傷口類型：${reminders[index]["type"]}", style: textStyle),
                       const SizedBox(height: 3),
                       Text(
-                        "換藥時間：${reminders[index]["selectedDay"]} "
+                        "換藥時間：${reminders[index]["selectedFreq"]} "
                         "${reminders[index]["selectedHour"]}:${reminders[index]["selectedMinute"].toString().padLeft(2, '0')}",
                         style: textStyle,
                       ),
@@ -465,6 +607,9 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
               if (index >= 0 && index < reminders.length) {
                 setState(() {
                   reminders.removeAt(index); // 移除對應索引的提醒
+                  // reminders[index]["ifcall"] = 'N';
+                  userCalls?[index]['ifcall'] = 'N';
+                  // print(userCalls);
                 });
               }
             },

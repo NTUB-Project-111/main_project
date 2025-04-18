@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
-
-import 'loginpages/login.dart';
 import 'registerpages/account_setup.dart';
 import 'registerpages/captcha_section.dart';
 import 'registerpages/personal_info_section.dart';
 import '../my_flutter_app_icons.dart';
+import '../feature/database.dart';
+import 'tabs.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -15,10 +15,12 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
+  final Map<String, dynamic> personalinfo = {};
+  final Map<String, dynamic> accountinfo = {};
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEBFEFF), // 設定 Scaffold 背景顏色
       body: SingleChildScrollView(
         child: Container(
           decoration: const BoxDecoration(
@@ -36,8 +38,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   border: Border(
-                    bottom: BorderSide(
-                        color: Color(0xFF589399), width: 2), // 只加底部邊框
+                    bottom: BorderSide(color: Color(0xFF589399), width: 2), // 只加底部邊框
                   ),
                 ),
                 child: Stack(
@@ -45,17 +46,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   children: [
                     Align(
                         alignment: Alignment.centerLeft,
-                        // child: Image.asset('images/icon/back.png', width: 30, height: 30),
                         child: IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const LoginScreen()));
-                            },
+                            onPressed: () {},
                             icon: const Icon(
                               MyFlutterApp.icon_park_solid__back,
-                              color: const Color(0xFF589399),
+                              color: Color(0xFF589399),
                             ))),
                     const SizedBox(
                       width: 5,
@@ -73,24 +68,133 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
 
               // 註冊表單內容
-              const Padding(
-                padding: EdgeInsets.all(15),
+              Padding(
+                padding: const EdgeInsets.all(15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PersonalInfoSection(), //個人資訊輸入區
-                    SizedBox(height: 25),
+                    PersonalInfoSection(onDataChanged: (data) {
+                      setState(() {
+                        personalinfo.clear();
+                        personalinfo.addAll(data);
+                      });
+                    }), //個人資訊輸入區
+                    const SizedBox(height: 25),
 
-                    DottedDivider(), // 直接使用即可，長度會根據螢幕寬度自適應
+                    const DottedDivider(), // 直接使用即可，長度會根據螢幕寬度自適應
 
-                    SizedBox(height: 15),
-                    AccountSetupSection(), //帳戶設定區
-                    SizedBox(height: 25),
+                    const SizedBox(height: 15),
+                    AccountSetupSection(onDataChanged: (data) {
+                      setState(() {
+                        accountinfo.clear();
+                        accountinfo.addAll(data);
+                      });
+                    }), //帳戶設定區
+                    const SizedBox(height: 25),
+                    const DottedDivider(), // 直接使用即可，長度會根據螢幕寬度自適應
+                    const SizedBox(height: 15),
+                    const CaptchaSection(), //驗證碼區
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        // onPressed: () async {
+                        //   Navigator.push(
+                        //       context, MaterialPageRoute(builder: (context) => const Tabs()));
+                        //   bool userAdded = await DatabaseHelper.addUser(
+                        //       personalinfo['name'],
+                        //       accountinfo['email'],
+                        //       accountinfo['password'],
+                        //       personalinfo['gender'],
+                        //       personalinfo['birthday'],
+                        //       personalinfo['profileImage']);
 
-                    // DottedDivider(), // 直接使用即可，長度會根據螢幕寬度自適應
+                        //   if (userAdded) {
+                        //     print("使用者註冊成功，開始儲存 userId...");
+                        //     bool saved = await DatabaseHelper.saveUserId(accountinfo['email']);
 
-                    // SizedBox(height: 15),
-                    CaptchaSection(), //驗證碼區
+                        //     if (saved) {
+                        //       String? userId = await DatabaseHelper.getUserId();
+                        //       print("獲取的 User ID: $userId");
+                        //     } else {
+                        //       print("無法儲存 User ID");
+                        //     }
+                        //   } else {
+                        //     print("註冊失敗，無法儲存 userId");
+                        //   }
+                        // },
+                        onPressed: () async {
+                          if (personalinfo['name'] == null ||
+                              personalinfo['name'].isEmpty ||
+                              personalinfo['birthday'] == null ||
+                              personalinfo['birthday'].isEmpty ||
+                              personalinfo['gender'] == null ||
+                              personalinfo['profileImage'] == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('請填寫完整個人資料'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return; // 終止註冊流程
+                          }
+
+                          if (accountinfo['email'] == null ||
+                              accountinfo['email'].isEmpty ||
+                              accountinfo['password'] == null ||
+                              accountinfo['password'].isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('請填寫完整帳戶資訊'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return; // 終止註冊流程
+                          }
+
+                          Navigator.push(
+                              context, MaterialPageRoute(builder: (context) => const Tabs()));
+                          bool userAdded = await DatabaseHelper.addUser(
+                              personalinfo['name'],
+                              accountinfo['email'],
+                              accountinfo['password'],
+                              personalinfo['gender'],
+                              personalinfo['birthday'],
+                              personalinfo['profileImage']);
+
+                          if (userAdded) {
+                            print("使用者註冊成功，開始儲存 userId...");
+                            bool saved = await DatabaseHelper.saveUserId(accountinfo['email']);
+
+                            if (saved) {
+                              String? userId = await DatabaseHelper.getUserId();
+                              print("獲取的 User ID: $userId");
+                            } else {
+                              print("無法儲存 User ID");
+                            }
+                          } else {
+                            print("使用者註冊失敗");
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF669FA5),
+                          padding: const EdgeInsets.symmetric(vertical: 13),
+                          minimumSize: const Size(100, 20), // 設定按鈕最小寬度 200，高度 50
+                          textStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          '註冊',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wounddetection/my_flutter_app_icons.dart';
+import '../feature/database.dart';
 import './tabs/homepage.dart';
 import './tabs/hospitalpage.dart';
 import './tabs/personpage.dart';
@@ -25,13 +26,29 @@ class _TabsState extends State<Tabs> {
     const RecordPage(),
     const PersonPage(),
   ];
+  
 
   @override
   void initState() {
     super.initState();
     // 如果 `currentIndex` 傳入的是 null，則使用 0
     _currentIndex = widget.currentIndex ?? 0;
+    // loadUserInfo();
   }
+
+  // void loadUserInfo() async {
+  //   final userInfo = await DatabaseHelper.getUserInfo();
+  //   final userId = await DatabaseHelper.getUserId();
+  //   if (userInfo != null) {
+  //     DatabaseHelper.userInfo = userInfo;
+  //     debugPrint('✅ User Info Loaded: $userInfo');
+  //   } else {
+  //     debugPrint('⚠️ 無法載入 userInfo');
+  //   }
+  //   debugPrint('User ID: $userId');
+  //   // 若需要更新畫面（例如根據 userInfo 調整 UI）再呼叫 setState()
+  //   // setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +72,6 @@ class _TabsState extends State<Tabs> {
           unselectedFontSize: 11,
           currentIndex: _currentIndex,
           items: const [
-            //icon的部分佑儒可以先自行改
             BottomNavigationBarItem(
               icon: Icon(MyFlutterApp.home),
               label: "首頁",
