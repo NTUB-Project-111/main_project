@@ -1,45 +1,91 @@
 import 'package:flutter/material.dart';
+import './pages/tabs.dart';
+import './pages/remindpage.dart';
+import './pages/registerpage.dart';
+import 'feature/database.dart';
 
-// import './pages/tabs.dart';
+// void main() {
+//   runApp(const MyApp());
+// }
 
-// import './pages/registerpage.dart';
-import 'package:wounddetection/pages/intropages/intro.dart';
-// import 'package:wounddetection/pages/loginpages/login.dart';
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
 
-import 'dart:io';
-
-// import 'package:wounddetection/pages/remindpage.dart';
-
-class MyHttpOverrides extends HttpOverrides {
-  // @override
-  // HttpClient createHttpClient(SecurityContext? context) {
-  //   return super.createHttpClient(context)
-  //     ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-  // }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return const MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: Tabs(),
+//     );
+//   }
+// }
 
 void main() {
-  // HttpOverrides.global = MyHttpOverrides(); // 忽略 SSL 憑證
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  Future<Widget> _getInitialPage() async {
+    final userId = await DatabaseHelper.getUserId();
+    if (userId != null) {
+      final userInfo = await DatabaseHelper.getUserInfo();
+      final userRecords = await DatabaseHelper.getUserRecords();
+      final userCalls = await DatabaseHelper.getReminds();
+      final remindRecord = await DatabaseHelper.getRemindRecord();
+      if (userInfo != null) {
+        DatabaseHelper.userInfo = userInfo;
+        // debugPrint('User Info Loaded: $userInfo');
+        debugPrint('成功載入使用者資料');
+      }
+      if (userRecords != null) {
+        DatabaseHelper.allRecords = userRecords;
+        // debugPrint('User Records Loaded: $userRecords');
+        debugPrint('成功載入使用者診斷紀錄');
+      }
+      if (userCalls != null) {
+        DatabaseHelper.allCalls = userCalls;
+        // debugPrint('User Records Loaded: $userCalls');
+        debugPrint('成功載入護理提醒');
+      }
+      if (remindRecord != null) {
+        DatabaseHelper.remindRecords = remindRecord;
+        debugPrint('成功載入診斷紀錄跟提醒');
+        // debugPrint('remindRecords Loaded: $remindRecord');
+      }
+      debugPrint('User ID: $userId');
+      return const Tabs(); // 回傳主頁
+    } else {
+      debugPrint('沒有 userId，導向註冊頁');
+      return const RegistrationPage();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // home:HospitalListPage(),
-
-      // home: Tabs(),
-      // home : RemindPage(),
-      // home: TotalPage(),
-      // home: RecordPage(),
-      // home: RegistrationPage(),
-      // home: LoginScreen(),
-      //home:NearbyHospitalScreen(),
-      home: IntroScreen(),
+      home: FutureBuilder<Widget>(
+        future: _getInitialPage(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // 等待資料載入時顯示 loading 畫面
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          } else if (snapshot.hasError) {
+            // 若發生錯誤
+            return const Scaffold(
+              body: Center(child: Text('發生錯誤，請稍後再試')),
+            );
+          } else {
+            // 資料載入成功，顯示對應頁面
+            return snapshot.data!;
+          }
+        },
+      ),
     );
   }
 }

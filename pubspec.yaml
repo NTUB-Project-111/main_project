@@ -56,6 +56,9 @@ dependencies:
   fluttertoast: ^8.2.12 #提示視窗
   path: ^1.9.0 #
   flutter_dash: ^1.0.0 #繪製底線
+  shared_preferences: ^2.5.2 #永久儲存使用者資料
+  mime: ^1.0.4 #判斷使用者上傳的檔案類型
+  http_parser: ^4.0.2 #解析 HTTP 相關資訊，例如 Content-Type、MIME 類型等
 
 dev_dependencies:
   flutter_test:

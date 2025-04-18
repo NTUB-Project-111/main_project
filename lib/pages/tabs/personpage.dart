@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:wounddetection/my_flutter_app_icons.dart';
 import 'package:wounddetection/pages/personalpages/personalcontain.dart';
 import '../headers/header_1.dart';
-import '../personalpages/personaldata.dart';
-import '../personalpages/personalchangeps.dart';
+import '../personalpages/changeps.dart';
 import '../remindpage.dart';
-import '../personalpages/personalsetting.dart';
+import '../personalpages/setting.dart';
+import '../../feature/database.dart';
+
 class PersonPage extends StatefulWidget {
   const PersonPage({super.key});
 
@@ -14,14 +15,32 @@ class PersonPage extends StatefulWidget {
 }
 
 class _PersonPageState extends State<PersonPage> {
+  String? userId = '';
+  Map<String, dynamic>? userInfo = DatabaseHelper.userInfo;
+  // bool _isLoading = true;
+  @override
+  void initState() {
+    super.initState();
+    // _loadUserInfo();
+  }
+
+  // Future<void> _loadUserInfo() async {
+  //   Map<String, dynamic>? info = await DatabaseHelper.getUserInfo();
+  //   setState(() {
+  //     userInfo = info ?? {}; // 確保 userInfo 不為 null
+  //     _isLoading = false;
+  //     // print(userInfo);
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         const HeaderPage1(
-          title: "我的",
-          icon: Icon(MyFlutterApp.bell, size: 23, color: Color(0xFF589399)),
-          targetPage: RemindPage()),
+            title: "我的",
+            icon: Icon(MyFlutterApp.bell, size: 23, color: Color(0xFF589399)),
+            targetPage: RemindPage()),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 26),
           child: Column(
@@ -49,10 +68,23 @@ class _PersonPageState extends State<PersonPage> {
                         color: const Color(0xFF669FA5).withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
+                      child: ClipOval(
+                        child: Image.network(
+                          Uri.parse(DatabaseHelper.baseUrl)
+                              .resolve(userInfo?['picture'])
+                              .toString(),
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(child: Text("圖片載入失敗"));
+                          },
+                        ),
+                      ),
                     ),
-                    const Text(
-                      '暱稱',
-                      style: TextStyle(
+                    Text(
+                      userInfo?['name'],
+                      style: const TextStyle(
                         color: Color(0xFF669FA5),
                         fontSize: 26,
                         fontWeight: FontWeight.w600,
@@ -67,17 +99,31 @@ class _PersonPageState extends State<PersonPage> {
                 height: 8,
               ),
               _buildDetailItem(
-                const Icon(Icons.person,color: Color(0xFF669FA5),size: 30,),
-                "個人基本資料",
-                const PersonalContainPage()),
+                  const Icon(
+                    Icons.person,
+                    color: Color(0xFF669FA5),
+                    size: 30,
+                  ),
+                  "個人基本資料",
+                  const PersonalContainPage()),
               _buildDetailItem(
-                const Icon(Icons.lock,color: Color(0xFF669FA5),size: 30,),
-                "變更密碼",
-                const ChangePsPage()),
+                  const Icon(
+                    Icons.lock,
+                    color: Color(0xFF669FA5),
+                    size: 30,
+                  ),
+                  "變更密碼",
+                  ChangePsPage(
+                    userPassword: userInfo?['password'],
+                  )),
               _buildDetailItem(
-                const Icon(Icons.settings,color: Color(0xFF669FA5),size: 30,),
-                "更多設定",
-                const Settings()),
+                  const Icon(
+                    Icons.settings,
+                    color: Color(0xFF669FA5),
+                    size: 30,
+                  ),
+                  "更多設定",
+                  const Settings()),
             ],
           ),
         )
@@ -101,8 +147,7 @@ class _PersonPageState extends State<PersonPage> {
       width: double.infinity,
       child: OutlinedButton.icon(
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => targetPage));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => targetPage));
         },
         label: Text(title,
             style: const TextStyle(

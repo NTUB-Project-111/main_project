@@ -26,7 +26,7 @@ class _ResultPage4State extends State<ResultPage4> {
               '附近相關醫療院所',
               style: TextStyle(
                 color: Color(0xFF589399),
-                fontSize: 22,
+                fontSize: 20,
               ),
             ),
           ),
