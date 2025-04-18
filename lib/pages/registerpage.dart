@@ -97,31 +97,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        // onPressed: () async {
-                        //   Navigator.push(
-                        //       context, MaterialPageRoute(builder: (context) => const Tabs()));
-                        //   bool userAdded = await DatabaseHelper.addUser(
-                        //       personalinfo['name'],
-                        //       accountinfo['email'],
-                        //       accountinfo['password'],
-                        //       personalinfo['gender'],
-                        //       personalinfo['birthday'],
-                        //       personalinfo['profileImage']);
-
-                        //   if (userAdded) {
-                        //     print("使用者註冊成功，開始儲存 userId...");
-                        //     bool saved = await DatabaseHelper.saveUserId(accountinfo['email']);
-
-                        //     if (saved) {
-                        //       String? userId = await DatabaseHelper.getUserId();
-                        //       print("獲取的 User ID: $userId");
-                        //     } else {
-                        //       print("無法儲存 User ID");
-                        //     }
-                        //   } else {
-                        //     print("註冊失敗，無法儲存 userId");
-                        //   }
-                        // },
                         onPressed: () async {
                           if (personalinfo['name'] == null ||
                               personalinfo['name'].isEmpty ||
@@ -150,9 +125,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             );
                             return; // 終止註冊流程
                           }
-
-                          Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => const Tabs()));
+                          print(personalinfo['name']);
+                          print(accountinfo['email']);
+                          print(accountinfo['password']);
+                          print(personalinfo['gender']);
+                          print(personalinfo['birthday']);
+                          print(personalinfo['profileImage']);
                           bool userAdded = await DatabaseHelper.addUser(
                               personalinfo['name'],
                               accountinfo['email'],
@@ -164,15 +142,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           if (userAdded) {
                             print("使用者註冊成功，開始儲存 userId...");
                             bool saved = await DatabaseHelper.saveUserId(accountinfo['email']);
-
                             if (saved) {
                               String? userId = await DatabaseHelper.getUserId();
+                              DatabaseHelper.userInfo = (await DatabaseHelper.getUserInfo())!;
                               print("獲取的 User ID: $userId");
+
+                              // ✅ 真正跳轉頁面
+                              Navigator.push(
+                                  context, MaterialPageRoute(builder: (context) => const Tabs()));
                             } else {
                               print("無法儲存 User ID");
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('註冊成功但無法儲存使用者資訊'),
+                                  backgroundColor: Colors.orange,
+                                ),
+                              );
                             }
                           } else {
                             print("使用者註冊失敗");
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('註冊失敗，請稍後再試'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
                           }
                         },
                         style: ElevatedButton.styleFrom(
