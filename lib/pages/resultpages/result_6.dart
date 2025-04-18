@@ -106,7 +106,7 @@ class _ResultPage6State extends State<ResultPage6> {
         }
       }
       DatabaseHelper.allCalls = (await DatabaseHelper.getReminds()) ?? [];
-
+      DatabaseHelper.remindRecords = (await DatabaseHelper.getRemindRecord()) ?? [];
       Fluttertoast.showToast(
         msg: "儲存成功",
         timeInSecForIosWeb: 2,
