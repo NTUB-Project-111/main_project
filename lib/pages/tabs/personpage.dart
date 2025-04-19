@@ -17,24 +17,18 @@ class PersonPage extends StatefulWidget {
 class _PersonPageState extends State<PersonPage> {
   String? userId = '';
   Map<String, dynamic>? userInfo = DatabaseHelper.userInfo;
-  // bool _isLoading = true;
   @override
   void initState() {
     super.initState();
-    // _loadUserInfo();
   }
-
-  // Future<void> _loadUserInfo() async {
-  //   Map<String, dynamic>? info = await DatabaseHelper.getUserInfo();
-  //   setState(() {
-  //     userInfo = info ?? {}; // 確保 userInfo 不為 null
-  //     _isLoading = false;
-  //     // print(userInfo);
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
+    final hasPicture = userInfo != null &&
+        userInfo!['picture'] != null &&
+        userInfo!['picture'].toString().isNotEmpty &&
+        userInfo!['picture'] != 'null';
+
     return Column(
       children: [
         const HeaderPage1(
@@ -69,17 +63,23 @@ class _PersonPageState extends State<PersonPage> {
                         shape: BoxShape.circle,
                       ),
                       child: ClipOval(
-                        child: Image.network(
-                          Uri.parse(DatabaseHelper.baseUrl)
-                              .resolve(userInfo?['picture'])
-                              .toString(),
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Center(child: Text("圖片載入失敗"));
-                          },
-                        ),
+                        child: hasPicture
+                            ? Image.network(
+                                Uri.parse(DatabaseHelper.baseUrl)
+                                    .resolve(userInfo!['picture'])
+                                    .toString(),
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Center(child: Text("圖片載入失敗"));
+                                },
+                              )
+                            : const Icon(
+                                Icons.person,
+                                color: Color(0xFF669FA5),
+                                size: 80,
+                              ),
                       ),
                     ),
                     Text(
