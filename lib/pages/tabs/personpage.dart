@@ -56,6 +56,7 @@ class _PersonPageState extends State<PersonPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
+                      margin: const EdgeInsets.only(right: 10),
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
@@ -82,13 +83,19 @@ class _PersonPageState extends State<PersonPage> {
                               ),
                       ),
                     ),
-                    Text(
-                      userInfo?['name'],
-                      style: const TextStyle(
-                        color: Color(0xFF669FA5),
-                        fontSize: 26,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 2.8,
+                    Expanded(
+                      child: Text(
+                        userInfo?['name'] ?? '',
+                        style: const TextStyle(
+                          color: Color(0xFF669FA5),
+                          fontSize: 26,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 2.8,
+                        ),
+                        overflow: TextOverflow.ellipsis, // 過長時顯示省略號
+                        maxLines: 1, // 限制為單行
+                        softWrap: false, // 不換行
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ],
