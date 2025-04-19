@@ -290,20 +290,34 @@ class _PersonalContainPageState extends State<PersonalContainPage> {
                                 style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
                             Row(
                               children: [
-                                Text(userInfo?['name'],
+                                Container(
+                                  constraints: const BoxConstraints(maxWidth: 120), // 設定最大寬度以防止溢出
+                                  child: Text(
+                                    userInfo?['name'] ?? '',
                                     style: const TextStyle(
-                                        fontSize: 13, color: Color.fromARGB(255, 140, 140, 140))),
+                                      fontSize: 13,
+                                      color: Color.fromARGB(255, 140, 140, 140),
+                                    ),
+                                    overflow: TextOverflow.ellipsis, // 超出顯示「...」
+                                    softWrap: false,
+                                    maxLines: 1,
+                                  ),
+                                ),
                                 IconButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => const ChangeNamePage()));
-                                    },
-                                    icon: const Icon(Icons.arrow_forward_ios,
-                                        size: 15, color: Color(0xFF669FA5)))
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const ChangeNamePage()));
+                                  },
+                                  icon: const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 15,
+                                    color: Color(0xFF669FA5),
+                                  ),
+                                )
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
