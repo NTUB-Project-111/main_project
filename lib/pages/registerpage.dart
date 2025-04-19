@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'registerpages/account_setup.dart';
@@ -98,12 +100,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
+                          // print(personalinfo['name']);
+                          // print(accountinfo['email']);
+                          // print(accountinfo['password']);
+                          // print(personalinfo['gender']);
+                          // print(personalinfo['birthday']);
+                          // print("image:${personalinfo['profileImage']}");
                           if (personalinfo['name'] == null ||
                               personalinfo['name'].isEmpty ||
                               personalinfo['birthday'] == null ||
                               personalinfo['birthday'].isEmpty ||
-                              personalinfo['gender'] == null ||
-                              personalinfo['profileImage'] == null) {
+                              personalinfo['gender'] == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('請填寫完整個人資料'),
@@ -125,19 +132,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             );
                             return; // 終止註冊流程
                           }
-                          print(personalinfo['name']);
-                          print(accountinfo['email']);
-                          print(accountinfo['password']);
-                          print(personalinfo['gender']);
-                          print(personalinfo['birthday']);
-                          print(personalinfo['profileImage']);
+
                           bool userAdded = await DatabaseHelper.addUser(
-                              personalinfo['name'],
-                              accountinfo['email'],
-                              accountinfo['password'],
-                              personalinfo['gender'],
-                              personalinfo['birthday'],
-                              personalinfo['profileImage']);
+                            personalinfo['name'],
+                            accountinfo['email'],
+                            accountinfo['password'],
+                            personalinfo['gender'],
+                            personalinfo['birthday'],
+                            personalinfo['profileImage'] != null
+                                ? personalinfo['profileImage'] as File
+                                : null,
+                          );
 
                           if (userAdded) {
                             print("使用者註冊成功，開始儲存 userId...");

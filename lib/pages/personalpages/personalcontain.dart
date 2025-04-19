@@ -18,23 +18,13 @@ class PersonalContainPage extends StatefulWidget {
 class _PersonalContainPageState extends State<PersonalContainPage> {
   // String? userId = '';
   Map<String, dynamic>? userInfo = DatabaseHelper.userInfo;
-  bool _isLoading = true;
   final ImagePicker _picker = ImagePicker();
   File? _image;
 
   @override
   void initState() {
     super.initState();
-    // _loadUserInfo();
   }
-
-  // Future<void> _loadUserInfo() async {
-  //   Map<String, dynamic>? info = await DatabaseHelper.getUserInfo();
-  //   setState(() {
-  //     userInfo = info ?? {}; // 確保 userInfo 不為 null
-  //     _isLoading = false;
-  //   });
-  // }
 
   Future<void> _pickPicture() async {
     final XFile? photo = await _picker.pickImage(source: ImageSource.gallery);
@@ -208,6 +198,10 @@ class _PersonalContainPageState extends State<PersonalContainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final hasPicture = userInfo != null &&
+        userInfo!['picture'] != null &&
+        userInfo!['picture'].toString().isNotEmpty &&
+        userInfo!['picture'] != 'null';
     return Scaffold(
         backgroundColor: const Color(0xFFF2FEFF),
         body: Column(
@@ -231,15 +225,23 @@ class _PersonalContainPageState extends State<PersonalContainPage> {
                     shape: BoxShape.circle,
                   ),
                   child: ClipOval(
-                    child: Image.network(
-                      Uri.parse(DatabaseHelper.baseUrl).resolve(userInfo?['picture']).toString(),
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Center(child: Text("圖片載入失敗"));
-                      },
-                    ),
+                    child: hasPicture
+                        ? Image.network(
+                            Uri.parse(DatabaseHelper.baseUrl)
+                                .resolve(userInfo!['picture'])
+                                .toString(),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Center(child: Text("圖片載入失敗"));
+                            },
+                          )
+                        : const Icon(
+                            Icons.person,
+                            color: Color(0xFF669FA5),
+                            size: 80,
+                          ),
                   ),
                 ),
                 //換頭像按鈕

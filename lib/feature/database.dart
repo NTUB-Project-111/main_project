@@ -6,7 +6,7 @@ import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 
 class DatabaseHelper {
-  static const String baseUrl = "http://:3000"; //放自己的電腦IP
+  static const String baseUrl = "http://192.168.1.109:3000"; //放我的電腦IP 172.20.10.5 192.168.1.107
   // static final String userId;
   static Map<String, dynamic> calls = {};
   static Map<String, dynamic> record = {};
@@ -14,6 +14,7 @@ class DatabaseHelper {
   static List<Map<String, dynamic>> allRecords = []; //取得使用者所有診斷紀錄
   static List<Map<String, dynamic>> allCalls = []; //取得使用者所有護理提醒
   static List<Map<String, dynamic>> remindRecords = [];
+  static List<Map<String, dynamic>> homeRemind = []; //首頁護理提醒
 
   // 存儲 userId
   static Future<bool> saveUserId(String email) async {
@@ -151,6 +152,30 @@ class DatabaseHelper {
     }
   }
 
+  //取得首頁提醒
+  static Future<List<Map<String, dynamic>>?> getHomeRemind() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userId');
+    if (userId == null) {
+      print('無法獲取 User ID，跳過請求');
+      return null;
+    }
+    final url = Uri.parse('$baseUrl/getHomeRemind?id=$userId');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body);
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        print('獲取HomeRemind失敗: ${response.statusCode} ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('請求錯誤: $e');
+      return null;
+    }
+  }
+
   // 刪除護理提醒
   static Future<bool> deleteRemind(String userId, String recordId) async {
     final url = Uri.parse('$baseUrl/deleteRemind');
@@ -192,7 +217,7 @@ class DatabaseHelper {
     }
   }
 
-    /// 修改提醒時間
+  /// 修改提醒時間
   static Future<bool> updateCallTime(String idRecord, String fkUserId, String time) async {
     final response = await http.post(
       Uri.parse("$baseUrl/updateCallTime"),
@@ -207,9 +232,15 @@ class DatabaseHelper {
     }
   }
 
-  /// 新增使用者
-  static Future<bool> addUser(String name, String email, String password, String gender,
-      String birthday, File photoFile) async {
+  //新增使用者
+  static Future<bool> addUser(
+    String name,
+    String email,
+    String password,
+    String gender,
+    String birthday,
+    File? photoFile, // 改為 nullable（可選）
+  ) async {
     var uri = Uri.parse("$baseUrl/addUser");
     var request = http.MultipartRequest("POST", uri);
 
@@ -220,15 +251,17 @@ class DatabaseHelper {
     request.fields['gender'] = gender;
     request.fields['birthday'] = birthday;
 
-    // 添加圖片檔案
-    var mimeType = lookupMimeType(photoFile.path) ?? "image/jpeg"; // 確保有 MIME 類型
-    var multipartFile = await http.MultipartFile.fromPath(
-      'photo', // 這個 key 要跟後端 API 參數名稱一致
-      photoFile.path,
-      contentType: MediaType.parse(mimeType),
-    );
+    // 添加圖片檔案（只有當 photoFile 有內容且存在時）
+    if (photoFile != null && await photoFile.exists()) {
+      var mimeType = lookupMimeType(photoFile.path) ?? "image/jpeg";
+      var multipartFile = await http.MultipartFile.fromPath(
+        'photo',
+        photoFile.path,
+        contentType: MediaType.parse(mimeType),
+      );
 
-    request.files.add(multipartFile);
+      request.files.add(multipartFile);
+    }
 
     // 發送請求
     var streamedResponse = await request.send();
@@ -237,7 +270,7 @@ class DatabaseHelper {
     if (response.statusCode == 200) {
       return true;
     } else {
-      print("上傳失敗: ${response.body}"); // 記錄錯誤資訊
+      print("上傳失敗: ${response.body}");
       return false;
     }
   }
