@@ -23,6 +23,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFEBFEFF),
       body: SingleChildScrollView(
         child: Container(
           decoration: const BoxDecoration(
@@ -93,9 +94,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       });
                     }), //帳戶設定區
                     const SizedBox(height: 25),
-                    const DottedDivider(), // 直接使用即可，長度會根據螢幕寬度自適應
-                    const SizedBox(height: 15),
-                    const CaptchaSection(), //驗證碼區
+                    // const DottedDivider(), // 直接使用即可，長度會根據螢幕寬度自適應
+                    // const SizedBox(height: 15),
+                    // const CaptchaSection(), //驗證碼區
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(

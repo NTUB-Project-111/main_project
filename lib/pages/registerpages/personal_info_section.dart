@@ -19,6 +19,7 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
   DateTime? _selectedDate;
   final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
   File? _profileImage;
+  String? _errorMessage = "";
 
   Map<String, dynamic> getPersonalInfo() {
     return {
@@ -32,7 +33,20 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
   @override
   void initState() {
     super.initState();
-    _nameController.addListener(_sendData);
+    _nameController.addListener(() {
+      if (_nameController.text.length > 50) {
+        setState(() {
+          _errorMessage = "姓名長度不可超過50";
+        });
+      } else {
+        if (_errorMessage != null) {
+          setState(() {
+            _errorMessage = null;
+          });
+        }
+      }
+      _sendData();
+    });
     _birthdateController.addListener(_sendData);
   }
 
@@ -132,16 +146,19 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: const Color(0xFF669FA5)),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: Color(0xFF669FA5),
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1.6,
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Color(0xFF669FA5),
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.6,
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -153,16 +170,19 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                 child: TextFormField(
                   controller: controller, // **這裡加上 controller**
                   style: const TextStyle(
-                      color: Color.fromARGB(255, 61, 103, 108), fontSize: 15), // 輸入文字大小
+                      color: Color.fromARGB(255, 61, 103, 108), fontSize: 14), // 輸入文字大小
                   decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(bottom: 3),
                     hintText: hint,
                     hintStyle: const TextStyle(
                       color: Color(0xFFA5A1A1),
                       fontSize: 14, // 提示字體
                     ),
                     border: InputBorder.none,
+                    counterText: '',
                   ),
                   readOnly: readOnly, // 生日欄位不能手動輸入
+                  maxLength: label == '姓名' ? 50 : null, // 只限制姓名欄
                 ),
               ),
             ),
