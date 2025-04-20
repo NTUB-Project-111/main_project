@@ -92,9 +92,10 @@ flutter:
     - images/arrow.png
     - images/knowledge.png
     - images/hospital.png
-    - images/1.png
-    - assets/cut_vs_abrasion_model.tflite
     - images/icon_2.png
+    - images/bruises.png #輪播圖
+    - images/cut.png #輪播圖
+    - images/burn.png #輪播圖
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
