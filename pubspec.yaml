@@ -59,6 +59,8 @@ dependencies:
   shared_preferences: ^2.5.2 #永久儲存使用者資料
   mime: ^1.0.4 #判斷使用者上傳的檔案類型
   http_parser: ^4.0.2 #解析 HTTP 相關資訊，例如 Content-Type、MIME 類型等
+  carousel_slider: ^5.0.0 #製作輪播圖
+  url_launcher: ^6.3.1 #點擊圖片跳轉網頁
 
 dev_dependencies:
   flutter_test:

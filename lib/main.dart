@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import './pages/tabs.dart';
-import './pages/remindpage.dart';
 import './pages/registerpage.dart';
-import 'feature/database.dart';
+import './feature/database.dart';
 
 // void main() {
 //   runApp(const MyApp());
@@ -15,7 +14,8 @@ import 'feature/database.dart';
 //   Widget build(BuildContext context) {
 //     return const MaterialApp(
 //       debugShowCheckedModeBanner: false,
-//       home: Tabs(),
+//       // home: Tabs(),
+//       home: TestPage(),
 //     );
 //   }
 // }
@@ -29,16 +29,20 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   Future<Widget> _getInitialPage() async {
-    final userId = await DatabaseHelper.getUserId();
+    var userId = await DatabaseHelper.getUserId();
+    // userId = null;
     if (userId != null) {
       final userInfo = await DatabaseHelper.getUserInfo();
       final userRecords = await DatabaseHelper.getUserRecords();
       final userCalls = await DatabaseHelper.getReminds();
       final remindRecord = await DatabaseHelper.getRemindRecord();
+      final homeRemind = await DatabaseHelper.getHomeRemind();
       if (userInfo != null) {
         DatabaseHelper.userInfo = userInfo;
-        // debugPrint('User Info Loaded: $userInfo');
+        debugPrint('User Info Loaded: $userInfo');
         debugPrint('成功載入使用者資料');
+      } else {
+        return const RegistrationPage();
       }
       if (userRecords != null) {
         DatabaseHelper.allRecords = userRecords;
@@ -54,6 +58,11 @@ class MyApp extends StatelessWidget {
         DatabaseHelper.remindRecords = remindRecord;
         debugPrint('成功載入診斷紀錄跟提醒');
         // debugPrint('remindRecords Loaded: $remindRecord');
+      }
+      if (homeRemind != null) {
+        DatabaseHelper.homeRemind = homeRemind;
+        debugPrint('成功載入首頁提醒');
+        // debugPrint('homeRemind Loaded: $homeRemind');
       }
       debugPrint('User ID: $userId');
       return const Tabs(); // 回傳主頁
