@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // 用於選擇或拍攝照片
-import 'package:intl/intl.dart'; // 用來格式化日期
-import 'dart:io'; // 用於處理文件
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'dart:io';
+
+import 'package:wounddetection/feature/database.dart';
 
 class PersonalInfoSection extends StatefulWidget {
-  final Function(Map<String, dynamic>) onDataChanged;
+  const PersonalInfoSection({super.key});
 
-  const PersonalInfoSection({super.key, required this.onDataChanged});
   @override
-  // ignore: library_private_types_in_public_api
   _PersonalInfoSectionState createState() => _PersonalInfoSectionState();
 }
 
@@ -19,44 +19,30 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
   DateTime? _selectedDate;
   final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
   File? _profileImage;
-  String? _errorMessage = "";
-
-  Map<String, dynamic> getPersonalInfo() {
-    return {
-      'name': _nameController.text,
-      'birthday': _birthdateController.text,
-      'gender': _selectedGender,
-      'profileImage': _profileImage,
-    };
-  }
+  final Map<String, String> genderMap = {
+    "M": "男",
+    "F": "女",
+    "Other": "其他",
+  };
+  
 
   @override
   void initState() {
     super.initState();
+    DatabaseHelper.userInfo["name"] = '';
+    DatabaseHelper.userInfo["birthday"] = '';
+    DatabaseHelper.userInfo["gender"] = '';
+
     _nameController.addListener(() {
-      if (_nameController.text.length > 50) {
-        setState(() {
-          _errorMessage = "姓名長度不可超過50";
-        });
-      } else {
-        if (_errorMessage != null) {
-          setState(() {
-            _errorMessage = null;
-          });
-        }
-      }
-      _sendData();
+      DatabaseHelper.userInfo["name"] = _nameController.text;
     });
-    _birthdateController.addListener(_sendData);
   }
 
-  void _sendData() {
-    widget.onDataChanged({
-      'name': _nameController.text,
-      'birthday': _birthdateController.text,
-      'gender': _selectedGender,
-      'profileImage': _profileImage, // 只回傳路徑，避免直接傳 `File`
-    });
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _birthdateController.dispose();
+    super.dispose();
   }
 
   @override
@@ -83,8 +69,8 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                   _buildTextField(
                     label: '姓名',
                     hint: '請輸入您的姓名/暱稱',
-                    controller: _nameController, // 可輸入文字
-                    readOnly: false, // 允許輸入
+                    controller: _nameController,
+                    readOnly: false,
                     onTap: null,
                   ),
                   const SizedBox(height: 16),
@@ -92,8 +78,8 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                     label: '生日',
                     hint: 'YYYY-MM-DD',
                     controller: _birthdateController,
-                    readOnly: true, // 禁止手動輸入
-                    onTap: _pickDate, // 點擊開啟月曆
+                    readOnly: true,
+                    onTap: _pickDate,
                   ),
                   const SizedBox(height: 16),
                   _buildGenderSelection(),
@@ -164,25 +150,27 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
           const SizedBox(width: 16),
           Expanded(
             child: GestureDetector(
-              onTap: onTap, // 讓生日欄位點擊時開啟日期選擇器
+              onTap: onTap,
               child: AbsorbPointer(
-                absorbing: readOnly, // 讓生日欄位無法手動輸入
+                absorbing: readOnly,
                 child: TextFormField(
-                  controller: controller, // **這裡加上 controller**
+                  controller: controller,
                   style: const TextStyle(
-                      color: Color.fromARGB(255, 61, 103, 108), fontSize: 14), // 輸入文字大小
+                    color: Color.fromARGB(255, 61, 103, 108),
+                    fontSize: 14,
+                  ),
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.only(bottom: 3),
                     hintText: hint,
                     hintStyle: const TextStyle(
                       color: Color(0xFFA5A1A1),
-                      fontSize: 14, // 提示字體
+                      fontSize: 14,
                     ),
                     border: InputBorder.none,
                     counterText: '',
                   ),
-                  readOnly: readOnly, // 生日欄位不能手動輸入
-                  maxLength: label == '姓名' ? 50 : null, // 只限制姓名欄
+                  readOnly: readOnly,
+                  maxLength: label == '姓名' ? 50 : null,
                 ),
               ),
             ),
@@ -192,7 +180,6 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
     );
   }
 
-  // 打開日期選擇器
   Future<void> _pickDate() async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -214,12 +201,12 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
         _selectedDate = pickedDate;
-        _birthdateController.text = _dateFormat.format(pickedDate); // 更新輸入框顯示
+        _birthdateController.text = _dateFormat.format(pickedDate);
+        DatabaseHelper.userInfo["birthday"] = _dateFormat.format(pickedDate);
       });
     }
   }
 
-  // 選擇或拍攝圖片
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -227,8 +214,8 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
     if (image != null) {
       setState(() {
         _profileImage = File(image.path);
+        DatabaseHelper.userInfo["picture"] = _profileImage;
       });
-      _sendData();
     }
   }
 
@@ -242,7 +229,7 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // 均勻分布性別選項
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Text(
             '性別',
@@ -253,10 +240,10 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
               letterSpacing: 1.6,
             ),
           ),
-          const SizedBox(width: 1), // 與選項間的間距
+          const SizedBox(width: 1),
           Expanded(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly, // 均勻分布選項
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildGenderOption('女'),
                 _buildGenderOption('男'),
@@ -276,17 +263,10 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
           width: 28,
           height: 28,
           child: Radio<String>(
-            value: gender, // UI 顯示的選項 "男", "女", "其他"
-            groupValue: _selectedGender == "M"
-                ? "男"
-                : _selectedGender == "F"
-                    ? "女"
-                    : _selectedGender == "Other"
-                        ? "其他"
-                        : null, // 確保 groupValue 與 value 一致
+            value: gender,
+            groupValue: genderMap[_selectedGender],
             onChanged: (String? value) {
               setState(() {
-                // 轉換 UI 選項為存儲值
                 if (value == "男") {
                   _selectedGender = "M";
                 } else if (value == "女") {
@@ -294,12 +274,12 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                 } else if (value == "其他") {
                   _selectedGender = "Other";
                 }
-                _sendData(); // 更新數據
+                DatabaseHelper.userInfo["gender"] = _selectedGender;
               });
             },
-            fillColor: WidgetStateProperty.resolveWith<Color>((states) {
-              return const Color(0xFF669FA5);
-            }),
+            fillColor: WidgetStateProperty.resolveWith<Color>(
+              (states) => const Color(0xFF669FA5),
+            ),
           ),
         ),
         Text(

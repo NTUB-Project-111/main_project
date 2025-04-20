@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'registerpages/account_setup.dart';
@@ -8,6 +7,7 @@ import 'registerpages/personal_info_section.dart';
 import '../my_flutter_app_icons.dart';
 import '../feature/database.dart';
 import 'tabs.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -17,8 +17,48 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
-  final Map<String, dynamic> personalinfo = {};
-  final Map<String, dynamic> accountinfo = {};
+  String _errorMessage = "";
+
+  //驗證電子郵件格式
+  bool _validateEmail(String value) {
+    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+    if (!emailRegex.hasMatch(value)) {
+      return false;
+    }
+    return true;
+  }
+  //驗證密碼格式
+  bool _validatePassword(String value) {
+    if (value.length < 8 || value.length > 16) {
+      _errorMessage = '密碼長度需為 8-16 個字符';
+      return false;
+    }
+    final passwordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$');
+    if (!passwordRegex.hasMatch(value)) {
+      _errorMessage = '密碼需包含英文字母與數字';
+      return false;
+    }
+    return true;
+  }
+  //驗證密碼是否一致
+  bool _confirmPassword(String value1, String value2) {
+    if (value1 != value2) {
+      return false;
+    }
+    return true;
+  }
+  //顯示錯誤訊息
+  void _showError(String errorMessage) {
+    Fluttertoast.showToast(
+      msg: errorMessage,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 2,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +68,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
         child: Container(
           decoration: const BoxDecoration(
             color: Color(0xFFEBFEFF),
-            // borderRadius: BorderRadius.circular(10), //邊緣圓弧狀
           ),
           constraints: const BoxConstraints(maxWidth: 412),
-          //margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -76,23 +114,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PersonalInfoSection(onDataChanged: (data) {
-                      setState(() {
-                        personalinfo.clear();
-                        personalinfo.addAll(data);
-                      });
-                    }), //個人資訊輸入區
+                    const PersonalInfoSection(),
                     const SizedBox(height: 25),
-
                     const DottedDivider(), // 直接使用即可，長度會根據螢幕寬度自適應
-
                     const SizedBox(height: 15),
-                    AccountSetupSection(onDataChanged: (data) {
-                      setState(() {
-                        accountinfo.clear();
-                        accountinfo.addAll(data);
-                      });
-                    }), //帳戶設定區
+                    const AccountSetupSection(), //帳戶設定區
                     const SizedBox(height: 25),
                     // const DottedDivider(), // 直接使用即可，長度會根據螢幕寬度自適應
                     // const SizedBox(height: 15),
@@ -101,79 +127,55 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
-                          // print(personalinfo['name']);
-                          // print(accountinfo['email']);
-                          // print(accountinfo['password']);
-                          // print(personalinfo['gender']);
-                          // print(personalinfo['birthday']);
-                          // print("image:${personalinfo['profileImage']}");
-                          if (personalinfo['name'] == null ||
-                              personalinfo['name'].isEmpty ||
-                              personalinfo['birthday'] == null ||
-                              personalinfo['birthday'].isEmpty ||
-                              personalinfo['gender'] == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('請填寫完整個人資料'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                            return; // 終止註冊流程
+                          final user = DatabaseHelper.userInfo;
+                          // 基本欄位檢查
+                          if (user["name"]?.isEmpty ||
+                              user["gender"]?.isEmpty ||
+                              user["birthday"]?.isEmpty ||
+                              user["email"]?.isEmpty ||
+                              user["password"]?.isEmpty ||
+                              user["confirm"]?.isEmpty) {
+                            _showError("請填寫完整個人資料");
+                            return;
                           }
-
-                          if (accountinfo['email'] == null ||
-                              accountinfo['email'].isEmpty ||
-                              accountinfo['password'] == null ||
-                              accountinfo['password'].isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('請填寫完整帳戶資訊'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                            return; // 終止註冊流程
+                          // Email 格式驗證
+                          if (!_validateEmail(user["email"])) {
+                            _showError("無效的電子郵件");
+                            return;
                           }
-
+                          // 密碼格式驗證
+                          if (!_validatePassword(user["password"])) {
+                            _showError(_errorMessage);
+                            return;
+                          }
+                          // 密碼確認
+                          if (!_confirmPassword(user["password"], user["confirm"])) {
+                            _showError("密碼不一致");
+                            return;
+                          }
+                          // 新增使用者
                           bool userAdded = await DatabaseHelper.addUser(
-                            personalinfo['name'],
-                            accountinfo['email'],
-                            accountinfo['password'],
-                            personalinfo['gender'],
-                            personalinfo['birthday'],
-                            personalinfo['profileImage'] != null
-                                ? personalinfo['profileImage'] as File
-                                : null,
+                            user["name"],
+                            user["email"],
+                            user["password"],
+                            user["gender"],
+                            user["birthday"],
+                            user["picture"] != null ? user["picture"] as File : null,
                           );
-
-                          if (userAdded) {
-                            print("使用者註冊成功，開始儲存 userId...");
-                            bool saved = await DatabaseHelper.saveUserId(accountinfo['email']);
-                            if (saved) {
-                              String? userId = await DatabaseHelper.getUserId();
-                              DatabaseHelper.userInfo = (await DatabaseHelper.getUserInfo())!;
-                              print("獲取的 User ID: $userId");
-
-                              // ✅ 真正跳轉頁面
-                              Navigator.push(
-                                  context, MaterialPageRoute(builder: (context) => const Tabs()));
-                            } else {
-                              print("無法儲存 User ID");
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('註冊成功但無法儲存使用者資訊'),
-                                  backgroundColor: Colors.orange,
-                                ),
-                              );
-                            }
-                          } else {
-                            print("使用者註冊失敗");
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('註冊失敗，請稍後再試'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
+                          if (!userAdded) {
+                            _showError("註冊失敗，請稍後再試");
+                            return;
                           }
+                          // 儲存 userId
+                          bool saved = await DatabaseHelper.saveUserId(user["email"]);
+                          if (!saved) {
+                            _showError("註冊成功但無法儲存使用者資訊");
+                            return;
+                          }
+                          String? userId = await DatabaseHelper.getUserId();
+                          DatabaseHelper.userInfo = (await DatabaseHelper.getUserInfo())!;
+                          print("獲取的 User ID: $userId");
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Tabs()));
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF669FA5),
