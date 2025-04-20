@@ -13,7 +13,7 @@ class DatabaseHelper {
   static Map<String, dynamic> userInfo = {};
   static List<Map<String, dynamic>> allRecords = []; //取得使用者所有診斷紀錄
   static List<Map<String, dynamic>> allCalls = []; //取得使用者所有護理提醒
-  static List<Map<String, dynamic>> remindRecords = [];
+  static List<Map<String, dynamic>> remindRecords = []; //小鈴鐺護理提醒
   static List<Map<String, dynamic>> homeRemind = []; //首頁護理提醒
 
   // 存儲 userId
