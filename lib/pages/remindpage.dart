@@ -22,12 +22,14 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
   List<Map<String, dynamic>>? userCalls = DatabaseHelper.remindRecords;
   List<Map<String, dynamic>>? distinctCalls;
   List<Map<String, dynamic>> remindlist = [];
+  
 
   @override
   void initState() {
     super.initState();
     // print(userCalls?)
     if (userCalls != 'null' && userCalls != '[]') {
+      List<bool> isSave = List.filled(userCalls!.length, true);
       createReminders();
     }
   }
@@ -40,7 +42,7 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
         "img": call["photo"],
         "isPressed": false,
         "selectedFreq": call["freq"],
-        "selectedHour": int.parse(call["time"].split(":")[0]), // 假設是 "14:30" 類型
+        "selectedHour": int.parse(call["time"].split(":")[0]), 
         "selectedMinute": int.parse(call["time"].split(":")[1]),
         "isDeleteView": false,
       };
@@ -173,12 +175,15 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
                       if (!handled) {
                         _createRemind(call["date"], call["oktime"], call["freq"], call["time"]);
                         if (remindlist.isNotEmpty) {
-                          // print("fk_userid${call["fk_userid"].toString()}");
-                          // print("id_record${call["id_record"].toString()}");
-                          DatabaseHelper.deleteRemind(call["fk_userid"].toString(), call["id_record"].toString());
+                          DatabaseHelper.deleteRemind(
+                              call["fk_userid"].toString(), call["id_record"].toString());
                           for (var remind in remindlist) {
-                            bool result = await DatabaseHelper.addRemind(call["fk_userid"].toString(),
-                                call["id_record"].toString(), remind["day"], remind["time"], call["freq"]);
+                            bool result = await DatabaseHelper.addRemind(
+                                call["fk_userid"].toString(),
+                                call["id_record"].toString(),
+                                remind["day"],
+                                remind["time"],
+                                call["freq"]);
                             if (!result) {
                               print("新增提醒失敗: $remind");
                             }
