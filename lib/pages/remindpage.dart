@@ -16,35 +16,36 @@ class RemindPage extends StatefulWidget {
 
 class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
   // `_RemindPageState` 負責處理頁面的狀態變更，`TickerProviderStateMixin` 用於動畫
-  List<Map<String, dynamic>>? userRecords = DatabaseHelper.allRecords;
   List<Map<String, dynamic>>? calls = DatabaseHelper.allCalls;
   List<Map<String, dynamic>> reminders = [];
-  List<Map<String, dynamic>>? userCalls = DatabaseHelper.remindRecords;
-  List<Map<String, dynamic>>? distinctCalls;
+  List<Map<String, dynamic>> userCalls =
+      DatabaseHelper.remindRecords.map((e) => Map<String, dynamic>.from(e)).toList();
   List<Map<String, dynamic>> remindlist = [];
-  
+  List<bool> isSave = [];
 
   @override
   void initState() {
     super.initState();
-    // print(userCalls?)
-    if (userCalls != 'null' && userCalls != '[]') {
-      List<bool> isSave = List.filled(userCalls!.length, true);
+    // debugPrint(userCalls?)
+    if (userCalls.isNotEmpty) {
+      print(userCalls);
+      isSave = List.filled(userCalls.length, true);
       createReminders();
     }
   }
 
   void createReminders() {
-    reminders = userCalls!.where((call) => call["ifcall"] == "Y").map((call) {
+    reminders = userCalls.where((call) => call["ifcall"] == "Y").map((call) {
       return {
         "date": call["date"],
         "type": call["type"],
         "img": call["photo"],
         "isPressed": false,
         "selectedFreq": call["freq"],
-        "selectedHour": int.parse(call["time"].split(":")[0]), 
+        "selectedHour": int.parse(call["time"].split(":")[0]),
         "selectedMinute": int.parse(call["time"].split(":")[1]),
         "isDeleteView": false,
+        "ifcall": true
       };
     }).toList();
   }
@@ -65,6 +66,13 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
       } else {
         userCalls?[index]["time"] = "${reminders[index]["selectedHour"]}:${value.toString()}";
       }
+      if (DatabaseHelper.remindRecords[index]["time"] != userCalls?[index]["time"]) {
+        isSave[index] = false;
+      } else {
+        debugPrint("database:${DatabaseHelper.remindRecords[index]["time"]}");
+        debugPrint("usercalls:${userCalls?[index]["time"]}");
+        isSave[index] = true;
+      }
     });
   }
 
@@ -73,6 +81,11 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
     setState(() {
       reminders[index]["selectedFreq"] = newFreq; // 修改選定的頻率
       userCalls?[index]["freq"] = newFreq;
+      if (userCalls?[index]["freq"] != DatabaseHelper.remindRecords[index]["freq"]) {
+        isSave[index] = false;
+      } else {
+        isSave[index] = true;
+      }
     });
   }
 
@@ -85,29 +98,225 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
     });
   }
 
+  void _showConfirmationDialog(int index) {
+    showDialog(
+      barrierDismissible: false, // 禁止點擊外部區域關閉對話框
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(
+              color: Color(0xFF589399),
+              width: 2,
+            ),
+          ),
+          backgroundColor: Colors.white,
+          title: const Text(
+            '確定要刪除此提醒?',
+            style: TextStyle(
+              fontSize: 20,
+              color: Color(0xFF589399),
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Row(
+            children: [
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  side: const BorderSide(
+                    width: 2,
+                    color: Color(0xFF589399),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  '取消',
+                  style: TextStyle(
+                    color: Color(0xFF589399),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  backgroundColor: const Color(0xFF589399),
+                  side: BorderSide.none,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    reminders[index]["ifcall"] = false;
+                    isSave[index] = true;
+                  });
+                },
+                child: const Text(
+                  '確定',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          )),
+    );
+  }
+
+  void _showErrorDialog() {
+    showDialog(
+      barrierDismissible: false, // 禁止點擊外部區域關閉對話框
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(
+              color: Color(0xFF589399),
+              width: 2,
+            ),
+          ),
+          backgroundColor: Colors.white,
+          title: const Text(
+            '尚有更動的資料未儲存\n確定要儲存嗎?',
+            style: TextStyle(
+              fontSize: 20,
+              color: Color(0xFF589399),
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: Row(
+            children: [
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  side: const BorderSide(
+                    width: 2,
+                    color: Color(0xFF589399),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  '取消',
+                  style: TextStyle(
+                    color: Color(0xFF589399),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  backgroundColor: const Color(0xFF589399),
+                  side: BorderSide.none,
+                ),
+                onPressed: () async {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Tabs(
+                                currentIndex: 0,
+                              )));
+                  _saveRemind();
+                },
+                child: const Text(
+                  '確定',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          )),
+    );
+  }
+
+  void _saveRemind() async {
+    bool isChange = false;
+    for (var usercall in userCalls) {
+      //處理刪除的提醒
+      if (usercall["ifcall"] == 'N') {
+        await DatabaseHelper.updateRecord(
+            usercall["id_record"].toString(), usercall["fk_userid"].toString(), 'N');
+        await DatabaseHelper.deleteRemind(
+            usercall["fk_userid"].toString(), usercall["id_record"].toString());
+      }
+      //處理更改的提醒
+      for (var call in calls!) {
+        if (call["fk_record_id"] == usercall["id_record"]) {
+          if (call["freq"] != usercall["freq"]) {
+            isChange = true;
+            await DatabaseHelper.deleteRemind(
+                //刪除舊提醒
+                usercall["fk_userid"].toString(),
+                usercall["id_record"].toString());
+            _createRemind(
+                usercall["date"], usercall["oktime"], usercall["freq"], usercall["time"]); //產生新提醒
+            if (remindlist.isNotEmpty) {
+              //將新提醒逐筆加入
+              for (var remind in remindlist) {
+                await DatabaseHelper.addRemind(
+                    usercall["fk_userid"].toString(),
+                    usercall["id_record"].toString(),
+                    remind["day"],
+                    remind["time"],
+                    usercall["freq"]);
+              }
+            }
+          } else if (call["time"] != usercall["time"]) {
+            isChange = true;
+            await DatabaseHelper.updateCallTime(usercall["id_record"].toString(),
+                usercall["fk_userid"].toString(), usercall["time"]);
+          }
+          break;
+        }
+      }
+    }
+    if (isChange) {
+      DatabaseHelper.allCalls = (await DatabaseHelper.getReminds()) ?? [];
+      DatabaseHelper.remindRecords = (await DatabaseHelper.getRemindRecord()) ?? [];
+    } else {
+      print("資料未更改");
+    }
+  }
+
   Widget buildReminderItem(int index) {
     return _buildDeleteView(index); // 確保這裡回傳一個 Widget
   }
 
   bool isDeleteMode = false; // 控制刪除模式的開關
-
   void toggleDeleteMode() {
     setState(() {
       isDeleteMode = !isDeleteMode; // 切換狀態
     });
   }
 
+  //產生新的護理提醒
   void _createRemind(String starttime, String oktime, String freq, String time) {
     late List<String> oktimelist;
-
     DateTime today = DateTime.now();
-
     oktimelist = oktime.split("~");
     if (oktimelist.length != 2) {
-      print("oktime 格式錯誤: $oktime");
+      debugPrint("oktime 格式錯誤: $oktime");
       return;
     }
-
     int okday = int.parse(oktimelist[1]);
     final freqMap = {
       "每天": 1,
@@ -118,13 +327,13 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
     final freqStr = freq;
     final freqDays = freqMap[freqStr] ?? 0;
     if (freqDays == 0) {
-      print("無效的頻率: $freqStr");
+      debugPrint("無效的頻率: $freqStr");
       return;
     }
 
     List<String> parts = starttime.split('-');
     if (parts.length != 3) {
-      print("日期格式錯誤: $starttime");
+      debugPrint("日期格式錯誤: $starttime");
       return;
     }
     int year = int.parse(parts[0]);
@@ -157,81 +366,27 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
               color: Color(0xFF589399), // 修改顏色
             ),
             onPressed: () async {
-              for (var call in userCalls!) {
-                bool handled = false; // 每筆 call 最多處理一次
-                if (call["ifcall"] == 'N') {
-                  await DatabaseHelper.updateRecord(
-                    call["id_record"].toString(),
-                    call["fk_userid"].toString(),
-                    "N",
-                  );
-                }
-                int index = 0;
-                for (var remind in calls!) {
-                  if (call["id_record"] == remind["fk_record_id"]) {
-                    // 優先處理 freq 不同
-                    if (call["freq"] != remind["freq"]) {
-                      DatabaseHelper.allCalls[index]["freq"] = call["freq"];
-                      if (!handled) {
-                        _createRemind(call["date"], call["oktime"], call["freq"], call["time"]);
-                        if (remindlist.isNotEmpty) {
-                          DatabaseHelper.deleteRemind(
-                              call["fk_userid"].toString(), call["id_record"].toString());
-                          for (var remind in remindlist) {
-                            bool result = await DatabaseHelper.addRemind(
-                                call["fk_userid"].toString(),
-                                call["id_record"].toString(),
-                                remind["day"],
-                                remind["time"],
-                                call["freq"]);
-                            if (!result) {
-                              print("新增提醒失敗: $remind");
-                            }
-                          }
-                        } else {
-                          print("提醒為空");
-                        }
-                        debugPrint("頻率不同 -> 處理 ${call["id_record"]}");
-                        handled = true;
-                      }
-                    }
-                    // 只有時間不同才處理 B
-                    else if (call["time"] != remind["time"]) {
-                      DatabaseHelper.allCalls[index]["time"] = call["time"];
-                      if (!handled) {
-                        await DatabaseHelper.updateCallTime(call["id_record"].toString(),
-                            call["fk_userid"].toString(), call["time"]);
-                        debugPrint("時間不同 -> 處理 ${call["id_record"]}");
-                        handled = true;
-                      }
-                    }
-                  }
-                  index += 1;
-                }
+              if (isSave.contains(false)) {
+                _showErrorDialog();
+              } else if (isSave.isNotEmpty) {
+                _saveRemind();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const Tabs(
+                              currentIndex: 0,
+                            )));
+              } else {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const Tabs(
+                              currentIndex: 0,
+                            )));
               }
-              Navigator.pop(context);
-              // print(userCalls);
-            }
 
-            // onPressed: () async {
-            //   for (var call in userCalls!) {
-            //     if (call["ifcall"] == 'N') {
-            //       await DatabaseHelper.updateRecord(
-            //           call["id_record"].toString(), call["fk_userid"].toString(), "N");
-            //     }
-            //     for (var remind in calls!) {
-            //       if (call["id_record"] == remind["fk_record_id"] && call["freq"] != remind["freq"]) {
-
-            //       } else if (call["id_record"] == remind["fk_record_id"] &&
-            //           call["time"] != remind["time"]) {
-
-            //       }
-            //     }
-            //   }
-            //   Navigator.pop(context);
-            //   print(userCalls);
-            // },
-            ),
+              // Navigator.pop(context);
+            }),
         title: const Text(
           "護理提醒",
           style: TextStyle(
@@ -266,28 +421,31 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
         child: ListView.separated(
           shrinkWrap: true, // 限制高度
           itemCount: reminders.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 15), // 設定間距
+          separatorBuilder: (context, index) => const SizedBox(height: 0), // 設定間距
           itemBuilder: (context, index) {
-            return reminders[index]["isDeleteView"]
-                ? _buildDeleteView(index)
-                : Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: const Color(0xFF589399),
-                        width: 1.5,
-                      ),
-                    ),
-                    width: 380,
-                    child: AnimatedSize(
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeInOut,
-                      child: reminders[index]["isPressed"]
-                          ? _buildEditableView(index)
-                          : _buildStaticView(index),
-                    ),
-                  );
+            return reminders[index]["ifcall"]
+                ? reminders[index]["isDeleteView"]
+                    ? _buildDeleteView(index)
+                    : Container(
+                        margin: const EdgeInsets.only(bottom: 15),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: const Color(0xFF589399),
+                            width: 1.5,
+                          ),
+                        ),
+                        width: 380,
+                        child: AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          child: reminders[index]["isPressed"]
+                              ? _buildEditableView(index)
+                              : _buildStaticView(index),
+                        ),
+                      )
+                : Container();
           },
         ),
       ),
@@ -417,6 +575,7 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
               if (index >= 0 && index < reminders.length) {
                 toggleEditMode(index);
               }
+              isSave[index] = true;
             },
             icon: const Icon(
               Icons.check,
@@ -556,6 +715,7 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
         Expanded(
           // 確保主要內容可以正確顯示
           child: Container(
+            margin: const EdgeInsets.only(bottom: 15),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -610,11 +770,11 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
           child: IconButton(
             onPressed: () {
               if (index >= 0 && index < reminders.length) {
+                _showConfirmationDialog(index);
                 setState(() {
-                  reminders.removeAt(index); // 移除對應索引的提醒
+                  // reminders.removeAt(index); // 移除對應索引的提醒
                   // reminders[index]["ifcall"] = 'N';
                   userCalls?[index]['ifcall'] = 'N';
-                  // print(userCalls);
                 });
               }
             },

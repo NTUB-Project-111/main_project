@@ -18,7 +18,6 @@ class _HomePageState extends State<HomePage> {
   String day = DateTime.now().toLocal().toString().split(' ')[0];
 
   List<Widget> buildReminderTiles() {
-    // print(userCalls);
     if (userCalls == null || userCalls!.isEmpty) {
       return []; // 或回傳 [Text("今日無提醒")]
     }
