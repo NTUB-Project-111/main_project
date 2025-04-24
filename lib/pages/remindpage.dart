@@ -20,6 +20,7 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
   List<Map<String, dynamic>> reminders = [];
   List<Map<String, dynamic>> userCalls =
       DatabaseHelper.remindRecords.map((e) => Map<String, dynamic>.from(e)).toList();
+  // List<Map<String, dynamic>>? distinctCalls;
   List<Map<String, dynamic>> remindlist = [];
   List<bool> isSave = [];
 
