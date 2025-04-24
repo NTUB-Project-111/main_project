@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../feature/database.dart';
-import '../feature/healingtime.dart';
+import 'package:wounddetection/feature/database.dart';
 import '../feature/hospitallist.dart';
 import '../feature/woundanalysis.dart';
 import 'dart:io';

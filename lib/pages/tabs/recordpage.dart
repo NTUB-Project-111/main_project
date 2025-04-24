@@ -207,14 +207,6 @@ class _RecordPageState extends State<RecordPage> with SingleTickerProviderStateM
                       height: 82,
                       fit: BoxFit.cover,
                     )
-                    // child: CachedNetworkImage(
-                    //   imageUrl: Uri.parse(DatabaseHelper.baseUrl).resolve(img).toString(),
-                    //   placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                    //   errorWidget: (context, url, error) => const Icon(Icons.error),
-                    //   fit: BoxFit.cover,
-                    //   width: 82,
-                    //   height: 82,
-                    // ),
                     )),
             onLongPress: () {
               _showConfirmationDialog(record['photo'], record['type']);
