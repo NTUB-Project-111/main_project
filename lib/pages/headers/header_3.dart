@@ -23,8 +23,8 @@ class _HeaderPage3State extends State<HeaderPage3> {
               // Icon(MyFlutterApp.bell,color: Color(0xFF669FA5),),
               Image.asset(
                 'images/icon.png',
-                width: 60,
-                height: 60,
+                width: 40,
+                height: 40,
                 fit: BoxFit.contain,
               ),
               const SizedBox(width: 8),
