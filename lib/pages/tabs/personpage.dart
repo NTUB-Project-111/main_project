@@ -131,6 +131,14 @@ class _PersonPageState extends State<PersonPage> {
                   ),
                   "更多設定",
                   const Settings()),
+              _buildDetailItem(
+                  const Icon(
+                    Icons.person,
+                    color: Color(0xFF669FA5),
+                    size: 30,
+                  ),
+                  "登出",
+                  const PersonalContainPage()),
             ],
           ),
         )
