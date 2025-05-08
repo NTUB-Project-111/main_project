@@ -26,7 +26,6 @@ class _TabsState extends State<Tabs> {
     const RecordPage(),
     const PersonPage(),
   ];
-  
 
   @override
   void initState() {
@@ -65,7 +64,8 @@ class _TabsState extends State<Tabs> {
         child: BottomNavigationBar(
           onTap: (index) {
             setState(() {
-              _currentIndex = index != 2 ? index : _currentIndex; //setState會重新跑build
+              _currentIndex =
+                  index != 2 ? index : _currentIndex; //setState會重新跑build
             });
           },
           selectedFontSize: 13,
@@ -111,7 +111,8 @@ class _TabsState extends State<Tabs> {
         child: FloatingActionButton(
             foregroundColor: Colors.white,
             backgroundColor: const Color(0xFF669FA5),
-            shape: const CircleBorder(side: BorderSide(color: Colors.white, width: 2.0)),
+            shape: const CircleBorder(
+                side: BorderSide(color: Colors.white, width: 2.0)),
             child: const Icon(MyFlutterApp.camera, size: 35),
             onPressed: () {
               Navigator.push(

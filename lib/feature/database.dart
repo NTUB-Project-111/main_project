@@ -6,7 +6,8 @@ import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 
 class DatabaseHelper {
-  static const String baseUrl = "http://192.168.1.109:3000"; //放我的電腦IP 172.20.10.5 192.168.1.107
+  static const String baseUrl =
+      "http://10.0.2.2:3000"; //放我的電腦IP 172.20.10.5 192.168.1.107
   // static final String userId;
   static Map<String, dynamic> calls = {};
   static Map<String, dynamic> record = {};
@@ -43,7 +44,7 @@ class DatabaseHelper {
   // 讀取 userId
   static Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userId');
+    return prefs.getString('userid');
   }
 
   // 清除 userId
@@ -203,11 +204,13 @@ class DatabaseHelper {
   }
 
   /// 修改診斷報告
-  static Future<bool> updateRecord(String idRecord, String fkUserId, String ifcall) async {
+  static Future<bool> updateRecord(
+      String idRecord, String fkUserId, String ifcall) async {
     final response = await http.post(
       Uri.parse("$baseUrl/updateRecord"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"id_record": idRecord, "fk_userid": fkUserId, "ifcall": ifcall}),
+      body: jsonEncode(
+          {"id_record": idRecord, "fk_userid": fkUserId, "ifcall": ifcall}),
     );
 
     if (response.statusCode == 200) {
@@ -218,11 +221,13 @@ class DatabaseHelper {
   }
 
   /// 修改提醒時間
-  static Future<bool> updateCallTime(String idRecord, String fkUserId, String time) async {
+  static Future<bool> updateCallTime(
+      String idRecord, String fkUserId, String time) async {
     final response = await http.post(
       Uri.parse("$baseUrl/updateCallTime"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"fk_record_id": idRecord, "fk_user_id": fkUserId, "time": time}),
+      body: jsonEncode(
+          {"fk_record_id": idRecord, "fk_user_id": fkUserId, "time": time}),
     );
 
     if (response.statusCode == 200) {
@@ -300,7 +305,8 @@ class DatabaseHelper {
     request.fields['recording'] = recording;
 
     // 添加圖片檔案
-    var mimeType = lookupMimeType(photoFile.path) ?? "image/jpeg"; // 確保有 MIME 類型
+    var mimeType =
+        lookupMimeType(photoFile.path) ?? "image/jpeg"; // 確保有 MIME 類型
     var multipartFile = await http.MultipartFile.fromPath(
       'photo', // 這個 key 要跟後端 API 參數名稱一致
       photoFile.path,
@@ -322,8 +328,8 @@ class DatabaseHelper {
   }
 
   //護理提醒
-  static Future<bool> addRemind(
-      String fkUserId, String fkRecordId, String day, String time, String freq) async {
+  static Future<bool> addRemind(String fkUserId, String fkRecordId, String day,
+      String time, String freq) async {
     if (fkUserId.isEmpty || day.isEmpty || time.isEmpty) {
       print("參數有空值: fk_user_id: $fkUserId, day: $day, time: $time");
       return false;

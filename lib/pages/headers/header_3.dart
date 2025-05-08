@@ -22,9 +22,8 @@ class _HeaderPage3State extends State<HeaderPage3> {
             children: [
               // Icon(MyFlutterApp.bell,color: Color(0xFF669FA5),),
               Image.asset(
-                'images/icon.png',
-                width: 40,
-                height: 40,
+                'images/icon_nobkg.png',
+                height: 45,
                 fit: BoxFit.contain,
               ),
               const SizedBox(width: 8),
@@ -43,7 +42,9 @@ class _HeaderPage3State extends State<HeaderPage3> {
               : IconButton(
                   onPressed: () {
                     Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => const RemindPage()));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RemindPage()));
                   },
                   icon: widget.icon!), //若widget.icon有值則widget.icon，否則顯示sizedbox
         ],
