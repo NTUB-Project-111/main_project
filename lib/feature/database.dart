@@ -53,19 +53,51 @@ class DatabaseHelper {
     await prefs.remove('userId');
   }
 
+  // // 取得使用者資訊
+  // static Future<Map<String, dynamic>?> getUserInfo() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   String? userId = prefs.getString('userId');
+
+  //   if (userId == null) {
+  //     print('無法獲取 User ID，跳過請求');
+  //     return null;
+  //   }
+
+  //   final url = Uri.parse('$baseUrl/getUserInfo?id=$userId');
+  //   try {
+  //     final response = await http.get(url);
+  //     if (response.statusCode == 200) {
+  //       return jsonDecode(response.body);
+  //     } else {
+  //       print('獲取使用者資料失敗: ${response.statusCode} ${response.body}');
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     print('請求錯誤: $e');
+  //     return null;
+  //   }
+  // }
+
   // 取得使用者資訊
   static Future<Map<String, dynamic>?> getUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('userId');
+    final token = prefs.getString('jwtToken');
 
-    if (userId == null) {
-      print('無法獲取 User ID，跳過請求');
+    if (token == null) {
+      print('無法取得 JWT Token');
       return null;
     }
 
-    final url = Uri.parse('$baseUrl/getUserInfo?id=$userId');
+    final url = Uri.parse('$baseUrl/getUserInfo'); // 不再需要 ?id
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {

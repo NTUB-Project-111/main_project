@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
+import 'package:wounddetection/pages/loginpages/login.dart';
 import 'registerpages/account_setup.dart';
 import 'registerpages/captcha_section.dart';
 import 'registerpages/personal_info_section.dart';
@@ -21,12 +22,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   //驗證電子郵件格式
   bool _validateEmail(String value) {
-    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+    final emailRegex =
+        RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
     if (!emailRegex.hasMatch(value)) {
       return false;
     }
     return true;
   }
+
   //驗證密碼格式
   bool _validatePassword(String value) {
     if (value.length < 8 || value.length > 16) {
@@ -40,6 +43,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
     return true;
   }
+
   //驗證密碼是否一致
   bool _confirmPassword(String value1, String value2) {
     if (value1 != value2) {
@@ -47,6 +51,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
     return true;
   }
+
   //顯示錯誤訊息
   void _showError(String errorMessage) {
     Fluttertoast.showToast(
@@ -79,7 +84,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   border: Border(
-                    bottom: BorderSide(color: Color(0xFF589399), width: 2), // 只加底部邊框
+                    bottom: BorderSide(
+                        color: Color(0xFF589399), width: 2), // 只加底部邊框
                   ),
                 ),
                 child: Stack(
@@ -88,7 +94,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     Align(
                         alignment: Alignment.centerLeft,
                         child: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginScreen()),
+                              );
+                            },
                             icon: const Icon(
                               MyFlutterApp.icon_park_solid__back,
                               color: Color(0xFF589399),
@@ -149,7 +161,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             return;
                           }
                           // 密碼確認
-                          if (!_confirmPassword(user["password"], user["confirm"])) {
+                          if (!_confirmPassword(
+                              user["password"], user["confirm"])) {
                             _showError("密碼不一致");
                             return;
                           }
@@ -160,27 +173,35 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             user["password"],
                             user["gender"],
                             user["birthday"],
-                            user["picture"] != null ? user["picture"] as File : null,
+                            user["picture"] != null
+                                ? user["picture"] as File
+                                : null,
                           );
                           if (!userAdded) {
                             _showError("註冊失敗，請稍後再試");
                             return;
                           }
                           // 儲存 userId
-                          bool saved = await DatabaseHelper.saveUserId(user["email"]);
+                          bool saved =
+                              await DatabaseHelper.saveUserId(user["email"]);
                           if (!saved) {
                             _showError("註冊成功但無法儲存使用者資訊");
                             return;
                           }
                           String? userId = await DatabaseHelper.getUserId();
-                          DatabaseHelper.userInfo = (await DatabaseHelper.getUserInfo())!;
+                          DatabaseHelper.userInfo =
+                              (await DatabaseHelper.getUserInfo())!;
                           print("獲取的 User ID: $userId");
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Tabs()));
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => Tab()),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF669FA5),
                           padding: const EdgeInsets.symmetric(vertical: 13),
-                          minimumSize: const Size(100, 20), // 設定按鈕最小寬度 200，高度 50
+                          minimumSize:
+                              const Size(100, 20), // 設定按鈕最小寬度 200，高度 50
                           textStyle: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,

@@ -25,15 +25,79 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // ✅ 登入 API 邏輯
+  // // ✅ 登入 API 邏輯
+  // Future<void> _login() async {
+  //   final email = _emailController.text.trim();
+  //   final password = _passwordController.text.trim();
+
+  //   if (email.isEmpty || password.isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("請輸入帳號與密碼")),
+  //     );
+  //     return;
+  //   }
+
+  //   final url = Uri.parse('${DatabaseHelper.baseUrl}/loginUser');
+
+  //   try {
+  //     final response = await http.post(
+  //       url,
+  //       headers: {"Content-Type": "application/json"},
+  //       body: jsonEncode({'email': email, 'password': password}),
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final responseData = jsonDecode(response.body);
+  //       final String userID = responseData['userID'].toString();
+  //       print("登入成功，使用者 ID：$userID");
+
+  //       // ✅ 先存 userID 到 SharedPreferences
+  //       final prefs = await SharedPreferences.getInstance();
+  //       await prefs.setString('userId', userID);
+
+  //       // ✅ 再撈使用者資訊
+  //       DatabaseHelper.userInfo = (await DatabaseHelper.getUserInfo())!;
+
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => Tabs()),
+  //       );
+  //     } else {
+  //       String errorMessage = '登入失敗';
+  //       try {
+  //         final errorData = jsonDecode(response.body);
+  //         errorMessage = errorData['message'] ?? errorMessage;
+  //       } catch (_) {}
+
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text(errorMessage)),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('發生錯誤：$e')),
+  //     );
+  //   }
+  // }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(color: Color.fromARGB(255, 30, 104, 96)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      ),
+    );
+  }
+
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("請輸入帳號與密碼")),
-      );
+      _showMessage("請輸入帳號與密碼");
       return;
     }
 
@@ -48,14 +112,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        final String userID = responseData['userID'].toString();
-        print("登入成功，使用者 ID：$userID");
+        final String token = responseData['token'];
 
-        // ✅ 先存 userID 到 SharedPreferences
+        // 儲存 JWT Token
         final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('jwtToken', token);
+
+        // 解析 token 取得 userID
+        final payload = _parseJwt(token);
+        final String userID = payload['userID'].toString();
         await prefs.setString('userId', userID);
 
-        // ✅ 再撈使用者資訊
+        print("登入成功，使用者 ID：$userID");
+
+        // 撈使用者資訊（後端應支援使用 Authorization header）
         DatabaseHelper.userInfo = (await DatabaseHelper.getUserInfo())!;
 
         Navigator.pushReplacement(
@@ -78,6 +148,17 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(content: Text('發生錯誤：$e')),
       );
     }
+  }
+
+  Map<String, dynamic> _parseJwt(String token) {
+    final parts = token.split('.');
+    if (parts.length != 3) {
+      throw Exception('無效的 JWT');
+    }
+
+    final payload =
+        utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+    return jsonDecode(payload);
   }
 
   // ✅ 錯誤訊息彈窗
@@ -107,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE3F8F8),
+      backgroundColor: const Color.fromARGB(255, 229, 248, 248),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -123,6 +204,9 @@ class _LoginScreenState extends State<LoginScreen> {
               // ✅ 帳號輸入
               TextField(
                 controller: _emailController,
+                style: const TextStyle(
+                  color: Color(0xFF669FA5),
+                ),
                 decoration:
                     _inputDecoration(label: "帳號", hint: "example@gmail.com"),
               ),
@@ -132,6 +216,9 @@ class _LoginScreenState extends State<LoginScreen> {
               TextField(
                 controller: _passwordController,
                 obscureText: _obscureText,
+                style: const TextStyle(
+                  color: Color(0xFF669FA5),
+                ),
                 decoration: _inputDecoration(label: "密碼", hint: "XXXXXXXXXXXX")
                     .copyWith(
                   suffixIcon: IconButton(
@@ -179,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const Tabs(), // 移除 userID
+                        builder: (context) => const Tabs(), 
                       ),
                     ),
                     child: const Text(

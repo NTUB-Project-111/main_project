@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wounddetection/my_flutter_app_icons.dart';
+import 'package:wounddetection/pages/loginpages/login.dart';
 import 'package:wounddetection/pages/personalpages/personalcontain.dart';
 import '../headers/header_1.dart';
 import '../personalpages/changeps.dart';
@@ -17,9 +19,17 @@ class PersonPage extends StatefulWidget {
 class _PersonPageState extends State<PersonPage> {
   String? userId = '';
   Map<String, dynamic>? userInfo = DatabaseHelper.userInfo;
-  @override
+  @override //更新資訊，卻保有抓到資料。
   void initState() {
     super.initState();
+    _loadUserInfo();
+  }
+
+  Future<void> _loadUserInfo() async {
+    final info = await DatabaseHelper.getUserInfo();
+    setState(() {
+      userInfo = info;
+    });
   }
 
   @override
@@ -40,7 +50,8 @@ class _PersonPageState extends State<PersonPage> {
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 46, vertical: 23),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 46, vertical: 23),
                 margin: const EdgeInsets.fromLTRB(0, 40, 0, 30),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -112,7 +123,7 @@ class _PersonPageState extends State<PersonPage> {
                     size: 30,
                   ),
                   "個人基本資料",
-                  const PersonalContainPage()),
+                  targetPage: const PersonalContainPage()),
               _buildDetailItem(
                   const Icon(
                     Icons.lock,
@@ -120,7 +131,7 @@ class _PersonPageState extends State<PersonPage> {
                     size: 30,
                   ),
                   "變更密碼",
-                  ChangePsPage(
+                  targetPage: ChangePsPage(
                     userPassword: userInfo?['password'],
                   )),
               _buildDetailItem(
@@ -130,15 +141,13 @@ class _PersonPageState extends State<PersonPage> {
                     size: 30,
                   ),
                   "更多設定",
-                  const Settings()),
+                  targetPage: const Settings()),
               _buildDetailItem(
-                  const Icon(
-                    Icons.person,
-                    color: Color(0xFF669FA5),
-                    size: 30,
-                  ),
-                  "登出",
-                  const PersonalContainPage()),
+                const Icon(Icons.logout, color: Color(0xFF669FA5), size: 30),
+                "登出",
+                targetPage: null,
+                onPressed: _logout,
+              )
             ],
           ),
         )
@@ -146,7 +155,8 @@ class _PersonPageState extends State<PersonPage> {
     );
   }
 
-  Widget _buildDetailItem(Icon icon, String title, Widget targetPage) {
+  Widget _buildDetailItem(Icon icon, String title,
+      {Widget? targetPage, VoidCallback? onPressed}) {
     return Container(
       margin: const EdgeInsets.only(top: 20),
       decoration: BoxDecoration(
@@ -161,20 +171,93 @@ class _PersonPageState extends State<PersonPage> {
       ),
       width: double.infinity,
       child: OutlinedButton.icon(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => targetPage));
-        },
-        label: Text(title,
-            style: const TextStyle(
-              color: Color(0xFF669FA5),
-              fontSize: 14,
-            )),
+        onPressed: onPressed ??
+            () {
+              if (targetPage != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => targetPage),
+                );
+              }
+            },
+        label: Text(
+          title,
+          style: const TextStyle(
+            color: Color(0xFF669FA5),
+            fontSize: 14,
+          ),
+        ),
         icon: icon,
         style: OutlinedButton.styleFrom(
-            alignment: Alignment.centerLeft,
-            side: BorderSide.none, // 移除框線
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
+          alignment: Alignment.centerLeft,
+          side: BorderSide.none,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        ),
       ),
     );
+  }
+
+  // void _logout() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.remove('jwtToken');
+  //   await prefs.remove('userId'); // 如果有儲存 userId 可以順便清除
+
+  //   // 跳回登入頁面
+  //   Navigator.pushReplacement(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => const LoginScreen()),
+  //   );
+  // }
+
+  void _logout() async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color.fromARGB(255, 248, 254, 255), // 背景顏色
+          title: const Text(
+            '確定要登出嗎？',
+            style: TextStyle(
+              color: Color(0xFF669FA5), // 標題文字顏色
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: const Text(
+            '登出後需重新登入才能繼續使用應用程式。',
+            style: TextStyle(
+              color: Color(0xFF669FA5), // 內文文字顏色
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text(
+                '取消',
+                style: TextStyle(color: Color.fromARGB(255, 94, 105, 103)),
+              ),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            TextButton(
+              child: const Text(
+                '登出',
+                style: TextStyle(
+                    color: Color.fromARGB(255, 13, 128, 108)), // 紅色登出按鈕
+              ),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldLogout == true) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('jwtToken');
+      await prefs.remove('userId');
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
   }
 }

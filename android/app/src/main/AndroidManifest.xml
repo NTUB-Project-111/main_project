@@ -6,9 +6,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> 
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
     <application
-        android:label="wounddetection"
+        android:label="Dr.W"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/bear"
         android:requestLegacyExternalStorage="true">
         <activity
             android:name=".MainActivity"
