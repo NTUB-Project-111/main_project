@@ -1,23 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // 用於格式化日期
 import 'package:wounddetection/my_flutter_app_icons.dart';
 
 class ResultPage1 extends StatefulWidget {
-  const ResultPage1({super.key});
+  final String date;
+  const ResultPage1({super.key,required this.date});
 
   @override
   State<ResultPage1> createState() => _ResultPage1State();
 }
 
 class _ResultPage1State extends State<ResultPage1> {
-  late String formattedDate;
-
-  @override
-  void initState() {
-    super.initState();
-    // 初始化抓取當前日期
-    formattedDate = DateFormat('yyyy/MM/dd').format(DateTime.now());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,13 +49,13 @@ class _ResultPage1State extends State<ResultPage1> {
                   style: TextStyle(
                     color: Color(0xFF589399),
                     fontSize: 25,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
               // 使用系統抓取的日期顯示
               Text(
-                formattedDate,
+                widget.date,
                 style: const TextStyle(
                   color: Color(0xFF589399),
                   fontSize: 12,

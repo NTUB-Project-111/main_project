@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../feature/database.dart';
 import '../../my_flutter_app_icons.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 class ResultPage3 extends StatefulWidget {
   final List<String> resultinfo;
-
   const ResultPage3({super.key, required this.resultinfo});
 
   @override
@@ -17,8 +17,30 @@ class _ResultPage3State extends State<ResultPage3> {
     color: Color(0xFF589399),
   );
   bool _notify = false;
-  String? selectedFrequency = "每天一次";
+  String? selectedFrequency = "每天";
+
   TimeOfDay selectedTime = TimeOfDay.now();
+  // String day = DateTime.now().toLocal().toString().split(' ')[0]; //日期格式:yyyy-MM-dd
+
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   DatabaseHelper.record['freq'] = "每天";
+  // }
+
+  void _saveRemind() async {
+    String formattedTime = "${selectedTime.hour}:${selectedTime.minute}";
+    DatabaseHelper.record['time'] = formattedTime;
+  }
+
+  void _updateNotify(bool value) {
+    setState(() {
+      _notify = value;
+      print(_notify);
+    });
+    DatabaseHelper.record['ifcall'] = _notify ? 'Y' : 'N';
+  }
 
   void _showReminderDialog(BuildContext context) {
     // 將選擇的時間初始值設定在對話框外層，讓其狀態能夠在對話框內更新
@@ -78,7 +100,7 @@ class _ResultPage3State extends State<ResultPage3> {
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
-                            items: ["每天一次", "每兩天一次", "每週一次", "每月一次"]
+                            items: ["每天", "兩天一次", "三天一次", "每週"]
                                 .map((String item) => DropdownMenuItem<String>(
                                       value: item,
                                       child: Text(
@@ -98,6 +120,7 @@ class _ResultPage3State extends State<ResultPage3> {
                               // 用 dialogSetState 更新對話框內 UI
                               dialogSetState(() {
                                 selectedFrequency = value;
+                                DatabaseHelper.record['freq'] = value;
                               });
                             },
                             buttonStyleData: ButtonStyleData(
@@ -259,6 +282,7 @@ class _ResultPage3State extends State<ResultPage3> {
                               color: Color(0xFF589399),
                             );
                           });
+                          _updateNotify(_notify);
                           Navigator.pop(context); // 關閉對話框
                         },
                         child: const Text(
@@ -280,6 +304,7 @@ class _ResultPage3State extends State<ResultPage3> {
                           side: BorderSide.none,
                         ),
                         onPressed: () {
+                          _saveRemind();
                           Navigator.pop(context); // 關閉對話框
                         },
                         child: const Text(
@@ -334,7 +359,7 @@ class _ResultPage3State extends State<ResultPage3> {
                           style: TextStyle(
                             height: 3,
                             color: Color(0xFF589399),
-                            fontSize: 22,
+                            fontSize: 20,
                           ),
                         ),
                         IconButton(
@@ -352,6 +377,7 @@ class _ResultPage3State extends State<ResultPage3> {
                                     );
                             });
                             _notify ? _showReminderDialog(context) : null;
+                            _updateNotify(_notify);
                           },
                           icon: _icon,
                         ),
@@ -361,7 +387,7 @@ class _ResultPage3State extends State<ResultPage3> {
                   ),
                   ...List.generate(widget.resultinfo.length, (index) {
                     //前面的 ... 是 Dart 的展開運算子，將列表中的每個元素展開並直接插入到 Column 中。
-                    return _buildSuggestionItem('${index+1}', widget.resultinfo[index]);
+                    return _buildSuggestionItem('${index + 1}', widget.resultinfo[index]);
                   }),
                   // _buildSuggestionItem('1', '用清水輕輕沖洗傷口，清除表面的灰塵或異物'),
                 ],

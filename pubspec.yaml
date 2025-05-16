@@ -30,6 +30,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  provider: ^6.1.1
+  shared_preferences: ^2.5.2
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -56,10 +59,15 @@ dependencies:
   fluttertoast: ^8.2.12 #提示視窗
   path: ^1.9.0 #
   flutter_dash: ^1.0.0 #繪製底線
+  carousel_slider: ^5.0.0
+  url_launcher: ^6.3.1
+  flutter_svg: ^2.0.9
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # provider: ^6.1.1  # 或最新版本
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -90,6 +98,10 @@ flutter:
     - images/1.png
     - assets/cut_vs_abrasion_model.tflite
     - images/icon_2.png
+    - images/icon_nobkg.png
+    - images/bruises.png
+    - images/cut.png
+    - images/burn.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -106,6 +118,10 @@ flutter:
     - family: MyFlutterApp
       fonts:
         - asset: fonts/MyFlutterApp.ttf
+      
+    - family: FontAwesome5
+      fonts:
+        - asset: fonts/FontAwesome5.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wounddetection/my_flutter_app_icons.dart';
+import '../feature/database.dart';
 import './tabs/homepage.dart';
 import './tabs/hospitalpage.dart';
 import './tabs/personpage.dart';
@@ -31,7 +32,22 @@ class _TabsState extends State<Tabs> {
     super.initState();
     // 如果 `currentIndex` 傳入的是 null，則使用 0
     _currentIndex = widget.currentIndex ?? 0;
+    // loadUserInfo();
   }
+
+  // void loadUserInfo() async {
+  //   final userInfo = await DatabaseHelper.getUserInfo();
+  //   final userId = await DatabaseHelper.getUserId();
+  //   if (userInfo != null) {
+  //     DatabaseHelper.userInfo = userInfo;
+  //     debugPrint('✅ User Info Loaded: $userInfo');
+  //   } else {
+  //     debugPrint('⚠️ 無法載入 userInfo');
+  //   }
+  //   debugPrint('User ID: $userId');
+  //   // 若需要更新畫面（例如根據 userInfo 調整 UI）再呼叫 setState()
+  //   // setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -48,14 +64,14 @@ class _TabsState extends State<Tabs> {
         child: BottomNavigationBar(
           onTap: (index) {
             setState(() {
-              _currentIndex = index != 2 ? index : _currentIndex; //setState會重新跑build
+              _currentIndex =
+                  index != 2 ? index : _currentIndex; //setState會重新跑build
             });
           },
           selectedFontSize: 13,
           unselectedFontSize: 11,
           currentIndex: _currentIndex,
           items: const [
-            //icon的部分佑儒可以先自行改
             BottomNavigationBarItem(
               icon: Icon(MyFlutterApp.home),
               label: "首頁",
@@ -95,7 +111,8 @@ class _TabsState extends State<Tabs> {
         child: FloatingActionButton(
             foregroundColor: Colors.white,
             backgroundColor: const Color(0xFF669FA5),
-            shape: const CircleBorder(side: BorderSide(color: Colors.white, width: 2.0)),
+            shape: const CircleBorder(
+                side: BorderSide(color: Colors.white, width: 2.0)),
             child: const Icon(MyFlutterApp.camera, size: 35),
             onPressed: () {
               Navigator.push(

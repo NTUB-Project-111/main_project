@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../registerpage.dart';
 import 'login.dart';
+import '../headers/header_widget.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   @override
@@ -8,36 +9,35 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  late bool _isPasswordVisible = false;
+  late bool _isConfirmPasswordVisible = false;
 
+  get decoration => null;
+
+  // 密碼變更成功畫面
   void _showSuccessDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        backgroundColor: Color(0xFF83B6BB),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: const Color(0xFF83B6BB),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               "變更密碼成功",
               style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             SizedBox(height: 5),
             Text(
               "Password changed successfully",
               style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
           ],
         ),
@@ -47,9 +47,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context).pop();
       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
+          context, MaterialPageRoute(builder: (context) => LoginScreen()));
     });
   }
 
@@ -63,123 +61,33 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 圖片與標題
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                      'assets/logo.jpeg',
-                      width: 194,
-                      height: 181,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Reset",
-                        style: TextStyle(
-                          fontSize: 45,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Rubik Dirt',
-                          color: Color(0xFF669FA5),
-                        ),
-                      ),
-                      Text(
-                        "Password",
-                        style: TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Rubik Dirt',
-                          color: Color(0xFF669FA5),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              const HeaderWidget(title: "Reset", subtitle: "Password"),
               const SizedBox(height: 20),
-
-              // 帳號輸入框
               buildInputField(
-                label: "帳號",
-                hint: "example@gmail.com",
-                suffix: buildButton("傳送驗證碼"),
-              ),
-
-              // 驗證碼輸入框
+                  label: "帳號",
+                  hint: "example@gmail.com",
+                  suffix: buildButton("傳送驗證碼")),
               buildInputField(
-                label: "驗證碼",
-                hint: "請至電子郵件中取得驗證碼",
-                suffix: buildButton("驗證"),
-              ),
-
-              // 新密碼輸入框
+                  label: "驗證碼",
+                  hint: "請至電子郵件中取得驗證碼",
+                  suffix: buildButton("驗證")),
               buildPasswordField(
                 label: "新密碼",
                 hint: "輸入 8-16 個英文/數字",
                 isVisible: _isPasswordVisible,
-                toggleVisibility: () {
-                  setState(() {
-                    _isPasswordVisible = !_isPasswordVisible;
-                  });
-                },
+                toggleVisibility: () =>
+                    setState(() => _isPasswordVisible = !_isPasswordVisible),
               ),
-
-              // 確認密碼輸入框
               buildPasswordField(
                 label: "確認密碼",
                 hint: "需與上面的密碼一致",
                 isVisible: _isConfirmPasswordVisible,
-                toggleVisibility: () {
-                  setState(() {
-                    _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                  });
-                },
+                toggleVisibility: () => setState(() =>
+                    _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
               ),
-
               const SizedBox(height: 20),
-
-              // 變更密碼按鈕
-              SizedBox(
-                width: 372,
-                height: 45,
-                child: ElevatedButton(
-                  onPressed: _showSuccessDialog,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF669FA5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text(
-                    "變更密碼",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                ),
-              ),
-
-              // 返回登入畫面按鈕
-              TextButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LoginScreen()),
-                  );
-                },
-                child: const Text(
-                  "返回登入畫面",
-                  style: TextStyle(
-                    color: Color(0xFF669FA5),
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
+              buildChangePasswordButton(),
+              buildBackToLoginButton(),
             ],
           ),
         ),
@@ -187,85 +95,124 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 
-  Widget buildInputField({
-    required String label,
-    required String hint,
-    Widget? suffix,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: TextField(
-        decoration: InputDecoration(
-          labelText: label, // 讓標籤顯示在輸入框內
-          labelStyle: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF669FA5),
+  /// **變更密碼按鈕**
+  Widget buildChangePasswordButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 45,
+      child: ElevatedButton(
+        onPressed: _showSuccessDialog,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF669FA5),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        child: const Text("變更密碼",
+            style: TextStyle(color: Colors.white, fontSize: 18)),
+      ),
+    );
+  }
+
+  /// **返回登入畫面按鈕**
+  Widget buildBackToLoginButton() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: () => Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        ),
+        child: RichText(
+          text: const TextSpan(
+            text: "返回登入畫面",
+            style: TextStyle(
+              color: Color(0xFF669FA5),
+              fontSize: 13,
+              decoration: TextDecoration.underline, // 加上底線
+              decorationColor: Color(0xFF669FA5), // 設定底線顏色
+            ),
           ),
-          floatingLabelBehavior: FloatingLabelBehavior.never, // 防止標籤浮動到上方
-          hintText: hint, // 顯示提示文字
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          suffixIcon: suffix,
         ),
       ),
     );
   }
 
+  /// **一般輸入框**
+  Widget buildInputField(
+      {required String label, required String hint, Widget? suffix}) {
+    return buildTextField(label: label, hint: hint, suffix: suffix);
+  }
+
+  /// **密碼輸入框**
   Widget buildPasswordField({
     required String label,
     required String hint,
     required bool isVisible,
     required VoidCallback toggleVisibility,
   }) {
+    return buildTextField(
+      label: label,
+      hint: hint,
+      obscureText: !isVisible,
+      suffix: IconButton(
+        icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off,
+            color: const Color.fromRGBO(135, 135, 135, 0.5)),
+        onPressed: toggleVisibility,
+      ),
+    );
+  }
+
+  /// **通用輸入框**
+  Widget buildTextField(
+      {required String label,
+      required String hint,
+      bool obscureText = false,
+      Widget? suffix}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: TextField(
-        obscureText: !isVisible,
+        obscureText: obscureText,
         decoration: InputDecoration(
-          labelText: label, // 讓標籤顯示在輸入框內
+          labelText: label,
           labelStyle: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF669FA5),
-          ),
-          floatingLabelBehavior: FloatingLabelBehavior.never, // 防止標籤浮動到上方
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF669FA5)),
           hintText: hint,
+          hintStyle: const TextStyle(
+              color: Color.fromRGBO(135, 135, 135, 0.4), fontSize: 14),
+          floatingLabelBehavior: FloatingLabelBehavior.never,
           filled: true,
           fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          suffixIcon: IconButton(
-            icon: Icon(
-              isVisible ? Icons.visibility : Icons.visibility_off,
-            ),
-            onPressed: toggleVisibility,
-          ),
+          border: _inputBorder(),
+          enabledBorder: _inputBorder(),
+          focusedBorder: _inputBorder(),
+          suffixIcon: suffix,
         ),
       ),
     );
   }
 
-  Widget buildButton(String text) {
+  /// **輸入框邊框樣式**
+  OutlineInputBorder _inputBorder() {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: Colors.transparent),
+    );
+  }
+
+  /// **可點擊按鈕**
+  Widget buildButton(String text, {VoidCallback? onPressed}) {
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: TextButton(
-        onPressed: () {},
+        onPressed: onPressed ?? () {},
         style: TextButton.styleFrom(
           backgroundColor: const Color(0xFF669FA5),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        child: Text(
-          text,
-          style: const TextStyle(color: Colors.white),
-        ),
+        child: Text(text, style: const TextStyle(color: Colors.white)),
       ),
     );
   }
