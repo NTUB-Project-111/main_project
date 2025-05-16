@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:wounddetection/pages/tabs.dart';
+import 'package:wounddetection/pages/tabs/personpage.dart';
 import '../headers/header_2.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../../feature/database.dart';
 
 class ChangePsPage extends StatefulWidget {
-  const ChangePsPage({super.key});
+  final String userPassword;
+  const ChangePsPage({super.key, required this.userPassword});
 
   @override
   State<ChangePsPage> createState() => _ChangePsPageState();
@@ -17,11 +21,44 @@ class _ChangePsPageState extends State<ChangePsPage> {
   String _errorMessage = "";
   final TextEditingController _textController = TextEditingController(); // 新增 Controller
   final List<String> _password = ["", "", ""];
+  bool _isLoading = false;
 
-// 密碼驗證函式
+  // 密碼驗證函式
   bool _isValidPassword(String password) {
     final RegExp regex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$');
     return regex.hasMatch(password);
+  }
+
+  Future<void> _updatePassword() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String? userId = await DatabaseHelper.getUserId();
+    String newPassword = _password[_index];
+
+    if (userId == null) {
+      Fluttertoast.showToast(msg: "無法獲取使用者 ID，請重新登入");
+      setState(() => _isLoading = false);
+      return;
+    }
+
+    bool success = await DatabaseHelper.updatePassword(userId, newPassword);
+
+    if (!mounted) return; // 防止異步錯誤
+
+    setState(() => _isLoading = false);
+
+    if (success) {
+      DatabaseHelper.userInfo['password'] = newPassword;
+      Fluttertoast.showToast(msg: "修改成功");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Tabs(currentIndex: 4,)),
+      );
+    } else {
+      Fluttertoast.showToast(msg: "修改失敗，請稍後再試");
+    }
   }
 
   @override
@@ -125,27 +162,26 @@ class _ChangePsPageState extends State<ChangePsPage> {
                     child: ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            if (_index == 2) {
-                              Fluttertoast.showToast(
-                                msg: "修改成功",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
-                                timeInSecForIosWeb: 2,
-                                backgroundColor: Colors.green,
-                                textColor: Colors.black,
-                                fontSize: 16.0,
-                              );
-                              Navigator.pop(context);
+                            if (_index == 0) {
+                              if (_password[_index] != widget.userPassword) {
+                                _errorMessage = "密碼錯誤";
+                              } else {
+                                _index += 1;
+                                _textController.clear();
+                              }
                             } else if (_index == 1) {
                               if (_isValidPassword(_password[_index])) {
-                                _index = _index + 1;
+                                _index += 1;
                                 _textController.clear();
                               } else {
                                 _errorMessage = "密碼需包含英文字母及數字，且長度為 8~16 位";
                               }
-                            } else if (_index < 2) {
-                              _index = _index + 1;
-                              _textController.clear();
+                            } else if (_index == 2) {
+                              if (_password[_index] == _password[_index - 1]) {
+                                _updatePassword();
+                              } else {
+                                _errorMessage = "密碼錯誤";
+                              }
                             }
                           });
                         },

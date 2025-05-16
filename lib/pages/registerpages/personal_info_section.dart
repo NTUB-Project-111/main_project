@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // 用於選擇或拍攝照片
-import 'package:intl/intl.dart'; // 用來格式化日期
-import 'dart:io'; // 用於處理文件
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'dart:io';
+
+import 'package:wounddetection/feature/database.dart';
 
 class PersonalInfoSection extends StatefulWidget {
   const PersonalInfoSection({super.key});
+
   @override
-  // ignore: library_private_types_in_public_api
   _PersonalInfoSectionState createState() => _PersonalInfoSectionState();
 }
 
@@ -15,20 +17,45 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _birthdateController = TextEditingController();
   DateTime? _selectedDate;
-  final DateFormat _dateFormat = DateFormat('yyyy/MM/dd');
+  final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
   File? _profileImage;
+  final Map<String, String> genderMap = {
+    "M": "男",
+    "F": "女",
+    "Other": "其他",
+  };
+  
+
+  @override
+  void initState() {
+    super.initState();
+    DatabaseHelper.userInfo["name"] = '';
+    DatabaseHelper.userInfo["birthday"] = '';
+    DatabaseHelper.userInfo["gender"] = '';
+
+    _nameController.addListener(() {
+      DatabaseHelper.userInfo["name"] = _nameController.text;
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _birthdateController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           '個人資料',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
-            color: const Color(0xFF669FA5),
+            color: Color(0xFF669FA5),
             letterSpacing: 2,
           ),
         ),
@@ -42,17 +69,17 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
                   _buildTextField(
                     label: '姓名',
                     hint: '請輸入您的姓名/暱稱',
-                    controller: _nameController, // 可輸入文字
-                    readOnly: false, // 允許輸入
+                    controller: _nameController,
+                    readOnly: false,
                     onTap: null,
                   ),
                   const SizedBox(height: 16),
                   _buildTextField(
                     label: '生日',
-                    hint: 'YYYY/MM/DD',
+                    hint: 'YYYY-MM-DD',
                     controller: _birthdateController,
-                    readOnly: true, // 禁止手動輸入
-                    onTap: _pickDate, // 點擊開啟月曆
+                    readOnly: true,
+                    onTap: _pickDate,
                   ),
                   const SizedBox(height: 16),
                   _buildGenderSelection(),
@@ -105,39 +132,45 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: const Color(0xFF669FA5)),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Color(0xFF669FA5),
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1.6,
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Color(0xFF669FA5),
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.6,
+              ),
             ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: GestureDetector(
-              onTap: onTap, // 讓生日欄位點擊時開啟日期選擇器
+              onTap: onTap,
               child: AbsorbPointer(
-                absorbing: readOnly, // 讓生日欄位無法手動輸入
+                absorbing: readOnly,
                 child: TextFormField(
-                  controller: controller, // **這裡加上 controller**
+                  controller: controller,
                   style: const TextStyle(
-                      color: Color.fromARGB(255, 61, 103, 108),
-                      fontSize: 15), // 輸入文字大小
+                    color: Color.fromARGB(255, 61, 103, 108),
+                    fontSize: 14,
+                  ),
                   decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(bottom: 3),
                     hintText: hint,
                     hintStyle: const TextStyle(
                       color: Color(0xFFA5A1A1),
-                      fontSize: 14, // 提示字體
+                      fontSize: 14,
                     ),
                     border: InputBorder.none,
-                    
+                    counterText: '',
                   ),
-                  readOnly: readOnly, // 生日欄位不能手動輸入
+                  readOnly: readOnly,
+                  maxLength: label == '姓名' ? 50 : null,
                 ),
               ),
             ),
@@ -147,7 +180,6 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
     );
   }
 
-  // 打開日期選擇器
   Future<void> _pickDate() async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -158,9 +190,8 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
         return Theme(
           data: ThemeData.light().copyWith(
             primaryColor: const Color(0xFF669FA5),
-            colorScheme: ColorScheme.light(primary: const Color(0xFF669FA5)),
-            buttonTheme:
-                const ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            colorScheme: const ColorScheme.light(primary: Color(0xFF669FA5)),
+            buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
           ),
           child: child!,
         );
@@ -170,12 +201,12 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
         _selectedDate = pickedDate;
-        _birthdateController.text = _dateFormat.format(pickedDate); // 更新輸入框顯示
+        _birthdateController.text = _dateFormat.format(pickedDate);
+        DatabaseHelper.userInfo["birthday"] = _dateFormat.format(pickedDate);
       });
     }
   }
 
-  // 選擇或拍攝圖片
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -183,6 +214,7 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
     if (image != null) {
       setState(() {
         _profileImage = File(image.path);
+        DatabaseHelper.userInfo["picture"] = _profileImage;
       });
     }
   }
@@ -197,21 +229,21 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // 均勻分布性別選項
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
+          const Text(
             '性別',
             style: TextStyle(
-              color: const Color(0xFF669FA5),
+              color: Color(0xFF669FA5),
               fontSize: 16,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.6,
             ),
           ),
-          const SizedBox(width: 1), // 與選項間的間距
+          const SizedBox(width: 1),
           Expanded(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly, // 均勻分布選項
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildGenderOption('女'),
                 _buildGenderOption('男'),
@@ -228,26 +260,33 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
     return Row(
       children: [
         SizedBox(
-          width: 28, // 調整寬度
-          height: 28, // 調整高度
+          width: 28,
+          height: 28,
           child: Radio<String>(
             value: gender,
-            groupValue: _selectedGender,
+            groupValue: genderMap[_selectedGender],
             onChanged: (String? value) {
               setState(() {
-                _selectedGender = value;
+                if (value == "男") {
+                  _selectedGender = "M";
+                } else if (value == "女") {
+                  _selectedGender = "F";
+                } else if (value == "其他") {
+                  _selectedGender = "Other";
+                }
+                DatabaseHelper.userInfo["gender"] = _selectedGender;
               });
             },
-            fillColor: WidgetStateProperty.resolveWith<Color>((states) {
-              return const Color(0xFF669FA5);
-            }),
+            fillColor: WidgetStateProperty.resolveWith<Color>(
+              (states) => const Color(0xFF669FA5),
+            ),
           ),
         ),
         Text(
           gender,
-          style: TextStyle(
-            color: const Color(0xFF669FA5),
-            fontSize: 14, // 適配容器的文字大小
+          style: const TextStyle(
+            color: Color(0xFF669FA5),
+            fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
         ),

@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:wounddetection/my_flutter_app_icons.dart';
 import 'package:wounddetection/pages/personalpages/personalcontain.dart';
 import '../headers/header_1.dart';
-import '../personalpages/personaldata.dart';
-import '../personalpages/personalchangeps.dart';
+import '../personalpages/changeps.dart';
 import '../remindpage.dart';
-import '../personalpages/personalsetting.dart';
+import '../personalpages/setting.dart';
+import '../../feature/database.dart';
+
 class PersonPage extends StatefulWidget {
   const PersonPage({super.key});
 
@@ -14,14 +15,26 @@ class PersonPage extends StatefulWidget {
 }
 
 class _PersonPageState extends State<PersonPage> {
+  String? userId = '';
+  Map<String, dynamic>? userInfo = DatabaseHelper.userInfo;
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasPicture = userInfo != null &&
+        userInfo!['picture'] != null &&
+        userInfo!['picture'].toString().isNotEmpty &&
+        userInfo!['picture'] != 'null';
+
     return Column(
       children: [
         const HeaderPage1(
-          title: "我的",
-          icon: Icon(MyFlutterApp.bell, size: 23, color: Color(0xFF589399)),
-          targetPage: RemindPage()),
+            title: "我的",
+            icon: Icon(MyFlutterApp.bell, size: 23, color: Color(0xFF589399)),
+            targetPage: RemindPage()),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 26),
           child: Column(
@@ -43,20 +56,46 @@ class _PersonPageState extends State<PersonPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
+                      margin: const EdgeInsets.only(right: 10),
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
                         color: const Color(0xFF669FA5).withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
+                      child: ClipOval(
+                        child: hasPicture
+                            ? Image.network(
+                                Uri.parse(DatabaseHelper.baseUrl)
+                                    .resolve(userInfo!['picture'])
+                                    .toString(),
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Center(child: Text("圖片載入失敗"));
+                                },
+                              )
+                            : const Icon(
+                                Icons.person,
+                                color: Color(0xFF669FA5),
+                                size: 80,
+                              ),
+                      ),
                     ),
-                    const Text(
-                      '暱稱',
-                      style: TextStyle(
-                        color: Color(0xFF669FA5),
-                        fontSize: 26,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 2.8,
+                    Expanded(
+                      child: Text(
+                        userInfo?['name'] ?? '',
+                        style: const TextStyle(
+                          color: Color(0xFF669FA5),
+                          fontSize: 26,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 2.8,
+                        ),
+                        overflow: TextOverflow.ellipsis, // 過長時顯示省略號
+                        maxLines: 1, // 限制為單行
+                        softWrap: false, // 不換行
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ],
@@ -67,17 +106,39 @@ class _PersonPageState extends State<PersonPage> {
                 height: 8,
               ),
               _buildDetailItem(
-                const Icon(Icons.person,color: Color(0xFF669FA5),size: 30,),
-                "個人基本資料",
-                const PersonalContainPage()),
+                  const Icon(
+                    Icons.person,
+                    color: Color(0xFF669FA5),
+                    size: 30,
+                  ),
+                  "個人基本資料",
+                  const PersonalContainPage()),
               _buildDetailItem(
-                const Icon(Icons.lock,color: Color(0xFF669FA5),size: 30,),
-                "變更密碼",
-                const ChangePsPage()),
+                  const Icon(
+                    Icons.lock,
+                    color: Color(0xFF669FA5),
+                    size: 30,
+                  ),
+                  "變更密碼",
+                  ChangePsPage(
+                    userPassword: userInfo?['password'],
+                  )),
               _buildDetailItem(
-                const Icon(Icons.settings,color: Color(0xFF669FA5),size: 30,),
-                "更多設定",
-                const Settings()),
+                  const Icon(
+                    Icons.settings,
+                    color: Color(0xFF669FA5),
+                    size: 30,
+                  ),
+                  "更多設定",
+                  const Settings()),
+              _buildDetailItem(
+                  const Icon(
+                    Icons.person,
+                    color: Color(0xFF669FA5),
+                    size: 30,
+                  ),
+                  "登出",
+                  const PersonalContainPage()),
             ],
           ),
         )
@@ -101,8 +162,7 @@ class _PersonPageState extends State<PersonPage> {
       width: double.infinity,
       child: OutlinedButton.icon(
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => targetPage));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => targetPage));
         },
         label: Text(title,
             style: const TextStyle(
