@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:wounddetection/pages/tabs.dart';
-import 'package:wounddetection/pages/tabs/personpage.dart';
 import '../headers/header_2.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../feature/database.dart';
@@ -54,7 +53,10 @@ class _ChangePsPageState extends State<ChangePsPage> {
       Fluttertoast.showToast(msg: "修改成功");
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const Tabs(currentIndex: 4,)),
+        MaterialPageRoute(
+            builder: (context) => const Tabs(
+                  currentIndex: 4,
+                )),
       );
     } else {
       Fluttertoast.showToast(msg: "修改失敗，請稍後再試");
@@ -160,48 +162,57 @@ class _ChangePsPageState extends State<ChangePsPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: ElevatedButton(
-                        onPressed: () {
+                      onPressed: () async {
+                        if (_index == 0) {
+                          final isCorrect = await DatabaseHelper.verifyPassword(
+                            DatabaseHelper.userInfo["email"],
+                            _password[_index],
+                          );
                           setState(() {
-                            if (_index == 0) {
-                              if (_password[_index] != widget.userPassword) {
-                                _errorMessage = "密碼錯誤";
-                              } else {
-                                _index += 1;
-                                _textController.clear();
-                              }
-                            } else if (_index == 1) {
-                              if (_isValidPassword(_password[_index])) {
-                                _index += 1;
-                                _textController.clear();
-                              } else {
-                                _errorMessage = "密碼需包含英文字母及數字，且長度為 8~16 位";
-                              }
-                            } else if (_index == 2) {
-                              if (_password[_index] == _password[_index - 1]) {
-                                _updatePassword();
-                              } else {
-                                _errorMessage = "密碼錯誤";
-                              }
+                            if (!isCorrect) {
+                              _errorMessage = "密碼錯誤";
+                            } else {
+                              _index += 1;
+                              _textController.clear();
                             }
                           });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          elevation: 0,
-                          backgroundColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                        } else if (_index == 1) {
+                          setState(() {
+                            if (_isValidPassword(_password[_index])) {
+                              _index += 1;
+                              _textController.clear();
+                            } else {
+                              _errorMessage = "密碼需包含英文字母及數字，且長度為 8~16 位";
+                            }
+                          });
+                        } else if (_index == 2) {
+                          setState(() {
+                            if (_password[_index] == _password[_index - 1]) {
+                              _updatePassword();
+                            } else {
+                              _errorMessage = "密碼錯誤";
+                            }
+                          });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        backgroundColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Text(
-                          "確定",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.8,
-                            color: Colors.white,
-                            fontFamily: 'Inter',
-                          ),
-                        ))),
+                      ),
+                      child: const Text(
+                        "確定",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.8,
+                          color: Colors.white,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                    )),
               ],
             ),
           ),

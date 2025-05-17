@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
+import 'package:wounddetection/pages/loginpages/login.dart';
 import 'registerpages/account_setup.dart';
 import 'registerpages/captcha_section.dart';
 import 'registerpages/personal_info_section.dart';
@@ -27,6 +28,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
     return true;
   }
+
   //驗證密碼格式
   bool _validatePassword(String value) {
     if (value.length < 8 || value.length > 16) {
@@ -40,6 +42,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
     return true;
   }
+
   //驗證密碼是否一致
   bool _confirmPassword(String value1, String value2) {
     if (value1 != value2) {
@@ -47,14 +50,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
     return true;
   }
+
   //顯示錯誤訊息
-  void _showError(String errorMessage) {
+  void _showError(String errorMessage,Color color) {
     Fluttertoast.showToast(
       msg: errorMessage,
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.CENTER,
       timeInSecForIosWeb: 2,
-      backgroundColor: Colors.red,
+      backgroundColor: color,
       textColor: Colors.white,
       fontSize: 16.0,
     );
@@ -88,7 +92,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     Align(
                         alignment: Alignment.centerLeft,
                         child: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                              );
+                            },
                             icon: const Icon(
                               MyFlutterApp.icon_park_solid__back,
                               color: Color(0xFF589399),
@@ -135,22 +144,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               user["email"]?.isEmpty ||
                               user["password"]?.isEmpty ||
                               user["confirm"]?.isEmpty) {
-                            _showError("請填寫完整個人資料");
+                            _showError("請填寫完整個人資料",Colors.red);
                             return;
                           }
                           // Email 格式驗證
                           if (!_validateEmail(user["email"])) {
-                            _showError("無效的電子郵件");
+                            _showError("無效的電子郵件",Colors.red);
                             return;
                           }
                           // 密碼格式驗證
                           if (!_validatePassword(user["password"])) {
-                            _showError(_errorMessage);
+                            _showError(_errorMessage,Colors.red);
                             return;
                           }
                           // 密碼確認
                           if (!_confirmPassword(user["password"], user["confirm"])) {
-                            _showError("密碼不一致");
+                            _showError("密碼不一致",Colors.red);
                             return;
                           }
                           // 新增使用者
@@ -163,19 +172,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             user["picture"] != null ? user["picture"] as File : null,
                           );
                           if (!userAdded) {
-                            _showError("註冊失敗，請稍後再試");
+                            _showError("註冊失敗，請稍後再試",Colors.red);
                             return;
                           }
                           // 儲存 userId
                           bool saved = await DatabaseHelper.saveUserId(user["email"]);
                           if (!saved) {
-                            _showError("註冊成功但無法儲存使用者資訊");
+                            _showError("註冊成功但無法儲存使用者資訊",Colors.red);
                             return;
                           }
-                          String? userId = await DatabaseHelper.getUserId();
-                          DatabaseHelper.userInfo = (await DatabaseHelper.getUserInfo())!;
-                          print("獲取的 User ID: $userId");
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Tabs()));
+                          _showError("註冊成功!",Colors.green);
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => const LoginScreen()),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF669FA5),

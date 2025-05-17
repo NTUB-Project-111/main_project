@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart'; // 引入 Flutter 的 UI 套件
 import 'package:dropdown_button2/dropdown_button2.dart'; // 引入第三方下拉選單套件
 import 'package:intl/intl.dart';
+import '../feature/notifer.dart';
 import '../my_flutter_app_icons.dart'; // 引入自訂義的圖示
 import 'headers/header_1.dart'; // 引入標頭檔
 import '../feature/database.dart';
@@ -293,6 +294,9 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
     if (isChange) {
       DatabaseHelper.allCalls = (await DatabaseHelper.getReminds()) ?? [];
       DatabaseHelper.remindRecords = (await DatabaseHelper.getRemindRecord()) ?? [];
+      await Notifier.initialize();
+      await Notifier.cancelAllReminders();
+      Notifier.scheduleReminders(DatabaseHelper.allCalls);
     } else {
       print("資料未更改");
     }

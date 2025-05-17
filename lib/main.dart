@@ -1,112 +1,10 @@
-// import 'package:flutter/material.dart';
-// import './pages/tabs.dart';
-// import './pages/registerpage.dart';
-// import './feature/database.dart';
-
-// /*原本就註解掉的地方*/
-// // void main() {
-// //   runApp(const MyApp());
-// // }
-
-// // class MyApp extends StatelessWidget {
-// //   const MyApp({super.key});
-
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return const MaterialApp(
-// //       debugShowCheckedModeBanner: false,
-// //       // home: Tabs(),
-// //       home: TestPage(),
-// //     );
-// //   }
-// // }
-// /*原本就註解掉的地方*/
-
-// void main() {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   runApp(const MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   Future<Widget> _getInitialPage() async {
-//     var userId = await DatabaseHelper.getUserId();
-//     // userId = null;
-//     if (userId != null) {
-//       final userInfo = await DatabaseHelper.getUserInfo();
-//       final userRecords = await DatabaseHelper.getUserRecords();
-//       final userCalls = await DatabaseHelper.getReminds();
-//       final remindRecord = await DatabaseHelper.getRemindRecord();
-//       final homeRemind = await DatabaseHelper.getHomeRemind();
-//       if (userInfo != null) {
-//         DatabaseHelper.userInfo = userInfo;
-//         debugPrint('User Info Loaded: $userInfo');
-//         debugPrint('成功載入使用者資料');
-//       } else {
-//         return const RegistrationPage();
-//       }
-//       if (userRecords != null) {
-//         DatabaseHelper.allRecords = userRecords;
-//         // debugPrint('User Records Loaded: $userRecords');
-//         debugPrint('成功載入使用者診斷紀錄');
-//       }
-//       if (userCalls != null) {
-//         DatabaseHelper.allCalls = userCalls;
-//         // debugPrint('User Records Loaded: $userCalls');
-//         debugPrint('成功載入護理提醒');
-//       }
-//       if (remindRecord != null) {
-//         DatabaseHelper.remindRecords = remindRecord;
-//         debugPrint('成功載入診斷紀錄跟提醒');
-//         // debugPrint('remindRecords Loaded: $remindRecord');
-//       }
-//       if (homeRemind != null) {
-//         DatabaseHelper.homeRemind = homeRemind;
-//         debugPrint('成功載入首頁提醒');
-//         // debugPrint('homeRemind Loaded: $homeRemind');
-//       }
-//       debugPrint('User ID: $userId');
-//       return const Tabs(); // 回傳主頁
-//     } else {
-//       debugPrint('沒有 userId，導向註冊頁');
-//       return const RegistrationPage();
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       home: FutureBuilder<Widget>(
-//         future: _getInitialPage(),
-//         builder: (context, snapshot) {
-//           if (snapshot.connectionState == ConnectionState.waiting) {
-//             // 等待資料載入時顯示 loading 畫面
-//             return const Scaffold(
-//               body: Center(child: CircularProgressIndicator()),
-//             );
-//           } else if (snapshot.hasError) {
-//             // 若發生錯誤
-//             return const Scaffold(
-//               body: Center(child: Text('發生錯誤，請稍後再試')),
-//             );
-//           } else {
-//             // 資料載入成功，顯示對應頁面
-//             return snapshot.data!;
-//           }
-//         },
-//       ),
-//     );
-//   }
-// }
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; //使用者的狀態管理
-// import '/providers/auth_provider.dart'; // 一般使用者的狀態
+import 'package:wounddetection/feature/notifer.dart';
 import './pages/tabs.dart';
 import './pages/registerpage.dart';
 import './feature/database.dart';
+import 'feature/ApiHelper.dart';
 import 'pages/loginpages/login.dart';
 
 // void main() {
@@ -131,52 +29,104 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late Future<Widget> _initialPageFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _initialPageFuture = _getInitialPage();
+  }
+
   Future<Widget> _getInitialPage() async {
-    var userId = await DatabaseHelper.getUserId();
-    userId = null;
-    if (userId != null) {
-      final userInfo = await DatabaseHelper.getUserInfo();
-      final userRecords = await DatabaseHelper.getUserRecords();
-      final userCalls = await DatabaseHelper.getReminds();
-      final remindRecord = await DatabaseHelper.getRemindRecord();
-      final homeRemind = await DatabaseHelper.getHomeRemind();
-      if (userInfo != null) {
-        DatabaseHelper.userInfo = userInfo;
-        debugPrint('User Info Loaded: $userInfo');
-        debugPrint('成功載入使用者資料');
+    try {
+      var userId = await DatabaseHelper.getUserId();
+      Notifier.debugPrintAllScheduledReminders();
+
+      if (userId == null) {
+        debugPrint('沒有 userId，導向登入頁');
+        return const LoginScreen();
       } else {
-        return const RegistrationPage();
+        debugPrint('已有 userId，嘗試載入使用者資料');
+        bool loadSuccess = await _loadUserData(userId);
+        if (!loadSuccess) {
+          debugPrint('載入使用者資訊失敗，可能 token 過期或無效');
+          // 載入失敗，導回登入頁
+          return const LoginScreen();
+        }
+        return const Tabs();
       }
-      if (userRecords != null) {
-        DatabaseHelper.allRecords = userRecords;
-        // debugPrint('User Records Loaded: $userRecords');
-        debugPrint('成功載入使用者診斷紀錄');
+    } catch (e) {
+      debugPrint('初始化失敗: $e');
+      return const Scaffold(
+        body: Center(child: Text('發生錯誤，請稍後再試')),
+      );
+    }
+  }
+
+  Future<bool> _loadUserData(String userID) async {
+    final response = await ApiHelper.get('/getUserInfo');
+    if (response == null || response.statusCode != 200) {
+      return false;
+    }
+    try {
+      final userInfo = jsonDecode(response.body);
+      DatabaseHelper.userInfo = userInfo;
+      debugPrint('使用者資訊載入成功');
+
+      final records = await DatabaseHelper.getUserRecords();
+      if (records != null) {
+        DatabaseHelper.allRecords = records;
+        checkRecord(records);
+        debugPrint('診斷紀錄載入成功');
       }
-      if (userCalls != null) {
-        DatabaseHelper.allCalls = userCalls;
-        // debugPrint('User Records Loaded: $userCalls');
-        debugPrint('成功載入護理提醒');
+      final calls = await DatabaseHelper.getReminds();
+      if (calls != null) {
+        DatabaseHelper.allCalls = calls;
+        debugPrint('護理提醒載入成功');
       }
+      final remindRecord = await DatabaseHelper.getRemindRecord();
       if (remindRecord != null) {
         DatabaseHelper.remindRecords = remindRecord;
-        debugPrint('成功載入診斷紀錄跟提醒');
-        // debugPrint('remindRecords Loaded: $remindRecord');
+        debugPrint('提醒紀錄載入成功');
       }
+      final homeRemind = await DatabaseHelper.getHomeRemind();
       if (homeRemind != null) {
         DatabaseHelper.homeRemind = homeRemind;
-        debugPrint('成功載入首頁提醒');
-        // debugPrint('homeRemind Loaded: $homeRemind');
+        debugPrint('首頁提醒載入成功');
       }
-      debugPrint('User ID: $userId');
-      return const Tabs(); // 回傳主頁
-    } else {
-      // debugPrint('沒有 userId，導向註冊頁');
-      // return const RegistrationPage();
-      debugPrint('沒有 userId，導向登入頁');
-      return const LoginScreen();
+      return true;
+    } catch (e) {
+      debugPrint('解析使用者資料時發生錯誤: $e');
+      return false;
+    }
+  }
+
+  Future<void> checkRecord(List<dynamic> userRecords) async {
+    DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    for (var record in userRecords) {
+      if (record["ifcall"] == "Y") {
+        List<String> oktimeList = record["oktime"].split("~");
+        DateTime startDate = DateTime.parse(record["date"]);
+        int durationDays = int.parse(oktimeList[1]);
+        DateTime endTime = startDate.add(Duration(days: durationDays));
+        if (today.isAfter(endTime)) {
+          record["ifcall"] = "N";
+          await DatabaseHelper.deleteRemind(
+              record["fk_userid"].toString(), record["id_record"].toString());
+          await DatabaseHelper.updateRecord(
+              record["id_record"].toString(), record["fk_userid"].toString(), "N");
+          await Notifier.cancelAllReminders();
+          await Notifier.debugPrintAllScheduledReminders();
+        }
+      }
     }
   }
 
@@ -185,20 +135,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: FutureBuilder<Widget>(
-        future: _getInitialPage(),
+        future: _initialPageFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // 等待資料載入時顯示 loading 畫面
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             );
           } else if (snapshot.hasError) {
-            // 若發生錯誤
             return const Scaffold(
               body: Center(child: Text('發生錯誤，請稍後再試')),
             );
           } else {
-            // 資料載入成功，顯示對應頁面
             return snapshot.data!;
           }
         },
