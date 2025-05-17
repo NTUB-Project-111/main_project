@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,8 +7,7 @@ import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 
 class DatabaseHelper {
-  static const String baseUrl =
-      "http://10.0.2.2:3000"; //放我的電腦IP 172.20.10.5 192.168.1.107
+  static const String baseUrl = "http://192.168.1.110:3000"; //放自己電腦的IP
   // static final String userId;
   static Map<String, dynamic> calls = {};
   static Map<String, dynamic> record = {};
@@ -29,14 +29,14 @@ class DatabaseHelper {
         String? userId = data['id']?.toString(); // 確保 userId 是字串或 null
         if (userId != null) {
           await prefs.setString('userId', userId);
-          print('User ID 存儲成功: $userId');
+          debugPrint('User ID 存儲成功: $userId');
           return true;
         }
       }
-      print('無法獲取 User ID: ${response.statusCode} ${response.body}');
+      debugPrint('無法獲取 User ID: ${response.statusCode} ${response.body}');
       return false;
     } catch (e) {
-      print('請求錯誤: $e');
+      debugPrint('請求錯誤: $e');
       return false;
     }
   }
@@ -44,7 +44,7 @@ class DatabaseHelper {
   // 讀取 userId
   static Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userid');
+    return prefs.getString('userId');
   }
 
   // 清除 userId
@@ -56,24 +56,36 @@ class DatabaseHelper {
   // 取得使用者資訊
   static Future<Map<String, dynamic>?> getUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('userId');
-
-    if (userId == null) {
-      print('無法獲取 User ID，跳過請求');
-      return null;
+    final token = prefs.getString('jwtToken');
+    if (token == null) {
+      debugPrint('無法取得 JWT Token');
+      return null; // 若未取得 token，返回 null
     }
-
-    final url = Uri.parse('$baseUrl/getUserInfo?id=$userId');
+    final url = Uri.parse('$baseUrl/getUserInfo');
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        // 嘗試解析 JSON 資料並打印調試訊息
+        try {
+          final userInfo = jsonDecode(response.body);
+          debugPrint('取得使用者資料: $userInfo'); // 可以打印來檢查返回資料
+          return userInfo;
+        } catch (e) {
+          debugPrint('解析 JSON 錯誤: $e');
+          return null;
+        }
       } else {
-        print('獲取使用者資料失敗: ${response.statusCode} ${response.body}');
+        debugPrint('獲取使用者資料失敗: ${response.statusCode} ${response.body}');
         return null;
       }
     } catch (e) {
-      print('請求錯誤: $e');
+      debugPrint('請求錯誤: $e');
       return null;
     }
   }
@@ -81,26 +93,38 @@ class DatabaseHelper {
   //取得診斷報告
   static Future<List<Map<String, dynamic>>?> getUserRecords() async {
     final prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('userId');
-
-    if (userId == null) {
-      print('無法獲取 User ID，跳過請求');
+    final userId = prefs.getString('userId');
+    final token = prefs.getString('jwtToken');
+    if (userId == null || token == null) {
+      debugPrint('無法取得 userId 或 JWT token，跳過請求');
       return null;
     }
-
     final url = Uri.parse('$baseUrl/getUserRecord?id=$userId');
     try {
-      final response = await http.get(url);
-      // print(jsonDecode(response.body));
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = jsonDecode(response.body);
-        return data['records'].cast<Map<String, dynamic>>();
+        final data = jsonDecode(response.body);
+        if (data is Map<String, dynamic> && data['records'] is List) {
+          debugPrint('成功取得診斷紀錄，共 ${data['records'].length} 筆');
+          return (data['records'] as List)
+              .map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e))
+              .toList();
+        } else {
+          debugPrint('資料格式錯誤或 records 欄位不存在');
+          return null;
+        }
       } else {
-        print('獲取使用者資料失敗: ${response.statusCode} ${response.body}');
+        debugPrint('獲取使用者診斷紀錄失敗: ${response.statusCode} ${response.body}');
         return null;
       }
     } catch (e) {
-      print('請求錯誤: $e');
+      debugPrint('請求錯誤: $e');
       return null;
     }
   }
@@ -108,23 +132,41 @@ class DatabaseHelper {
   //取得護理提醒
   static Future<List<Map<String, dynamic>>?> getReminds() async {
     final prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('userId');
-    if (userId == null) {
-      print('無法獲取 User ID，跳過請求');
+    final userId = prefs.getString('userId');
+    final token = prefs.getString('jwtToken');
+
+    if (userId == null || token == null) {
+      debugPrint('無法取得 userId 或 JWT token，跳過請求');
       return null;
     }
+
     final url = Uri.parse('$baseUrl/getReminds?id=$userId');
+
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
       if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
-        return data.cast<Map<String, dynamic>>();
+        final data = jsonDecode(response.body);
+
+        if (data is List) {
+          debugPrint('成功取得提醒資料，共 ${data.length} 筆');
+          return data.map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e)).toList();
+        } else {
+          debugPrint('回傳資料格式錯誤，不是 List');
+          return null;
+        }
       } else {
-        print('獲取使用者資料失敗: ${response.statusCode} ${response.body}');
+        debugPrint('取得提醒失敗: ${response.statusCode} ${response.body}');
         return null;
       }
     } catch (e) {
-      print('請求錯誤: $e');
+      debugPrint('請求錯誤: $e');
       return null;
     }
   }
@@ -132,23 +174,41 @@ class DatabaseHelper {
   //取得護理提醒(結合診斷報告)
   static Future<List<Map<String, dynamic>>?> getRemindRecord() async {
     final prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('userId');
-    if (userId == null) {
-      print('無法獲取 User ID，跳過請求');
+    final userId = prefs.getString('userId');
+    final token = prefs.getString('jwtToken');
+
+    if (userId == null || token == null) {
+      debugPrint('無法取得 userId 或 JWT token，跳過請求');
       return null;
     }
+
     final url = Uri.parse('$baseUrl/getRemindRecord?id=$userId');
+
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
       if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
-        return data.cast<Map<String, dynamic>>();
+        final data = jsonDecode(response.body);
+
+        if (data is List) {
+          debugPrint('成功取得提醒與診斷紀錄，共 ${data.length} 筆');
+          return data.map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e)).toList();
+        } else {
+          debugPrint('回傳格式錯誤，非 List');
+          return null;
+        }
       } else {
-        print('結合提醒與診斷資料失敗: ${response.statusCode} ${response.body}');
+        debugPrint('結合提醒與診斷資料失敗: ${response.statusCode} ${response.body}');
         return null;
       }
     } catch (e) {
-      print('請求錯誤: $e');
+      debugPrint('請求錯誤: $e');
       return null;
     }
   }
@@ -156,23 +216,41 @@ class DatabaseHelper {
   //取得首頁提醒
   static Future<List<Map<String, dynamic>>?> getHomeRemind() async {
     final prefs = await SharedPreferences.getInstance();
-    String? userId = prefs.getString('userId');
-    if (userId == null) {
-      print('無法獲取 User ID，跳過請求');
+    final userId = prefs.getString('userId');
+    final token = prefs.getString('jwtToken');
+
+    if (userId == null || token == null) {
+      debugPrint('無法取得 userId 或 JWT token，跳過請求');
       return null;
     }
+
     final url = Uri.parse('$baseUrl/getHomeRemind?id=$userId');
+
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
       if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
-        return data.cast<Map<String, dynamic>>();
+        final data = jsonDecode(response.body);
+
+        if (data is List) {
+          debugPrint('成功取得首頁提醒，共 ${data.length} 筆');
+          return data.map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e)).toList();
+        } else {
+          debugPrint('回傳格式錯誤，非 List');
+          return null;
+        }
       } else {
-        print('獲取HomeRemind失敗: ${response.statusCode} ${response.body}');
+        debugPrint('獲取 HomeRemind 失敗: ${response.statusCode} ${response.body}');
         return null;
       }
     } catch (e) {
-      print('請求錯誤: $e');
+      debugPrint('請求錯誤: $e');
       return null;
     }
   }
@@ -191,26 +269,24 @@ class DatabaseHelper {
       );
 
       if (response.statusCode == 200) {
-        print("提醒成功刪除");
+        debugPrint("提醒成功刪除");
         return true;
       } else {
-        print("刪除失敗: ${response.statusCode} - ${response.body}");
+        debugPrint("刪除失敗: ${response.statusCode} - ${response.body}");
         return false;
       }
     } catch (e) {
-      print("刪除請求錯誤: $e");
+      debugPrint("刪除請求錯誤: $e");
       return false;
     }
   }
 
   /// 修改診斷報告
-  static Future<bool> updateRecord(
-      String idRecord, String fkUserId, String ifcall) async {
+  static Future<bool> updateRecord(String idRecord, String fkUserId, String ifcall) async {
     final response = await http.post(
       Uri.parse("$baseUrl/updateRecord"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode(
-          {"id_record": idRecord, "fk_userid": fkUserId, "ifcall": ifcall}),
+      body: jsonEncode({"id_record": idRecord, "fk_userid": fkUserId, "ifcall": ifcall}),
     );
 
     if (response.statusCode == 200) {
@@ -221,13 +297,11 @@ class DatabaseHelper {
   }
 
   /// 修改提醒時間
-  static Future<bool> updateCallTime(
-      String idRecord, String fkUserId, String time) async {
+  static Future<bool> updateCallTime(String idRecord, String fkUserId, String time) async {
     final response = await http.post(
       Uri.parse("$baseUrl/updateCallTime"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode(
-          {"fk_record_id": idRecord, "fk_user_id": fkUserId, "time": time}),
+      body: jsonEncode({"fk_record_id": idRecord, "fk_user_id": fkUserId, "time": time}),
     );
 
     if (response.statusCode == 200) {
@@ -275,7 +349,7 @@ class DatabaseHelper {
     if (response.statusCode == 200) {
       return true;
     } else {
-      print("上傳失敗: ${response.body}");
+      debugPrint("上傳失敗: ${response.body}");
       return false;
     }
   }
@@ -305,8 +379,7 @@ class DatabaseHelper {
     request.fields['recording'] = recording;
 
     // 添加圖片檔案
-    var mimeType =
-        lookupMimeType(photoFile.path) ?? "image/jpeg"; // 確保有 MIME 類型
+    var mimeType = lookupMimeType(photoFile.path) ?? "image/jpeg"; // 確保有 MIME 類型
     var multipartFile = await http.MultipartFile.fromPath(
       'photo', // 這個 key 要跟後端 API 參數名稱一致
       photoFile.path,
@@ -322,19 +395,19 @@ class DatabaseHelper {
     if (response.statusCode == 200) {
       return true;
     } else {
-      print("上傳失敗: ${response.body}"); // 記錄錯誤資訊
+      debugPrint("上傳失敗: ${response.body}"); // 記錄錯誤資訊
       return false;
     }
   }
 
   //護理提醒
-  static Future<bool> addRemind(String fkUserId, String fkRecordId, String day,
-      String time, String freq) async {
+  static Future<bool> addRemind(
+      String fkUserId, String fkRecordId, String day, String time, String freq) async {
     if (fkUserId.isEmpty || day.isEmpty || time.isEmpty) {
-      print("參數有空值: fk_user_id: $fkUserId, day: $day, time: $time");
+      debugPrint("參數有空值: fk_user_id: $fkUserId, day: $day, time: $time");
       return false;
     }
-    print("fk_user_id: $fkUserId, day: $day, time: $time");
+    debugPrint("fk_user_id: $fkUserId, day: $day, time: $time");
     try {
       var uri = Uri.parse("$baseUrl/addRemind");
       var response = await http.post(
@@ -350,11 +423,35 @@ class DatabaseHelper {
       if (response.statusCode == 200) {
         return true;
       } else {
-        print("上傳失敗: ${response.statusCode} - ${response.body}");
+        debugPrint("上傳失敗: ${response.statusCode} - ${response.body}");
         return false;
       }
     } catch (e) {
-      print("例外錯誤: $e");
+      debugPrint("例外錯誤: $e");
+      return false;
+    }
+  }
+
+  //驗證密碼
+  static Future<bool> verifyPassword(String email, String password) async {
+    final url = Uri.parse("$baseUrl/verifyPassword");
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password}),
+      );
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print('驗證成功：${responseData['message']}');
+        return true;
+      } else {
+        final responseData = jsonDecode(response.body);
+        print('驗證失敗：${responseData['error']}');
+        return false;
+      }
+    } catch (e) {
+      print('請求錯誤：$e');
       return false;
     }
   }
@@ -407,11 +504,11 @@ class DatabaseHelper {
       if (response.statusCode == 200) {
         return true;
       } else {
-        print("圖片更新失敗: ${response.body}");
+        debugPrint("圖片更新失敗: ${response.body}");
         return false;
       }
     } catch (e) {
-      print("圖片上傳發生錯誤: $e");
+      debugPrint("圖片上傳發生錯誤: $e");
       return false;
     }
   }

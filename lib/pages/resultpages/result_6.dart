@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../../feature/notifer.dart';
 import '../tabs.dart';
 import '../../feature/database.dart';
 
@@ -108,6 +109,9 @@ class _ResultPage6State extends State<ResultPage6> {
       DatabaseHelper.allCalls = (await DatabaseHelper.getReminds()) ?? [];
       DatabaseHelper.remindRecords = (await DatabaseHelper.getRemindRecord()) ?? [];
       DatabaseHelper.homeRemind = (await DatabaseHelper.getHomeRemind()) ?? [];
+
+      await Notifier.initialize();
+      Notifier.scheduleReminders(DatabaseHelper.allCalls);
       Fluttertoast.showToast(
         msg: "儲存成功",
         timeInSecForIosWeb: 2,
