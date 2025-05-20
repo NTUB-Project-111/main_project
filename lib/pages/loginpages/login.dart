@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http; //匯入 http 套件
 import 'package:wounddetection/font_awesome5_icons.dart';
 import '../../feature/ApiHelper.dart';
 import '../../feature/notifer.dart';
+import '../disclaimerpage.dart';
 import '../registerpage.dart';
 import '../tabs.dart';
 import 'reset_password.dart'; // ✅ 引入變更密碼畫面
@@ -126,6 +127,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final calls = await DatabaseHelper.getReminds();
     if (calls != null) {
       DatabaseHelper.allCalls = calls;
+      await Notifier.initialize();
+      Notifier.scheduleReminders(DatabaseHelper.allCalls);
+      Notifier.debugPrintAllScheduledReminders();
       debugPrint('護理提醒載入成功');
     }
     final remindRecord = await DatabaseHelper.getRemindRecord();
@@ -312,7 +316,7 @@ class _LoginScreenState extends State<LoginScreen> {
               TextButton(
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const RegistrationPage()),
+                  MaterialPageRoute(builder: (context) => const DisclaimerPage()),
                 ),
                 child: const Text(
                   "註冊新帳號",

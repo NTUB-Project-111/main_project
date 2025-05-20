@@ -7,7 +7,7 @@ import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 
 class DatabaseHelper {
-  static const String baseUrl = "http://192.168.1.110:3000"; //放自己電腦的IP
+  static const String baseUrl = "http://192.168.1.107:3000"; //放自己電腦的IP
   // static final String userId;
   static Map<String, dynamic> calls = {};
   static Map<String, dynamic> record = {};

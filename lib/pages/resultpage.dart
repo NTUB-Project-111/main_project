@@ -47,7 +47,7 @@ class _ResultPageState extends State<ResultPage> {
   /// 同時加載醫院資料和傷口分析結果
   Future<void> _loadData() async {
     try {
-      // await Future.wait([_fetchHospitals(), _analyzeWoundImage()]);
+      await Future.wait([_fetchHospitals(), _analyzeWoundImage()]);
       await Future.wait([_analyzeWoundImage()]);
     } finally {
       setState(() {
@@ -56,14 +56,14 @@ class _ResultPageState extends State<ResultPage> {
     }
   }
 
-  // 測試醫院 API 回傳資料
-  // Future<void> _fetchHospitals() async {
-  //   List<Map<String, dynamic>> hospitals = await HospitalSearch.getNearbyHospitals();
-  //   setState(() {
-  //     _hospitals = hospitals;
-  //     // print(_hospitals);
-  //   });
-  // }
+  //測試醫院 API 回傳資料
+  Future<void> _fetchHospitals() async {
+    List<Map<String, dynamic>> hospitals = await HospitalSearch.getNearbyHospitals();
+    setState(() {
+      _hospitals = hospitals;
+      // print(_hospitals);
+    });
+  }
 
   // / 測試 Image.asset('images/1.png') 並分析傷口
   Future<void> _analyzeWoundImage() async {
@@ -118,7 +118,7 @@ class _ResultPageState extends State<ResultPage> {
                           ResultPage3(
                             resultinfo: _careSteps,
                           ),
-                          // if (_woundType != "無異常") ResultPage4(hospitals: _hospitals),
+                          if (_woundType != "無異常") ResultPage4(hospitals: _hospitals),
                           if (_woundType != "無異常")
                             ResultPage5(
                               onDataChanged: (data) {

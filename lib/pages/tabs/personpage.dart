@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wounddetection/my_flutter_app_icons.dart';
 import 'package:wounddetection/pages/loginpages/login.dart';
 import 'package:wounddetection/pages/personalpages/personalcontain.dart';
+import '../../feature/notifer.dart';
 import '../headers/header_1.dart';
 import '../personalpages/changeps.dart';
 import '../remindpage.dart';
@@ -230,6 +231,8 @@ class _PersonPageState extends State<PersonPage> {
               onPressed: () async {
                 Navigator.of(context).pop(true);
                 await DatabaseHelper.clearUserId();
+                Notifier.cancelAllReminders();
+                Notifier.debugPrintAllScheduledReminders();
               },
             ),
           ],
