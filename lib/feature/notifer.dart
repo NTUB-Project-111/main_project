@@ -38,7 +38,7 @@ class Notifier {
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      payload: '',
+      payload: scheduled.toIso8601String(),
     );
   }
 
@@ -87,7 +87,8 @@ class Notifier {
     } else {
       debugPrint("已排程通知列表:");
       for (var notification in pending) {
-        debugPrint("ID: ${notification.id}, 標題: ${notification.title}, 內容: ${notification.body}");
+        debugPrint(
+            "ID: ${notification.id}, 時間: ${notification.payload}, 標題: ${notification.title}, 內容: ${notification.body}");
       }
     }
   }

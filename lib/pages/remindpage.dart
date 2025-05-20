@@ -259,6 +259,8 @@ class _RemindPageState extends State<RemindPage> with TickerProviderStateMixin {
             usercall["id_record"].toString(), usercall["fk_userid"].toString(), 'N');
         await DatabaseHelper.deleteRemind(
             usercall["fk_userid"].toString(), usercall["id_record"].toString());
+        DatabaseHelper.homeRemind = await DatabaseHelper.getHomeRemind() ?? [];
+        DatabaseHelper.remindRecords = await DatabaseHelper.getRemindRecord() ?? [];
       }
       //處理更改的提醒
       for (var call in calls!) {

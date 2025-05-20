@@ -48,6 +48,7 @@ class _MyAppState extends State<MyApp> {
   Future<Widget> _getInitialPage() async {
     try {
       var userId = await DatabaseHelper.getUserId();
+      // Notifier.cancelAllReminders();
       Notifier.debugPrintAllScheduledReminders();
 
       if (userId == null) {
