@@ -19,6 +19,7 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   String _errorMessage = "";
+  bool _isLoading = false;
 
   //驗證電子郵件格式
   bool _validateEmail(String value) {
@@ -52,7 +53,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   //顯示錯誤訊息
-  void _showError(String errorMessage,Color color) {
+  void _showError(String errorMessage, Color color) {
     Fluttertoast.showToast(
       msg: errorMessage,
       toastLength: Toast.LENGTH_SHORT,
@@ -62,6 +63,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
       textColor: Colors.white,
       fontSize: 16.0,
     );
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
   }
 
   @override
@@ -135,58 +143,74 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () async {
-                          final user = DatabaseHelper.userInfo;
-                          // 基本欄位檢查
-                          if (user["name"]?.isEmpty ||
-                              user["gender"]?.isEmpty ||
-                              user["birthday"]?.isEmpty ||
-                              user["email"]?.isEmpty ||
-                              user["password"]?.isEmpty ||
-                              user["confirm"]?.isEmpty) {
-                            _showError("請填寫完整個人資料",Colors.red);
-                            return;
-                          }
-                          // Email 格式驗證
-                          if (!_validateEmail(user["email"])) {
-                            _showError("無效的電子郵件",Colors.red);
-                            return;
-                          }
-                          // 密碼格式驗證
-                          if (!_validatePassword(user["password"])) {
-                            _showError(_errorMessage,Colors.red);
-                            return;
-                          }
-                          // 密碼確認
-                          if (!_confirmPassword(user["password"], user["confirm"])) {
-                            _showError("密碼不一致",Colors.red);
-                            return;
-                          }
-                          // 新增使用者
-                          bool userAdded = await DatabaseHelper.addUser(
-                            user["name"],
-                            user["email"],
-                            user["password"],
-                            user["gender"],
-                            user["birthday"],
-                            user["picture"] != null ? user["picture"] as File : null,
-                          );
-                          if (!userAdded) {
-                            _showError("註冊失敗，請稍後再試",Colors.red);
-                            return;
-                          }
-                          // 儲存 userId
-                          bool saved = await DatabaseHelper.saveUserId(user["email"]);
-                          if (!saved) {
-                            _showError("註冊成功但無法儲存使用者資訊",Colors.red);
-                            return;
-                          }
-                          _showError("註冊成功!",Colors.green);
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => const LoginScreen()),
-                          );
-                        },
+                        onPressed: _isLoading
+                            ? null
+                            : () async {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                                final user = DatabaseHelper.userInfo;
+                                File? photoFile =
+                                    user["picture"] != null ? File(user["picture"]) : null;
+                                if (photoFile == null) {
+                                  print("圖片為空");
+                                } else {
+                                  print(photoFile);
+                                }
+                                // 基本欄位檢查
+                                if (user["name"]?.isEmpty ||
+                                    user["gender"]?.isEmpty ||
+                                    user["birthday"]?.isEmpty ||
+                                    user["email"]?.isEmpty ||
+                                    user["password"]?.isEmpty ||
+                                    user["confirm"]?.isEmpty) {
+                                  _showError("請填寫完整個人資料", Colors.red);
+                                  return;
+                                }
+                                // Email 格式驗證
+                                if (!_validateEmail(user["email"])) {
+                                  _showError("無效的電子郵件", Colors.red);
+                                  return;
+                                }
+                                // 密碼格式驗證
+                                if (!_validatePassword(user["password"])) {
+                                  _showError(_errorMessage, Colors.red);
+                                  return;
+                                }
+                                // 密碼確認
+                                if (!_confirmPassword(user["password"], user["confirm"])) {
+                                  _showError("密碼不一致", Colors.red);
+                                  return;
+                                }
+                                // 新增使用者
+                                bool userAdded = await DatabaseHelper.addUser(
+                                  user["name"],
+                                  user["email"],
+                                  user["password"],
+                                  user["gender"],
+                                  user["birthday"],
+                                  photoFile,
+                                );
+                                setState(() {
+                                  _isLoading = false;
+                                });
+
+                                if (!userAdded) {
+                                  _showError("註冊失敗，請稍後再試", Colors.red);
+                                  return;
+                                }
+                                // 儲存 userId
+                                bool saved = await DatabaseHelper.saveUserId(user["email"]);
+                                if (!saved) {
+                                  _showError("註冊成功但無法儲存使用者資訊", Colors.red);
+                                  return;
+                                }
+                                _showError("註冊成功!", Colors.green);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                                );
+                              },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF669FA5),
                           padding: const EdgeInsets.symmetric(vertical: 13),
@@ -201,10 +225,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: const Text(
-                          '註冊',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        child: _isLoading
+                            ? const Text(
+                                '註冊中，請稍後',
+                                style: TextStyle(color: Colors.white),
+                              )
+                            : const Text(
+                                '註冊',
+                                style: TextStyle(color: Colors.white),
+                              ),
                       ),
                     ),
                   ],

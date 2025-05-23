@@ -20,6 +20,8 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
 
   bool _isVerificationEnabled = false;
   bool _isPasswordEnabled = false;
+  bool _isSending = false;
+  
 
   @override
   void initState() {
@@ -47,7 +49,13 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
       return;
     }
 
+    setState(() {
+      _isSending = true;
+    });
     final result = await AuthService.sendCode(email);
+    setState(() {
+      _isSending = false;
+    });
     _showMessage(result);
     setState(() {
       _isVerificationEnabled = true;
@@ -131,22 +139,26 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
               ),
               const SizedBox(width: 9),
               ElevatedButton(
-                onPressed: () {
-                  if (_validateEmail(_emailController.text)) {
-                    _sendVerificationCode();
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('帳號格式錯誤')),
-                    );
-                  }
-                },
+                onPressed: _isSending
+                    ? null
+                    : () {
+                        if (_validateEmail(_emailController.text)) {
+                          _sendVerificationCode();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('帳號格式錯誤')),
+                          );
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF669FA5),
                   padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 11),
                   textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                child: const Text('傳送驗證碼', style: TextStyle(color: Colors.white)),
+                child: _isSending
+                    ? const Text('發送中', style: TextStyle(color: Colors.white))
+                    : const Text('傳送驗證碼', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),

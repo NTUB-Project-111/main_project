@@ -22,6 +22,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
+  bool _isLoading = false;
 
 // 要能取得 email 和 password，需要用 TextEditingController
   final TextEditingController _emailController = TextEditingController();
@@ -46,6 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
       _showMessage("請輸入帳號與密碼");
       return;
     }
+    setState(() {
+      _isLoading = true;
+    });
     final url = Uri.parse('${DatabaseHelper.baseUrl}/loginUser');
     try {
       final response = await http.post(
@@ -276,13 +280,15 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _login,
+                  onPressed: _isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF669FA5),
                     minimumSize: const Size(double.infinity, 45),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                  child: const Text("登入", style: TextStyle(color: Colors.white, fontSize: 16)),
+                  child: _isLoading
+                      ? const Text("登入中...", style: TextStyle(color: Colors.white, fontSize: 16))
+                      : const Text("登入", style: TextStyle(color: Colors.white, fontSize: 16)),
                 ),
               ),
               const SizedBox(height: 20),

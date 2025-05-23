@@ -41,7 +41,7 @@ class HospitalService {
   static Future<List<Map<String, dynamic>>> fetchHospitals(
       {required String city, String district = '', String dept = ''}) async {
     final uri = Uri.http(
-      '192.168.1.107:3000',
+      '172.20.10.5:3000',
       '/api/hospitals',
       {
         'city': city,

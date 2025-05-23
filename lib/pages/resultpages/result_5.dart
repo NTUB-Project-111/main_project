@@ -37,6 +37,7 @@ class _ResultPage5State extends State<ResultPage5> {
   List<String> selectedWoundReactions = [];
   bool _open = false;
   bool isShow = false;
+  bool _isLoading = false;
   Icon icon = const Icon(
     Icons.arrow_drop_down_rounded,
     color: Color(0xFF589399),
@@ -175,24 +176,6 @@ class _ResultPage5State extends State<ResultPage5> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: const [BoxShadow(color: Color(0x4D000000), blurRadius: 1)]),
-                // child: Expanded(
-                //   child: TextField(
-                //     controller: infoEditimg,
-                //     keyboardType: TextInputType.text,
-                //     maxLines: 10,
-                //     maxLength: 370,
-                //     decoration: const InputDecoration(
-                //         hintStyle: TextStyle(color: Color(0xFFA5A1A1), fontSize: 13, height: 1.4),
-                //         hintText: '詳細說明發生傷口狀態、造成原因、大小、深度，例如:由美工刀造成、大小約5公分、出血量不多',
-                //         border: InputBorder.none),
-                //     onChanged: (value) {
-                //       setState(() {
-                //         _showButton();
-                //         DatabaseHelper.record['recording'] = value;
-                //       });
-                //     }, // 每次輸入時更新資料
-                //   ),
-                // ),
                 child: TextField(
                   controller: infoEditimg,
                   keyboardType: TextInputType.text,
@@ -322,46 +305,47 @@ class _ResultPage5State extends State<ResultPage5> {
           ),
           const SizedBox(height: 20),
           SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: isShow
-                  ? () async {
-                      // 按鈕按下時的邏輯
-                      if (isShow) {
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: (isShow && !_isLoading)
+                    ? () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+
                         _healingTime = await HealingTime.getOktime(
-                            DatabaseHelper.record['type'].toString(),
-                            // widget.woundtype,
-                            selectedInjuryParts.toString(),
-                            selectedWoundReactions.toString(),
-                            infoEditimg.text);
+                          DatabaseHelper.record['type'].toString(),
+                          selectedInjuryParts.toString(),
+                          selectedWoundReactions.toString(),
+                          infoEditimg.text,
+                        );
 
                         _updateHealingTime();
-                        // Navigator.pop(context);
+
+                        setState(() {
+                          _isLoading = false;
+                        });
                       }
-                    }
-                  : null, // 未選擇標籤或詳細說明時按鈕禁用
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(
-                  isShow ? const Color(0xFF589399) : const Color(0xFFBED7DA), //#BED7DA
-                ),
-                padding: WidgetStateProperty.all(
-                  const EdgeInsets.symmetric(vertical: 12),
-                ),
-                minimumSize: WidgetStateProperty.all(const Size(355, 0)),
-                shape: WidgetStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    : null,
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(
+                    isShow ? const Color(0xFF589399) : const Color(0xFFBED7DA), //#BED7DA
+                  ),
+                  padding: WidgetStateProperty.all(
+                    const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  minimumSize: WidgetStateProperty.all(const Size(355, 0)),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
-              ),
-              child: isShow
-                  ? const Text('開始分析', style: TextStyle(fontSize: 16, color: Colors.white))
-                  : const Text(
-                      '填寫自我紀錄，獲取更精準的癒合時間',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-            ),
-          )
+                child: Text(
+                  _isLoading ? '分析中...' : (isShow ? '開始分析' : '填寫自我紀錄，獲取更精準的癒合時間'),
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              ))
         ],
       ),
     );

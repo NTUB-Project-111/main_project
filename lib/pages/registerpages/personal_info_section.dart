@@ -24,7 +24,6 @@ class _PersonalInfoSectionState extends State<PersonalInfoSection> {
     "F": "女",
     "Other": "其他",
   };
-  
 
   @override
   void initState() {
