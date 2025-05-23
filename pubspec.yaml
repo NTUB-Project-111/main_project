@@ -30,7 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-    
+
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
@@ -69,11 +70,9 @@ dependencies:
 
   geocoding: ^3.0.0 #轉換地理位置為經緯度
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  # provider: ^6.1.1  # 或最新版本
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -122,6 +121,7 @@ flutter:
     - family: FontAwesome5
       fonts:
         - asset: fonts/FontAwesome5.ttf
+
   # fonts:
   #   - family: Schyler
   #     fonts:
