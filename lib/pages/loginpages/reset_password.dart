@@ -10,8 +10,8 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  late bool _isPasswordVisible = false;
-  late bool _isConfirmPasswordVisible = false;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   // 定義 TextEditingController
   TextEditingController _emailController = TextEditingController();
@@ -79,18 +79,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           children: [
             Text(
               "變更密碼成功",
-              style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             SizedBox(height: 5),
             Text(
               "Password changed successfully",
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ],
         ),
@@ -99,8 +93,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context).pop();
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
     });
   }
 
@@ -114,13 +107,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const HeaderWidget(title: "Reset", subtitle: "Password"),
+              const HeaderWidget(title: "忘記密碼"),
               const SizedBox(height: 20),
               buildInputField(
                   label: "帳號",
                   hint: "example@gmail.com",
-                  suffix:
-                      buildButton("傳送驗證碼", onPressed: _sendVerificationCode),
+                  suffix: buildButton("傳送驗證碼", onPressed: _sendVerificationCode),
                   controller: _emailController), // 這裡傳遞 controller
               buildInputField(
                   label: "驗證碼",
@@ -131,16 +123,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 label: "新密碼",
                 hint: "輸入 8-16 個英文/數字",
                 isVisible: _isPasswordVisible,
-                toggleVisibility: () =>
-                    setState(() => _isPasswordVisible = !_isPasswordVisible),
+                toggleVisibility: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                 controller: _newPasswordController, // 這裡傳遞 controller
               ),
               buildPasswordField(
                 label: "確認密碼",
                 hint: "需與上面的密碼一致",
                 isVisible: _isConfirmPasswordVisible,
-                toggleVisibility: () => setState(() =>
-                    _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                toggleVisibility: () =>
+                    setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
                 controller: _confirmPasswordController, // 這裡傳遞 controller
               ),
               const SizedBox(height: 20),
@@ -187,11 +178,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF669FA5),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
-        child: const Text("變更密碼",
-            style: TextStyle(color: Colors.white, fontSize: 18)),
+        child: const Text("變更密碼", style: TextStyle(color: Colors.white, fontSize: 16)),
       ),
     );
   }
@@ -275,13 +264,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF669FA5)),
+          labelStyle:
+              const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF669FA5)),
           hintText: hint,
-          hintStyle: const TextStyle(
-              color: Color.fromRGBO(135, 135, 135, 0.4), fontSize: 14),
+          hintStyle: const TextStyle(color: Color.fromRGBO(135, 135, 135, 0.4), fontSize: 14),
           floatingLabelBehavior: FloatingLabelBehavior.never,
           filled: true,
           fillColor: Colors.white,

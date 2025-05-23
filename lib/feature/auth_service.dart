@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'constants.dart';
+import 'config.dart';
 
 class AuthService {
   //傳送驗證碼
@@ -16,6 +16,25 @@ class AuthService {
 
       final data = jsonDecode(response.body);
 
+      if (response.statusCode == 200) {
+        return data['message'] ?? '已發送驗證碼';
+      } else {
+        return data['message'] ?? '發送失敗';
+      }
+    } catch (e) {
+      return '伺服器錯誤: $e';
+    }
+  }
+
+  static Future<String> sendCode(String email) async {
+    final url = Uri.parse("$baseUrl/sendCode");
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+      final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
         return data['message'] ?? '已發送驗證碼';
       } else {
@@ -49,16 +68,14 @@ class AuthService {
   }
 
   //修改新密碼
-  static Future<String> resetPassword(
-      String email, String code, String newPassword) async {
+  static Future<String> resetPassword(String email, String code, String newPassword) async {
     final url = Uri.parse("$baseUrl/resetPassword");
 
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(
-            {'email': email, 'code': code, 'newPassword': newPassword}),
+        body: jsonEncode({'email': email, 'code': code, 'newPassword': newPassword}),
       );
 
       final data = jsonDecode(response.body);

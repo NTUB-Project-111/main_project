@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wounddetection/feature/database.dart';
 
+import '../../feature/auth_service.dart';
+
 class AccountSetupSection extends StatefulWidget {
   const AccountSetupSection({super.key});
 
@@ -17,6 +19,9 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
   final _formKey = GlobalKey<FormState>();
 
   bool _isVerificationEnabled = false;
+  bool _isPasswordEnabled = false;
+  bool _isSending = false;
+  
 
   @override
   void initState() {
@@ -33,6 +38,68 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
     _confirmPasswordController.addListener(() {
       DatabaseHelper.userInfo["confirm"] = _confirmPasswordController.text;
     });
+  }
+
+  //驗證碼傳送
+  void _sendVerificationCode() async {
+    final email = _emailController.text.trim();
+    print(email);
+    if (email.isEmpty) {
+      _showMessage("請輸入 Email");
+      return;
+    }
+
+    setState(() {
+      _isSending = true;
+    });
+    final result = await AuthService.sendCode(email);
+    setState(() {
+      _isSending = false;
+    });
+    _showMessage(result);
+    setState(() {
+      _isVerificationEnabled = true;
+    });
+  }
+
+  //驗證驗證碼
+  void _verifyCode() async {
+    final email = _emailController.text.trim();
+    final code = _verificationCodeController.text.trim();
+    if (email.isEmpty || code.isEmpty) {
+      _showMessage("請輸入 Email 和 驗證碼");
+      return;
+    }
+    final result = await AuthService.verifyCode(email, code);
+    if (result == '驗證碼正確') {
+      _showMessage("驗證成功，請輸入密碼");
+      setState(() {
+        _isPasswordEnabled = true;
+      });
+    } else {
+      _showMessage(result);
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(color: Color.fromARGB(255, 30, 104, 96)),
+        ),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      ),
+    );
+  }
+
+  //驗證電子郵件格式
+  bool _validateEmail(String value) {
+    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+    if (!emailRegex.hasMatch(value)) {
+      return false;
+    }
+    return true;
   }
 
   @override
@@ -72,27 +139,26 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
               ),
               const SizedBox(width: 9),
               ElevatedButton(
-                onPressed: () {
-                  // if (emailError == null) {
-                  //   setState(() {
-                  //     _isVerificationEnabled = true;
-                  //   });
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     const SnackBar(content: Text('驗證碼已發送')),
-                  //   );
-                  // } else {
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     SnackBar(content: Text(emailError)),
-                  //   );
-                  // }
-                },
+                onPressed: _isSending
+                    ? null
+                    : () {
+                        if (_validateEmail(_emailController.text)) {
+                          _sendVerificationCode();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('帳號格式錯誤')),
+                          );
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF669FA5),
                   padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 11),
                   textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                child: const Text('傳送驗證碼', style: TextStyle(color: Colors.white)),
+                child: _isSending
+                    ? const Text('發送中', style: TextStyle(color: Colors.white))
+                    : const Text('傳送驗證碼', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -113,9 +179,7 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
               ElevatedButton(
                 onPressed: _isVerificationEnabled
                     ? () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('驗證碼驗證成功')),
-                        );
+                        _verifyCode();
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
@@ -135,6 +199,7 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
             hint: '請設定8-16個英文/數字',
             controller: _passwordController,
             isPassword: true,
+            isEnabled: _isPasswordEnabled,
           ),
           const SizedBox(height: 16),
           _buildTextField(
@@ -142,6 +207,7 @@ class _AccountSetupSectionState extends State<AccountSetupSection> {
             hint: '需與上面密碼一致',
             controller: _confirmPasswordController,
             isPassword: true,
+            isEnabled: _isPasswordEnabled,
           ),
         ],
       ),

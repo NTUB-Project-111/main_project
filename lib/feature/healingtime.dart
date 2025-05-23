@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 class HealingTime {
   static const String apiUrl = "https://api.openai.com/v1/chat/completions";
   static const String apiKey =
-      "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"; //放APIKey
+      ""; //放APIKey
 
   static Future<String> getOktime(
       String woundType, String part, String rection, String description) async {

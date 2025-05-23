@@ -1,8 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http; //匯入 http 套件
 import 'package:wounddetection/font_awesome5_icons.dart';
+import '../../feature/ApiHelper.dart';
+import '../../feature/notifer.dart';
+import '../disclaimerpage.dart';
 import '../registerpage.dart';
 import '../tabs.dart';
 import 'reset_password.dart'; // ✅ 引入變更密碼畫面
@@ -20,65 +22,11 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
+  bool _isLoading = false;
 
 // 要能取得 email 和 password，需要用 TextEditingController
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  // // ✅ 登入 API 邏輯
-  // Future<void> _login() async {
-  //   final email = _emailController.text.trim();
-  //   final password = _passwordController.text.trim();
-
-  //   if (email.isEmpty || password.isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("請輸入帳號與密碼")),
-  //     );
-  //     return;
-  //   }
-
-  //   final url = Uri.parse('${DatabaseHelper.baseUrl}/loginUser');
-
-  //   try {
-  //     final response = await http.post(
-  //       url,
-  //       headers: {"Content-Type": "application/json"},
-  //       body: jsonEncode({'email': email, 'password': password}),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final responseData = jsonDecode(response.body);
-  //       final String userID = responseData['userID'].toString();
-  //       print("登入成功，使用者 ID：$userID");
-
-  //       // ✅ 先存 userID 到 SharedPreferences
-  //       final prefs = await SharedPreferences.getInstance();
-  //       await prefs.setString('userId', userID);
-
-  //       // ✅ 再撈使用者資訊
-  //       DatabaseHelper.userInfo = (await DatabaseHelper.getUserInfo())!;
-
-  //       Navigator.pushReplacement(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => Tabs()),
-  //       );
-  //     } else {
-  //       String errorMessage = '登入失敗';
-  //       try {
-  //         final errorData = jsonDecode(response.body);
-  //         errorMessage = errorData['message'] ?? errorMessage;
-  //       } catch (_) {}
-
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text(errorMessage)),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('發生錯誤：$e')),
-  //     );
-  //   }
-  // }
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -95,14 +43,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-
     if (email.isEmpty || password.isEmpty) {
       _showMessage("請輸入帳號與密碼");
       return;
     }
-
+    setState(() {
+      _isLoading = true;
+    });
     final url = Uri.parse('${DatabaseHelper.baseUrl}/loginUser');
-
     try {
       final response = await http.post(
         url,
@@ -112,25 +60,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        final String token = responseData['token'];
 
-        // 儲存 JWT Token
+        // 從回傳資料抓 access token 與 refresh token
+        final String token = responseData['token'];
+        final String refreshToken = responseData['refreshToken'];
+
+        // 儲存 access token 與 refresh token 到 SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwtToken', token);
+        await prefs.setString('refreshToken', refreshToken);
 
-        // 解析 token 取得 userID
-        final payload = _parseJwt(token);
+        // 解 JWT 取得 userID
+        Map<String, dynamic> payload;
+        try {
+          payload = _parseJwt(token);
+        } catch (e) {
+          _showMessage("無效的 token 格式");
+          return;
+        }
         final String userID = payload['userID'].toString();
         await prefs.setString('userId', userID);
+        print("從 token 解出來的 userID: $userID");
 
-        print("登入成功，使用者 ID：$userID");
+        // 載入使用者資料
+        await _loadUserData(userID);
 
-        // 撈使用者資訊（後端應支援使用 Authorization header）
-        DatabaseHelper.userInfo = (await DatabaseHelper.getUserInfo())!;
-
+        // 導向主頁
+        if (!context.mounted) return;
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Tabs()),
+          MaterialPageRoute(builder: (_) => const Tabs()),
         );
       } else {
         String errorMessage = '登入失敗';
@@ -138,15 +97,75 @@ class _LoginScreenState extends State<LoginScreen> {
           final errorData = jsonDecode(response.body);
           errorMessage = errorData['message'] ?? errorMessage;
         } catch (_) {}
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        _showMessage(errorMessage);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('發生錯誤：$e')),
+      _showMessage('發生錯誤：$e');
+    }
+  }
+
+  Future<void> _loadUserData(String userID) async {
+    // 先嘗試用 ApiHelper 的 get 方法（裡面會幫你自動檢查和續期 token）
+    final response = await ApiHelper.get('/getUserInfo');
+
+    if (response == null || response.statusCode != 200) {
+      // token 過期且無法續期或其他錯誤，導向登入或註冊頁
+      if (!context.mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
       );
+      return;
+    }
+
+    final userInfo = jsonDecode(response.body);
+    DatabaseHelper.userInfo = userInfo;
+    debugPrint('使用者資訊載入成功');
+
+    final records = await DatabaseHelper.getUserRecords();
+    if (records != null) {
+      DatabaseHelper.allRecords = records;
+      checkRecord(records);
+      debugPrint('診斷紀錄載入成功');
+    }
+    final calls = await DatabaseHelper.getReminds();
+    if (calls != null) {
+      DatabaseHelper.allCalls = calls;
+      await Notifier.initialize();
+      Notifier.scheduleReminders(DatabaseHelper.allCalls);
+      Notifier.debugPrintAllScheduledReminders();
+      debugPrint('護理提醒載入成功');
+    }
+    final remindRecord = await DatabaseHelper.getRemindRecord();
+    if (remindRecord != null) {
+      DatabaseHelper.remindRecords = remindRecord;
+      debugPrint('提醒紀錄載入成功');
+    }
+    final homeRemind = await DatabaseHelper.getHomeRemind();
+    if (homeRemind != null) {
+      DatabaseHelper.homeRemind = homeRemind;
+      debugPrint('首頁提醒載入成功');
+    }
+  }
+
+  Future<void> checkRecord(List<Map<String, dynamic>> userRecords) async {
+    DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    for (int i = 0; i < userRecords.length; i++) {
+      if (userRecords[i]["ifcall"] == "Y") {
+        List<String> oktimeList = userRecords[i]["oktime"].split("~");
+        DateTime startDate = DateTime.parse(userRecords[i]["date"]);
+        int durationDays = int.parse(oktimeList[1]);
+        DateTime endTime = startDate.add(Duration(days: durationDays));
+        if (today.isAfter(endTime)) {
+          userRecords[i]["ifcall"] = "N";
+          await DatabaseHelper.deleteRemind(
+              userRecords[i]["fk_userid"].toString(), userRecords[i]["id_record"].toString());
+          await DatabaseHelper.updateRecord(
+              userRecords[i]["id_record"].toString(), userRecords[i]["fk_userid"].toString(), "N");
+          await Notifier.cancelAllReminders();
+          await Notifier.debugPrintAllScheduledReminders();
+        }
+      }
     }
   }
 
@@ -156,12 +175,11 @@ class _LoginScreenState extends State<LoginScreen> {
       throw Exception('無效的 JWT');
     }
 
-    final payload =
-        utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+    final payload = utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
     return jsonDecode(payload);
   }
 
-  // ✅ 錯誤訊息彈窗
+  // 錯誤訊息彈窗
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -196,10 +214,10 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const HeaderWidget(
-                title: "Welcome",
-                subtitle: ' to Dr.W',
+                title: "Dr.W",
+                subtitle: '一拍即知，智慧照護',
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
 
               // ✅ 帳號輸入
               TextField(
@@ -207,8 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: const TextStyle(
                   color: Color(0xFF669FA5),
                 ),
-                decoration:
-                    _inputDecoration(label: "帳號", hint: "example@gmail.com"),
+                decoration: _inputDecoration(label: "帳號", hint: "example@gmail.com"),
               ),
               const SizedBox(height: 10),
 
@@ -219,14 +236,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: const TextStyle(
                   color: Color(0xFF669FA5),
                 ),
-                decoration: _inputDecoration(label: "密碼", hint: "XXXXXXXXXXXX")
-                    .copyWith(
+                decoration: _inputDecoration(label: "密碼", hint: "XXXXXXXXXXXX").copyWith(
                   suffixIcon: IconButton(
-                    icon: Icon(
-                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                    icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility,
                         color: const Color.fromRGBO(135, 135, 135, 0.5)),
-                    onPressed: () =>
-                        setState(() => _obscureText = !_obscureText),
+                    onPressed: () => setState(() => _obscureText = !_obscureText),
                   ),
                 ),
               ),
@@ -240,33 +254,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextButton(
                     onPressed: () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => ResetPasswordScreen()),
+                      MaterialPageRoute(builder: (context) => ResetPasswordScreen()),
                     ),
-                    child: const Text("忘記密碼？",
-                        style: TextStyle(color: Color(0xFF669FA5))),
+                    child: const Text("忘記密碼？", style: TextStyle(color: Color(0xFF669FA5))),
                   ),
-                  // TextButton(
-                  //   onPressed: () => Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => const Tabs(
-                  //               userID: '',
-                  //             )),
-                  //   ),
-                  //   child: const Text(
-                  //     "訪客登入",
-                  //     style: TextStyle(
-                  //       color: Color(0xFF4C7488),
-                  //       fontWeight: FontWeight.bold,
-                  //     ),
-                  //   ),
-                  // ),
                   TextButton(
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const Tabs(), 
+                        builder: (context) => const Tabs(),
                       ),
                     ),
                     child: const Text(
@@ -284,15 +280,15 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _login,
+                  onPressed: _isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF669FA5),
                     minimumSize: const Size(double.infinity, 45),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                  child: const Text("登入",
-                      style: TextStyle(color: Colors.white, fontSize: 16)),
+                  child: _isLoading
+                      ? const Text("登入中...", style: TextStyle(color: Colors.white, fontSize: 16))
+                      : const Text("登入", style: TextStyle(color: Colors.white, fontSize: 16)),
                 ),
               ),
               const SizedBox(height: 20),
@@ -302,18 +298,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   Expanded(
                       child: Divider(
-                          color: Color(0xFF4C7488),
-                          thickness: 1,
-                          indent: 10,
-                          endIndent: 10)),
-                  Text("其他方式",
-                      style: TextStyle(fontSize: 12, color: Color(0xFF4C7488))),
+                          color: Color(0xFF4C7488), thickness: 1, indent: 10, endIndent: 10)),
+                  Text("其他方式", style: TextStyle(fontSize: 12, color: Color(0xFF4C7488))),
                   Expanded(
                       child: Divider(
-                          color: Color(0xFF4C7488),
-                          thickness: 1,
-                          indent: 10,
-                          endIndent: 10)),
+                          color: Color(0xFF4C7488), thickness: 1, indent: 10, endIndent: 10)),
                 ],
               ),
               const SizedBox(height: 20),
@@ -322,12 +311,9 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildSocialButton(
-                      FontAwesome5.facebook_square, const Color(0xFF4C7488)),
-                  _buildSocialButton(
-                      FontAwesome5.google_plus_square, const Color(0xFF4C7488)),
-                  _buildSocialButton(
-                      FontAwesome5.line, const Color(0xFF4C7488)),
+                  _buildSocialButton(FontAwesome5.facebook_square, const Color(0xFF4C7488)),
+                  _buildSocialButton(FontAwesome5.google_plus_square, const Color(0xFF4C7488)),
+                  _buildSocialButton(FontAwesome5.line, const Color(0xFF4C7488)),
                 ],
               ),
               const SizedBox(height: 15),
@@ -336,7 +322,7 @@ class _LoginScreenState extends State<LoginScreen> {
               TextButton(
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RegistrationPage()),
+                  MaterialPageRoute(builder: (context) => const DisclaimerPage()),
                 ),
                 child: const Text(
                   "註冊新帳號",
@@ -355,20 +341,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   /// 共用輸入框樣式
-  InputDecoration _inputDecoration(
-      {required String label, required String hint}) {
+  InputDecoration _inputDecoration({required String label, required String hint}) {
     return InputDecoration(
       filled: true,
       fillColor: Colors.white,
       labelText: label,
       hintText: hint,
-      hintStyle: const TextStyle(
-          color: Color.fromRGBO(135, 135, 135, 0.4), fontSize: 14),
-      labelStyle: const TextStyle(
-          fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF669FA5)),
+      hintStyle: const TextStyle(color: Color.fromRGBO(135, 135, 135, 0.4), fontSize: 14),
+      labelStyle:
+          const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF669FA5)),
       floatingLabelBehavior: FloatingLabelBehavior.never,
-      border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+      border:
+          OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
     );
   }
 
