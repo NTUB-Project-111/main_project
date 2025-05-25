@@ -7,7 +7,7 @@ import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 
 class DatabaseHelper {
-  static const String baseUrl = "http://172.20.10.5:3000"; //放自己電腦的IP
+  static const String baseUrl = "http://192.168.100.2:3000"; //放自己電腦的IP
   // static final String userId;
   static Map<String, dynamic> calls = {};
   static Map<String, dynamic> record = {};
@@ -156,7 +156,9 @@ class DatabaseHelper {
 
         if (data is List) {
           debugPrint('成功取得提醒資料，共 ${data.length} 筆');
-          return data.map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e)).toList();
+          return data
+              .map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e))
+              .toList();
         } else {
           debugPrint('回傳資料格式錯誤，不是 List');
           return null;
@@ -198,7 +200,9 @@ class DatabaseHelper {
 
         if (data is List) {
           debugPrint('成功取得提醒與診斷紀錄，共 ${data.length} 筆');
-          return data.map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e)).toList();
+          return data
+              .map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e))
+              .toList();
         } else {
           debugPrint('回傳格式錯誤，非 List');
           return null;
@@ -240,7 +244,9 @@ class DatabaseHelper {
 
         if (data is List) {
           debugPrint('成功取得首頁提醒，共 ${data.length} 筆');
-          return data.map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e)).toList();
+          return data
+              .map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e))
+              .toList();
         } else {
           debugPrint('回傳格式錯誤，非 List');
           return null;
@@ -282,11 +288,13 @@ class DatabaseHelper {
   }
 
   /// 修改診斷報告
-  static Future<bool> updateRecord(String idRecord, String fkUserId, String ifcall) async {
+  static Future<bool> updateRecord(
+      String idRecord, String fkUserId, String ifcall) async {
     final response = await http.post(
       Uri.parse("$baseUrl/updateRecord"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"id_record": idRecord, "fk_userid": fkUserId, "ifcall": ifcall}),
+      body: jsonEncode(
+          {"id_record": idRecord, "fk_userid": fkUserId, "ifcall": ifcall}),
     );
 
     if (response.statusCode == 200) {
@@ -297,11 +305,13 @@ class DatabaseHelper {
   }
 
   /// 修改提醒時間
-  static Future<bool> updateCallTime(String idRecord, String fkUserId, String time) async {
+  static Future<bool> updateCallTime(
+      String idRecord, String fkUserId, String time) async {
     final response = await http.post(
       Uri.parse("$baseUrl/updateCallTime"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"fk_record_id": idRecord, "fk_user_id": fkUserId, "time": time}),
+      body: jsonEncode(
+          {"fk_record_id": idRecord, "fk_user_id": fkUserId, "time": time}),
     );
 
     if (response.statusCode == 200) {
@@ -311,7 +321,7 @@ class DatabaseHelper {
     }
   }
 
-  //新增使用者
+    //新增使用者
   static Future<bool> addUser(
     String name,
     String email,
@@ -379,7 +389,8 @@ class DatabaseHelper {
     request.fields['recording'] = recording;
 
     // 添加圖片檔案
-    var mimeType = lookupMimeType(photoFile.path) ?? "image/jpeg"; // 確保有 MIME 類型
+    var mimeType =
+        lookupMimeType(photoFile.path) ?? "image/jpeg"; // 確保有 MIME 類型
     var multipartFile = await http.MultipartFile.fromPath(
       'photo', // 這個 key 要跟後端 API 參數名稱一致
       photoFile.path,
@@ -401,8 +412,8 @@ class DatabaseHelper {
   }
 
   //護理提醒
-  static Future<bool> addRemind(
-      String fkUserId, String fkRecordId, String day, String time, String freq) async {
+  static Future<bool> addRemind(String fkUserId, String fkRecordId, String day,
+      String time, String freq) async {
     if (fkUserId.isEmpty || day.isEmpty || time.isEmpty) {
       debugPrint("參數有空值: fk_user_id: $fkUserId, day: $day, time: $time");
       return false;

@@ -23,7 +23,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   //驗證電子郵件格式
   bool _validateEmail(String value) {
-    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+    final emailRegex =
+        RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
     if (!emailRegex.hasMatch(value)) {
       return false;
     }
@@ -91,7 +92,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   border: Border(
-                    bottom: BorderSide(color: Color(0xFF589399), width: 2), // 只加底部邊框
+                    bottom: BorderSide(
+                        color: Color(0xFF589399), width: 2), // 只加底部邊框
                   ),
                 ),
                 child: Stack(
@@ -103,7 +105,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             onPressed: () {
                               Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginScreen()),
                               );
                             },
                             icon: const Icon(
@@ -150,8 +153,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   _isLoading = true;
                                 });
                                 final user = DatabaseHelper.userInfo;
-                                File? photoFile =
-                                    user["picture"] != null ? File(user["picture"]) : null;
+                                File? photoFile;
+                                if (user["picture"] != null) {
+                                  if (user["picture"] is String) {
+                                    photoFile = File(user["picture"]);
+                                  } else if (user["picture"] is File) {
+                                    photoFile = user["picture"];
+                                  }
+                                } else {
+                                  photoFile = null;
+                                }
                                 if (photoFile == null) {
                                   print("圖片為空");
                                 } else {
@@ -178,7 +189,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   return;
                                 }
                                 // 密碼確認
-                                if (!_confirmPassword(user["password"], user["confirm"])) {
+                                if (!_confirmPassword(
+                                    user["password"], user["confirm"])) {
                                   _showError("密碼不一致", Colors.red);
                                   return;
                                 }
@@ -200,7 +212,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   return;
                                 }
                                 // 儲存 userId
-                                bool saved = await DatabaseHelper.saveUserId(user["email"]);
+                                bool saved = await DatabaseHelper.saveUserId(
+                                    user["email"]);
                                 if (!saved) {
                                   _showError("註冊成功但無法儲存使用者資訊", Colors.red);
                                   return;
@@ -208,13 +221,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 _showError("註冊成功!", Colors.green);
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                                  MaterialPageRoute(
+                                      builder: (_) => const LoginScreen()),
                                 );
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF669FA5),
                           padding: const EdgeInsets.symmetric(vertical: 13),
-                          minimumSize: const Size(100, 20), // 設定按鈕最小寬度 200，高度 50
+                          minimumSize:
+                              const Size(100, 20), // 設定按鈕最小寬度 200，高度 50
                           textStyle: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
