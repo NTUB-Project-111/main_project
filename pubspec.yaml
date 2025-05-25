@@ -51,11 +51,24 @@ dependencies:
   google_maps_flutter: ^2.10.0  # Google Maps SDK
   location: ^7.0.1 #可能是取得使用者位置
 
-  geolocator: ^10.1.0          # 取得使用者位置
+  geolocator: ^10.1.0 # 取得使用者位置
   google_maps_webservice: ^0.0.20-nullsafety.5  # Google Places & 距離計算
   fluttertoast: ^8.2.12 #提示視窗
   path: ^1.9.0 #
   flutter_dash: ^1.0.0 #繪製底線
+  shared_preferences: ^2.5.2 #永久儲存使用者資料
+  mime: ^1.0.4 #判斷使用者上傳的檔案類型
+  http_parser: ^4.0.2 #解析 HTTP 相關資訊，例如 Content-Type、MIME 類型等
+  carousel_slider: ^5.0.0 #製作輪播圖
+  url_launcher: ^6.3.1 #點擊圖片跳轉網頁
+
+  provider: ^6.1.5 #類別的狀態管理
+
+  flutter_local_notifications: ^18.0.1 #系統通知
+  timezone: ^0.9.4 #系統通知比對時間(取得時區)
+  flutter_timezone: ^4.1.0 #系統通知比對時間(取得時區)
+
+  geocoding: ^3.0.0 #轉換地理位置為經緯度
 
 dev_dependencies:
   flutter_test:
@@ -83,13 +96,11 @@ flutter:
   assets:
     - images/dash.png
     - images/line.png
-    - images/icon.png
-    - images/arrow.png
-    - images/knowledge.png
+    - images/icon_nobkg.png
     - images/hospital.png
-    - images/1.png
-    - assets/cut_vs_abrasion_model.tflite
-    - images/icon_2.png
+    - images/bruises.png #輪播圖
+    - images/cut.png #輪播圖
+    - images/burn.png #輪播圖
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -106,6 +117,11 @@ flutter:
     - family: MyFlutterApp
       fonts:
         - asset: fonts/MyFlutterApp.ttf
+      
+    - family: FontAwesome5
+      fonts:
+        - asset: fonts/FontAwesome5.ttf
+
   # fonts:
   #   - family: Schyler
   #     fonts:

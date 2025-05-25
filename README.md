@@ -1,12 +1,16 @@
-# main_project
-前端後端共用這個儲存庫。
-Create branches 的部分要做好！
+# wounddetection
 
-統一命名：
+A new Flutter project.
 
-1. 功能branch -> feature/功能名稱(打英文)  [ex.feature/login]
-2. 修復功能的bug_branch -> feature-bugfix/功能名稱(打英文)/bug名稱(打英文)  [ex.feature-bugfix/login/unable-login]
-3. 前端畫面branch -> interface/畫面名稱(打英文)  [ex.interface/login]
-4. 前端畫面『修改』branch -> interface-modify/畫面名稱(打英文)  [ex.interface-modify/login]
+## Getting Started
 
----後續有其他的再新增
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
