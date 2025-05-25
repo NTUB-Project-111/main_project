@@ -1,9 +1,0 @@
-R_DEF: Internal format may change without notice
-local
-drawable ic_notification
-drawable launch_background
-mipmap ic_launcher
-mipmap icon
-mipmap icon1
-style LaunchTheme
-style NormalTheme
