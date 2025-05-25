@@ -1,0 +1,70 @@
+[
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-xxhdpi_icon.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-xxhdpi/icon.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/drawable-v21_launch_background.xml.flat",
+        "source": "com.example.wounddetection.app-main-42:/drawable-v21/launch_background.xml"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-xxhdpi_icon1.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-xxhdpi/icon1.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-xhdpi_icon.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-xhdpi/icon.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-xxxhdpi_icon1.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-xxxhdpi/icon1.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-hdpi_icon1.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-hdpi/icon1.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-xhdpi_icon1.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-xhdpi/icon1.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-hdpi_icon.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-hdpi/icon.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/drawable_ic_notification.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/drawable/ic_notification.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-mdpi_icon.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-mdpi/icon.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-xxxhdpi_icon.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-xxxhdpi/icon.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.example.wounddetection.app-merged_res-47:/mipmap-mdpi_icon1.png.flat",
+        "source": "com.example.wounddetection.app-main-42:/mipmap-mdpi/icon1.png"
+    }
+]
