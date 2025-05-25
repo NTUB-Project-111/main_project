@@ -4,7 +4,7 @@
             "outputFile": "com.example.wounddetection.app-mergeDebugResources-45:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "C:\\github\\new_file\\main_project\\main_project\\android\\app\\src\\main\\res\\values-night\\styles.xml",
+                    "source": "C:\\github\\new_file\\renew\\android\\app\\src\\main\\res\\values-night\\styles.xml",
                     "from": {
                         "startLines": "3,14",
                         "startColumns": "4,4",

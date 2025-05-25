@@ -13,36 +13,36 @@
 13         to allow setting breakpoints, to provide hot reload, etc.
 14    -->
 15    <uses-permission android:name="android.permission.INTERNET" />
-15-->C:\github\new_file\main_project\main_project\android\app\src\debug\AndroidManifest.xml:6:5-66
-15-->C:\github\new_file\main_project\main_project\android\app\src\debug\AndroidManifest.xml:6:22-64
+15-->C:\github\new_file\renew\android\app\src\debug\AndroidManifest.xml:6:5-66
+15-->C:\github\new_file\renew\android\app\src\debug\AndroidManifest.xml:6:22-64
 16    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-16-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:2:5-81
-16-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:2:22-78
+16-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:2:5-81
+16-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:2:22-78
 17    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-17-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:3:5-80
-17-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:3:22-77
+17-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:3:5-80
+17-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:3:22-77
 18    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- 設定系統通知 -->
-18-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:4:5-77
-18-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:4:22-74
+18-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:4:5-77
+18-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:4:22-74
 19    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- 設定系統通知 -->
-19-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:5:5-80
-19-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:5:22-78
+19-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:5:5-80
+19-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:5:22-78
 20    <uses-permission android:name="android.permission.CAMERA" /> <!-- 使用相機功能(camera: ^0.10.0)要設定的權限 -->
-20-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:6:5-65
-20-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:6:22-62
+20-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:6:5-65
+20-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:6:22-62
 21    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 定位使用者位置 -->
-21-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:7:5-78
-21-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:7:22-76
+21-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:7:5-78
+21-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:7:22-76
 22    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 定位使用者位置 -->
-22-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:8:5-80
-22-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:8:22-78
+22-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:8:5-80
+22-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:8:22-78
 23    <!-- Location -->
 24    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-24-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:10:5-77
-24-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:10:22-74
+24-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:10:5-77
+24-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:10:22-74
 25    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-25-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:11:5-84
-25-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:11:22-82
+25-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:11:5-84
+25-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:11:22-82
 26    <!--
 27 Required to query activities that can process text, see:
 28         https://developer.android.com/training/package-visibility and
@@ -51,16 +51,16 @@
 31         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin.
 32    -->
 33    <queries>
-33-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:67:5-72:15
+33-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:67:5-72:15
 34        <intent>
-34-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:68:9-71:18
+34-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:68:9-71:18
 35            <action android:name="android.intent.action.PROCESS_TEXT" />
-35-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:69:13-72
-35-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:69:21-70
+35-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:69:13-72
+35-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:69:21-70
 36
 37            <data android:mimeType="text/plain" />
-37-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:70:13-50
-37-->C:\github\new_file\main_project\main_project\android\app\src\main\AndroidManifest.xml:70:19-48
+37-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:70:13-50
+37-->C:\github\new_file\renew\android\app\src\main\AndroidManifest.xml:70:19-48
 38        </intent>
 39        <!-- Needs to be explicitly declared on Android R+ -->
 40        <package android:name="com.google.android.apps.maps" />
@@ -69,11 +69,11 @@
 41    </queries>
 42
 43    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-43-->[:camera_android] C:\github\new_file\main_project\main_project\build\camera_android\intermediates\merged_manifest\debug\AndroidManifest.xml:8:5-71
-43-->[:camera_android] C:\github\new_file\main_project\main_project\build\camera_android\intermediates\merged_manifest\debug\AndroidManifest.xml:8:22-68
+43-->[:camera_android] C:\github\new_file\renew\build\camera_android\intermediates\merged_manifest\debug\AndroidManifest.xml:8:5-71
+43-->[:camera_android] C:\github\new_file\renew\build\camera_android\intermediates\merged_manifest\debug\AndroidManifest.xml:8:22-68
 44    <uses-permission android:name="android.permission.VIBRATE" /> <!-- Include required permissions for Google Maps API to run. -->
-44-->[:flutter_local_notifications] C:\github\new_file\main_project\main_project\build\flutter_local_notifications\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-66
-44-->[:flutter_local_notifications] C:\github\new_file\main_project\main_project\build\flutter_local_notifications\intermediates\merged_manifest\debug\AndroidManifest.xml:7:22-63
+44-->[:flutter_local_notifications] C:\github\new_file\renew\build\flutter_local_notifications\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-66
+44-->[:flutter_local_notifications] C:\github\new_file\renew\build\flutter_local_notifications\intermediates\merged_manifest\debug\AndroidManifest.xml:7:22-63
 45    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 45-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\YUYUYU\.gradle\caches\transforms-3\f4d369bb198debe8c89a7b9800366cf3\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:23:5-79
 45-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\YUYUYU\.gradle\caches\transforms-3\f4d369bb198debe8c89a7b9800366cf3\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:23:22-76
@@ -155,73 +155,73 @@
 112            android:exported="false" />
 113
 114        <provider
-114-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:9:9-17:20
+114-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:9:9-17:20
 115            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
-115-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:10:13-82
+115-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:10:13-82
 116            android:authorities="com.example.wounddetection.flutter.image_provider"
-116-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:11:13-74
+116-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:11:13-74
 117            android:exported="false"
-117-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-37
+117-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-37
 118            android:grantUriPermissions="true" >
-118-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:13:13-47
+118-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:13:13-47
 119            <meta-data
-119-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:14:13-16:75
+119-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:14:13-16:75
 120                android:name="android.support.FILE_PROVIDER_PATHS"
-120-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:15:17-67
+120-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:15:17-67
 121                android:resource="@xml/flutter_image_picker_file_paths" />
-121-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:16:17-72
+121-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:16:17-72
 122        </provider> <!-- Trigger Google Play services to install the backported photo picker module. -->
 123        <service
-123-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:19:9-31:19
+123-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:19:9-31:19
 124            android:name="com.google.android.gms.metadata.ModuleDependencies"
-124-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:20:13-78
+124-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:20:13-78
 125            android:enabled="false"
-125-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:21:13-36
+125-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:21:13-36
 126            android:exported="false" >
-126-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:22:13-37
+126-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:22:13-37
 127            <intent-filter>
-127-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:24:13-26:29
+127-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:24:13-26:29
 128                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
-128-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:25:17-94
-128-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:25:25-91
+128-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:25:17-94
+128-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:25:25-91
 129            </intent-filter>
 130
 131            <meta-data
-131-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:28:13-30:36
+131-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:28:13-30:36
 132                android:name="photopicker_activity:0:required"
-132-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:29:17-63
+132-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:29:17-63
 133                android:value="" />
-133-->[:image_picker_android] C:\github\new_file\main_project\main_project\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:30:17-33
+133-->[:image_picker_android] C:\github\new_file\renew\build\image_picker_android\intermediates\merged_manifest\debug\AndroidManifest.xml:30:17-33
 134        </service>
 135        <service
-135-->[:geolocator_android] C:\github\new_file\main_project\main_project\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:8:9-12:56
+135-->[:geolocator_android] C:\github\new_file\renew\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:8:9-12:56
 136            android:name="com.baseflow.geolocator.GeolocatorLocationService"
-136-->[:geolocator_android] C:\github\new_file\main_project\main_project\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:9:13-77
+136-->[:geolocator_android] C:\github\new_file\renew\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:9:13-77
 137            android:enabled="true"
-137-->[:geolocator_android] C:\github\new_file\main_project\main_project\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:10:13-35
+137-->[:geolocator_android] C:\github\new_file\renew\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:10:13-35
 138            android:exported="false"
-138-->[:geolocator_android] C:\github\new_file\main_project\main_project\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:11:13-37
+138-->[:geolocator_android] C:\github\new_file\renew\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:11:13-37
 139            android:foregroundServiceType="location" />
-139-->[:geolocator_android] C:\github\new_file\main_project\main_project\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-53
+139-->[:geolocator_android] C:\github\new_file\renew\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-53
 140        <service
-140-->[:location] C:\github\new_file\main_project\main_project\build\location\intermediates\merged_manifest\debug\AndroidManifest.xml:11:9-15:56
+140-->[:location] C:\github\new_file\renew\build\location\intermediates\merged_manifest\debug\AndroidManifest.xml:11:9-15:56
 141            android:name="com.lyokone.location.FlutterLocationService"
-141-->[:location] C:\github\new_file\main_project\main_project\build\location\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-71
+141-->[:location] C:\github\new_file\renew\build\location\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-71
 142            android:enabled="true"
-142-->[:location] C:\github\new_file\main_project\main_project\build\location\intermediates\merged_manifest\debug\AndroidManifest.xml:13:13-35
+142-->[:location] C:\github\new_file\renew\build\location\intermediates\merged_manifest\debug\AndroidManifest.xml:13:13-35
 143            android:exported="false"
-143-->[:location] C:\github\new_file\main_project\main_project\build\location\intermediates\merged_manifest\debug\AndroidManifest.xml:14:13-37
+143-->[:location] C:\github\new_file\renew\build\location\intermediates\merged_manifest\debug\AndroidManifest.xml:14:13-37
 144            android:foregroundServiceType="location" />
-144-->[:location] C:\github\new_file\main_project\main_project\build\location\intermediates\merged_manifest\debug\AndroidManifest.xml:15:13-53
+144-->[:location] C:\github\new_file\renew\build\location\intermediates\merged_manifest\debug\AndroidManifest.xml:15:13-53
 145
 146        <activity
-146-->[:url_launcher_android] C:\github\new_file\main_project\main_project\build\url_launcher_android\intermediates\merged_manifest\debug\AndroidManifest.xml:8:9-11:74
+146-->[:url_launcher_android] C:\github\new_file\renew\build\url_launcher_android\intermediates\merged_manifest\debug\AndroidManifest.xml:8:9-11:74
 147            android:name="io.flutter.plugins.urllauncher.WebViewActivity"
-147-->[:url_launcher_android] C:\github\new_file\main_project\main_project\build\url_launcher_android\intermediates\merged_manifest\debug\AndroidManifest.xml:9:13-74
+147-->[:url_launcher_android] C:\github\new_file\renew\build\url_launcher_android\intermediates\merged_manifest\debug\AndroidManifest.xml:9:13-74
 148            android:exported="false"
-148-->[:url_launcher_android] C:\github\new_file\main_project\main_project\build\url_launcher_android\intermediates\merged_manifest\debug\AndroidManifest.xml:10:13-37
+148-->[:url_launcher_android] C:\github\new_file\renew\build\url_launcher_android\intermediates\merged_manifest\debug\AndroidManifest.xml:10:13-37
 149            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" /> <!-- Needs to be explicitly declared on P+ -->
-149-->[:url_launcher_android] C:\github\new_file\main_project\main_project\build\url_launcher_android\intermediates\merged_manifest\debug\AndroidManifest.xml:11:13-71
+149-->[:url_launcher_android] C:\github\new_file\renew\build\url_launcher_android\intermediates\merged_manifest\debug\AndroidManifest.xml:11:13-71
 150        <uses-library
 150-->[com.google.android.gms:play-services-maps:18.2.0] C:\Users\YUYUYU\.gradle\caches\transforms-3\f4d369bb198debe8c89a7b9800366cf3\transformed\jetified-play-services-maps-18.2.0\AndroidManifest.xml:39:9-41:40
 151            android:name="org.apache.http.legacy"
