@@ -1,0 +1,26 @@
+@startuml
+title 圖 7-4-1 傷口拍攝狀態機
+skinparam shadowing true
+
+[*] --> Capturing : \n啟動「傷口拍攝」頁
+
+state Capturing as "Capturing\n拍攝 / 選擇\n(可多張)" {
+}
+
+Capturing --> Confirming : 確認照片
+Confirming : Confirming\n照片確認
+Confirming --> Capturing : 重新拍攝
+Confirming --> Uploading  : 送出診斷
+
+Uploading : Uploading\n上傳中
+Uploading --> Waiting : 上傳完成
+
+Waiting : WaitingDiagnosis\n等待診斷
+Waiting --> Showing : 診斷完成
+
+state Showing as "ShowingResult\n顯示結果\n(建議 / 醫院 / 記錄)" {
+}
+
+Showing --> Capturing : 重新拍攝
+Showing --> [*]       : 儲存 / 離開
+@enduml

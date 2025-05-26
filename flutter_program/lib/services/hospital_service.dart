@@ -16,7 +16,8 @@ class HospitalService {
 
   /// 取得地區清單（依縣市）
   static Future<List<String>> fetchDistricts(String city) async {
-    final response = await http.get(Uri.parse('$baseUrl/api/districts?city=$city'));
+    final response =
+        await http.get(Uri.parse('$baseUrl/api/districts?city=$city'));
     if (response.statusCode == 200) {
       List<dynamic> jsonList = jsonDecode(response.body);
       return jsonList.cast<String>();
@@ -26,9 +27,10 @@ class HospitalService {
   }
 
   /// 取得醫療部門清單（依縣市+地區）
-  static Future<List<String>> fetchDepartments(String city, String district) async {
-    final response =
-        await http.get(Uri.parse('$baseUrl/api/departments?city=$city&district=$district'));
+  static Future<List<String>> fetchDepartments(
+      String city, String district) async {
+    final response = await http.get(
+        Uri.parse('$baseUrl/api/departments?city=$city&district=$district'));
     if (response.statusCode == 200) {
       List<dynamic> jsonList = jsonDecode(response.body);
       return jsonList.cast<String>();
@@ -41,7 +43,7 @@ class HospitalService {
   static Future<List<Map<String, dynamic>>> fetchHospitals(
       {required String city, String district = '', String dept = ''}) async {
     final uri = Uri.http(
-      '192.168.100.2:3000',
+      '192.168.100.5:3000',
       '/api/hospitals',
       {
         'city': city,
