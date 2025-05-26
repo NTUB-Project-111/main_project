@@ -7,3 +7,5 @@
 #串後端資料時伺服器要一直保持開啟的狀態，否則無法讀寫資料
 
 #開啟伺服器:node server.js
+
+#檔案開啟後記得加入.env檔【JWT_SECRET】、【REFRESH_SECRET_KEY】在群組記事本
