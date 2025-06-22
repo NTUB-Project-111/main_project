@@ -1,0 +1,130 @@
+import 'package:drw/backend/models/report_model.dart';
+import 'package:drw/backend/models/user_model.dart';
+import 'package:drw/backend/services/record_service.dart';
+import 'package:drw/frontend/pages/tabs/tabs.dart';
+import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class ButtonPart extends StatefulWidget {
+  const ButtonPart({super.key});
+
+  @override
+  State<ButtonPart> createState() => _ButtonPartState();
+}
+
+class _ButtonPartState extends State<ButtonPart> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<Report>(
+      builder: (context, report, _) {
+        return Container(
+          margin: const EdgeInsets.only(top: 15, bottom: 25),
+          child: report.woundType != "無異常"
+              ? Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const Tabs(
+                                        currentIndex: 0,
+                                      )));
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          side: const BorderSide(
+                            color: Color(0xFF589399),
+                            width: 2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          '不儲存報告',
+                          style: TextStyle(
+                            color: Color(0xFF589399),
+                            fontSize: 16,
+                            // fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: report.isSaving
+                            ? null
+                            : () async {
+                                final user = Provider.of<User>(context, listen: false);
+                                final result = await report.uploadData(user.id);
+                                if (result) {
+                                  await RecordService.getRecords(context, user.id);
+                                  FrontTool.showError('報告儲存成功!', Colors.green, Colors.white);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => const Tabs(
+                                                currentIndex: 0,
+                                              )));
+                                } else {
+                                  FrontTool.showError('報告儲存失敗', Colors.red, Colors.white);
+                                }
+                              },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: report.isSaving ? Colors.grey : const Color(0xFF589399),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          report.isSaving ? '儲存中...' : '儲存報告',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const Tabs(
+                                        currentIndex: 0,
+                                      )));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: const Color(0xFF589399),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          '確定',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            // fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+        );
+      },
+    );
+  }
+}
