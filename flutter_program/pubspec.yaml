@@ -1,4 +1,4 @@
-name: wounddetection
+name: drw
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -35,40 +35,24 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  path_provider: ^2.1.5
-  tflite_flutter: ^0.11.0
-  image: ^3.2.1
-  image_picker: ^1.1.2 
-  http: ^0.13.6
-  dio: ^5.3.2 # 發送 HTTP 請求 (取得步行時間)
-  flutter_spinkit: ^5.2.0
-  intl: ^0.18.0
-
-  dropdown_button2: ^2.0.0 #
-  camera: ^0.10.0 #
-   
-  permission_handler: ^10.0.0 #之後可能可以刪除
-  google_maps_flutter: ^2.10.0  # Google Maps SDK
-  location: ^7.0.1 #可能是取得使用者位置
-
-  geolocator: ^10.1.0 # 取得使用者位置
-  google_maps_webservice: ^0.0.20-nullsafety.5  # Google Places & 距離計算
-  fluttertoast: ^8.2.12 #提示視窗
-  path: ^1.9.0 #
+  image_picker: ^1.1.2 #開啟手機相簿
+  intl: ^0.20.2 #格式化日期
+  fluttertoast: ^8.2.12 #顯示警告訊息
   flutter_dash: ^1.0.0 #繪製底線
-  shared_preferences: ^2.5.2 #永久儲存使用者資料
-  mime: ^1.0.4 #判斷使用者上傳的檔案類型
-  http_parser: ^4.0.2 #解析 HTTP 相關資訊，例如 Content-Type、MIME 類型等
-  carousel_slider: ^5.0.0 #製作輪播圖
-  url_launcher: ^6.3.1 #點擊圖片跳轉網頁
-
-  provider: ^6.1.5 #類別的狀態管理
-
-  flutter_local_notifications: ^18.0.1 #系統通知
-  timezone: ^0.9.4 #系統通知比對時間(取得時區)
-  flutter_timezone: ^4.1.0 #系統通知比對時間(取得時區)
-
-  geocoding: ^3.0.0 #轉換地理位置為經緯度
+  provider: ^6.1.5 #類別狀態管理
+  http: ^0.13.6 #發送http請求，用於對接伺服器
+  path: ^1.9.0 #處理路徑字串，用於檔案儲存、上傳/下載檔案、解析路徑或檔名
+  http_parser: ^4.0.2 #解析和格式化HTTP相關格式，例如:媒體(MediaType)
+  camera: 0.10.5+9 #開啟手機相機
+  image: ^4.5.4 #處理圖片
+  dropdown_button2: ^2.3.9 #下拉式選單
+  location: ^7.0.1 #定位使用者位置
+  mime: ^2.0.0 #確定副檔名
+  google_maps_flutter: ^2.10.1 #顯示google地圖
+  geolocator: ^10.1.0 #取得地理位置
+  google_maps_webservice: ^0.0.20-nullsafety.5  # Google Places & 距離計算
+  flutter_dotenv: ^5.2.1 #使用.env檔案
+  url_launcher: ^6.3.1 #跳轉至外部網站
 
 dev_dependencies:
   flutter_test:
@@ -94,13 +78,10 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/dash.png
+    - images/icon.png
     - images/line.png
-    - images/icon_nobkg.png
     - images/hospital.png
-    - images/bruises.png #輪播圖
-    - images/cut.png #輪播圖
-    - images/burn.png #輪播圖
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -113,15 +94,6 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: MyFlutterApp
-      fonts:
-        - asset: fonts/MyFlutterApp.ttf
-      
-    - family: FontAwesome5
-      fonts:
-        - asset: fonts/FontAwesome5.ttf
-
   # fonts:
   #   - family: Schyler
   #     fonts:

@@ -1,0 +1,211 @@
+import 'package:drw/backend/models/records_model.dart';
+import 'package:drw/backend/models/reminds_model.dart';
+import 'package:drw/backend/models/user_model.dart';
+import 'package:drw/backend/services/record_service.dart';
+import 'package:drw/backend/services/remind_service.dart';
+
+import 'forget_page.dart';
+import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../backend/models/login_model.dart';
+import '../headers/header2.dart';
+import 'registerpages/disclaimer_page.dart';
+import 'tabs/tabs.dart';
+import '../../backend/services/user_service.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  bool _obscureText = true;
+  late BuildContext myContext;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    myContext = context;
+    return ChangeNotifierProvider(
+        create: (context) => Login(),
+        child: Builder(builder: (context) {
+          final login = Provider.of<Login>(context);
+          return Scaffold(
+            backgroundColor: const Color.fromARGB(255, 229, 248, 248),
+            body: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Header2(
+                      title: "Dr.W",
+                      subtitle: '一拍即知，智慧照護',
+                    ),
+                    const SizedBox(height: 15),
+
+                    // 帳號輸入
+                    TextField(
+                      controller: _emailController,
+                      onChanged: (value) => login.setEmail(value),
+                      style: const TextStyle(
+                        color: Color(0xFF669FA5),
+                      ),
+                      decoration: _inputDecoration(label: "帳號", hint: "example@gmail.com"),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // 密碼輸入
+                    TextField(
+                      controller: _passwordController,
+                      onChanged: (value) => login.setPassword(value),
+                      obscureText: _obscureText,
+                      style: const TextStyle(
+                        color: Color(0xFF669FA5),
+                      ),
+                      decoration: _inputDecoration(label: "密碼", hint: "XXXXXXXXXXXX").copyWith(
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText ? Icons.visibility_off : Icons.visibility,
+                            color: const Color.fromRGBO(135, 135, 135, 0.5),
+                          ),
+                          onPressed: () => setState(() => _obscureText = !_obscureText),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // 忘記密碼 / 訪客登入
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const ForgetPage()),
+                            );
+                          },
+                          child: const Text("忘記密碼？", style: TextStyle(color: Color(0xFF669FA5))),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text(
+                            "訪客登入",
+                            style: TextStyle(
+                              color: Color(0xFF4C7488),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+
+                    // 登入按鈕
+                    Consumer<Login>(builder: (context, login, _) {
+                      return SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: login.isLoading
+                              ? null
+                              : () async {
+                                  if (!login.isFilled()) {
+                                    FrontTool.showError('請填寫帳號及密碼', Colors.red, Colors.white);
+                                    return;
+                                  }
+                                  final error = await login.login(login.email, login.password);
+                                  if (!mounted) return;
+                                  if (error) {
+                                    await UserService.getUserInfo(myContext, login.accessToken!);
+                                    
+                                    if (!mounted) return;
+                                    final user = Provider.of<User>(myContext, listen: false);
+                                    await RecordService.getRecords(myContext, user.id);
+                                    final recordsProvider =
+                                        Provider.of<Records>(myContext, listen: false);
+                                        
+                                    final records = recordsProvider.records;
+                                    debugPrint(user.toString());
+                                    for (var record in records) {
+                                      debugPrint(record.toString());
+                                    }
+                                    await RemindService.getReminds(myContext, user.id);
+                                    final remindsProvider =
+                                        Provider.of<Reminds>(myContext, listen: false);
+                                    final reminds = remindsProvider.reminds;
+                                    for (var remind in reminds) {
+                                      debugPrint(remind.toString());
+                                    }
+                                    FrontTool.showError('登入成功!', Colors.green, Colors.white);
+                                    if (!mounted) return;
+                                    Navigator.pushReplacement(
+                                      myContext,
+                                      MaterialPageRoute(builder: (context) => const Tabs()),
+                                    );
+                                  } else {
+                                    FrontTool.showError('登入失敗，帳號或密碼輸入錯誤', Colors.red, Colors.white);
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF669FA5),
+                            minimumSize: const Size(double.infinity, 45),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          child: login.isLoading
+                              ? const Text("登入中...",
+                                  style: TextStyle(color: Colors.white, fontSize: 16))
+                              : const Text("登入",
+                                  style: TextStyle(color: Colors.white, fontSize: 16)),
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 15),
+                    TextButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const DisclaimerPage()),
+                      ),
+                      child: const Text(
+                        "註冊新帳號",
+                        style: TextStyle(
+                          color: Color(0xFF4C7488),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }));
+  }
+
+  InputDecoration _inputDecoration({required String label, required String hint}) {
+    return InputDecoration(
+      filled: true,
+      fillColor: Colors.white,
+      labelText: label,
+      hintText: hint,
+      hintStyle: const TextStyle(color: Color.fromRGBO(135, 135, 135, 0.4), fontSize: 14),
+      labelStyle:
+          const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF669FA5)),
+      floatingLabelBehavior: FloatingLabelBehavior.never,
+      border:
+          OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+    );
+  }
+}
