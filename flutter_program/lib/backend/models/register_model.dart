@@ -113,7 +113,12 @@ class Register extends ChangeNotifier {
     isRegistering = true;
     notifyListeners();
     final error = await _authService.register(
-        name: name, gender: gender, birthday: formatted, email: email, password: password);
+        name: name,
+        gender: gender,
+        birthday: formatted,
+        email: email,
+        password: password,
+        imageFile: picture);
     isRegistering = false;
     notifyListeners();
     return error;

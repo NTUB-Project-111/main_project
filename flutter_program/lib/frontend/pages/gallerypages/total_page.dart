@@ -1,6 +1,6 @@
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header3.dart';
-import 'package:drw/frontend/pages/recordspages/showreport_page.dart';
+import 'package:drw/frontend/pages/gallerypages/showreport_page.dart';
 import 'package:drw/frontend/pages/remind_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

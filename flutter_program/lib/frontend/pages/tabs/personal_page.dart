@@ -4,6 +4,7 @@ import 'package:drw/frontend/headers/header3.dart';
 import 'package:drw/frontend/pages/login_page.dart';
 import 'package:drw/frontend/pages/personalpages/changepwd_page.dart';
 import 'package:drw/frontend/pages/personalpages/profiles_page.dart';
+import 'package:drw/frontend/pages/remind_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +25,7 @@ class _PersonalPageState extends State<PersonalPage> {
           const Header3(
               title: "我的",
               icon: Icon(Icons.notifications, size: 23, color: Color(0xFF589399)),
-              targetPage: LoginPage()),
+              targetPage: RemindPage()),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 26),
             child: Column(

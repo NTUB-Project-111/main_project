@@ -71,7 +71,7 @@ class AuthService {
     if (imageFile != null) {
       final fileName = path.basename(imageFile.path);
       final mimeType = 'image/${path.extension(fileName).replaceAll('.', '')}';
-
+      debugPrint(mimeType);
       request.files.add(
         await http.MultipartFile.fromPath(
           'picture',

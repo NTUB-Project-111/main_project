@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 class OktimeUpdate {
   static const String apiUrl = "https://api.openai.com/v1/chat/completions";
   static const String apiKey =
-      ""; //放APIKey
+      "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"; //放APIKey
 
   static Future<String> getOktime(
       String woundType, String part, String rection, String description) async {

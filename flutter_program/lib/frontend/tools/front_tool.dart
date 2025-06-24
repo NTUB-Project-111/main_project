@@ -40,6 +40,8 @@ class FrontTool {
     ));
   }
 
+  
+
   // 顯示確認對話框
   static void showImageDialog(BuildContext context, File image, String title, String confirm,
       String cancle, Widget nextPage) {

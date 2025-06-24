@@ -33,7 +33,7 @@ class Header3 extends StatelessWidget {
             IconButton(
               icon: icon,
               onPressed: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => targetPage),
                 );

@@ -1,20 +1,20 @@
 import 'package:drw/backend/models/records_model.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header3.dart';
-import 'package:drw/frontend/pages/recordspages/showreport_page.dart';
-import 'package:drw/frontend/pages/recordspages/total_page.dart';
+import 'package:drw/frontend/pages/gallerypages/showreport_page.dart';
+import 'package:drw/frontend/pages/gallerypages/total_page.dart';
 import 'package:drw/frontend/pages/remind_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class RecordsPage extends StatefulWidget {
-  const RecordsPage({super.key});
+class GalleryPage extends StatefulWidget {
+  const GalleryPage({super.key});
 
   @override
-  State<RecordsPage> createState() => _RecordsPageState();
+  State<GalleryPage> createState() => _GalleryPageState();
 }
 
-class _RecordsPageState extends State<RecordsPage> with SingleTickerProviderStateMixin {
+class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -51,52 +51,54 @@ class _RecordsPageState extends State<RecordsPage> with SingleTickerProviderStat
       }
     }
 
-    return Column(
-      children: [
-        const Header3(
-            title: "傷口紀錄冊",
-            icon: Icon(
-              Icons.notifications,
-              size: 23,
-              color: Color(0xFF589399),
+    return Scaffold(
+        backgroundColor: const Color(0xFFEBFEFF),
+        body: Column(
+          children: [
+            const Header3(
+                title: "傷口紀錄冊",
+                icon: Icon(
+                  Icons.notifications,
+                  size: 23,
+                  color: Color(0xFF589399),
+                ),
+                targetPage: RemindPage()),
+            Container(
+              color: const Color(0xFFCBF0F4),
+              child: TabBar(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                labelColor: const Color(0xFF04555D),
+                unselectedLabelColor: Colors.blueGrey,
+                controller: _tabController,
+                indicatorColor: const Color(0xFF04555D),
+                dividerColor: Colors.transparent,
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
+                tabs: const [
+                  Tab(text: ("全部")),
+                  Tab(text: ("割傷")),
+                  Tab(text: ("擦傷")),
+                  Tab(text: ("瘀青")),
+                  Tab(text: ("燒傷")),
+                ],
+              ),
             ),
-            targetPage: RemindPage()),
-        Container(
-          color: const Color(0xFFCBF0F4),
-          child: TabBar(
-            padding: const EdgeInsets.symmetric(horizontal: 18),
-            labelColor: const Color(0xFF04555D),
-            unselectedLabelColor: Colors.blueGrey,
-            controller: _tabController,
-            indicatorColor: const Color(0xFF04555D),
-            dividerColor: Colors.transparent,
-            indicatorSize: TabBarIndicatorSize.tab,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-            tabs: const [
-              Tab(text: ("全部")),
-              Tab(text: ("割傷")),
-              Tab(text: ("擦傷")),
-              Tab(text: ("瘀青")),
-              Tab(text: ("燒傷")),
-            ],
-          ),
-        ),
-        Expanded(
-          child: TabBarView(
-            physics: const NeverScrollableScrollPhysics(),
-            controller: _tabController,
-            children: [
-              _buildImagePage(records), // 全部
-              _buildImagePage(cuts), // 割傷
-              _buildImagePage(abrasions), // 擦傷
-              _buildImagePage(bruises), // 瘀青
-              _buildImagePage(burns), // 燒傷
-            ],
-          ),
-        ),
-      ],
-    );
+            Expanded(
+              child: TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
+                controller: _tabController,
+                children: [
+                  _buildImagePage(records), // 全部
+                  _buildImagePage(cuts), // 割傷
+                  _buildImagePage(abrasions), // 擦傷
+                  _buildImagePage(bruises), // 瘀青
+                  _buildImagePage(burns), // 燒傷
+                ],
+              ),
+            ),
+          ],
+        ));
   }
 
   Widget _buildImagePage(List<UserRecord> records) {

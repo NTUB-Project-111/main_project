@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:drw/backend/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -84,6 +85,24 @@ class UserService {
       }
     } catch (e) {
       return ('請求錯誤: $e');
+    }
+  }
+
+  static Future<UserInfo> fetchUserInfo(String token) async {
+    final response = await http.get(
+      Uri.parse('${ApiBase.baseUrl}/getUserDetail'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final userJson = data['user'];
+      userJson['reports'] = data['reports'];
+      return UserInfo.fromJson(userJson);
+    } else {
+      throw Exception('取得使用者資料失敗: ${response.body}');
     }
   }
 }

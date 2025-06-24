@@ -33,6 +33,7 @@ class UserRemind {
       日期: $date
       時間: $time
       頻率: $freq
+      ================
     ''';
   }
 }

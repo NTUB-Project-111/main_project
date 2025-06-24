@@ -1,6 +1,9 @@
 import 'package:drw/backend/models/records_model.dart';
 import 'package:drw/backend/models/reminds_model.dart';
 import 'package:drw/backend/models/user_model.dart';
+import 'package:drw/backend/provider/remind_provider.dart';
+import 'package:drw/backend/provider/report_provider.dart';
+import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/backend/services/remind_service.dart';
 
@@ -128,26 +131,60 @@ class _LoginPageState extends State<LoginPage> {
                                   final error = await login.login(login.email, login.password);
                                   if (!mounted) return;
                                   if (error) {
-                                    await UserService.getUserInfo(myContext, login.accessToken!);
-                                    
-                                    if (!mounted) return;
-                                    final user = Provider.of<User>(myContext, listen: false);
-                                    await RecordService.getRecords(myContext, user.id);
-                                    final recordsProvider =
-                                        Provider.of<Records>(myContext, listen: false);
-                                        
-                                    final records = recordsProvider.records;
-                                    debugPrint(user.toString());
-                                    for (var record in records) {
-                                      debugPrint(record.toString());
+                                    // 1. 從後端取得完整使用者資料
+                                    final userInfo =
+                                        await UserService.fetchUserInfo(login.accessToken!);
+
+                                    // 2. 儲存使用者資料
+                                    Provider.of<UserProvider>(context, listen: false)
+                                        .setUserInfo(userInfo);
+
+                                    // 3. 儲存診斷報告
+                                    Provider.of<ReportProvider>(context, listen: false)
+                                        .setReports(userInfo.reports);
+
+                                    // 4. 提取所有提醒並儲存
+                                    final allReminds =
+                                        userInfo.reports.expand((r) => r.reminds).toList();
+                                    Provider.of<RemindProvider>(context, listen: false)
+                                        .setReminds(allReminds);
+                                    // 打印診斷報告與每筆報告底下的提醒
+                                    for (var report in userInfo.reports) {
+                                      debugPrint("====== 報告 ======");
+                                      debugPrint("報告ID：${report.id}");
+                                      debugPrint("日期：${report.date}");
+                                      debugPrint("類型：${report.type}");
+                                      debugPrint("照護方式：${report.caremode}");
+                                      debugPrint("是否提醒：${report.ifcall}");
+                                      debugPrint("備註：${report.recording}");
+
+                                      // 每一筆提醒
+                                      for (var remind in report.reminds) {
+                                        debugPrint("  -> 提醒ID：${remind.id}");
+                                        debugPrint("     日期：${remind.date}");
+                                        debugPrint("     時間：${remind.time}");
+                                        debugPrint("     頻率：${remind.freq}");
+                                      }
                                     }
-                                    await RemindService.getReminds(myContext, user.id);
-                                    final remindsProvider =
-                                        Provider.of<Reminds>(myContext, listen: false);
-                                    final reminds = remindsProvider.reminds;
-                                    for (var remind in reminds) {
-                                      debugPrint(remind.toString());
-                                    }
+                                    // await UserService.getUserInfo(myContext, login.accessToken!);
+                                    // if (!mounted) return;
+                                    // final user = Provider.of<User>(myContext, listen: false);
+                                    // await RecordService.getRecords(myContext, user.id);
+                                    // final recordsProvider =
+                                    //     Provider.of<Records>(myContext, listen: false);
+                                    // final records = recordsProvider.records;
+                                    // debugPrint(user.toString());
+                                    // for (var record in records) {
+                                    //   debugPrint(record.toString());
+                                    // }
+                                    // await RemindService.getReminds(myContext, user.id);
+                                    // final remindsProvider =
+                                    //     Provider.of<Reminds>(myContext, listen: false);
+                                    // final reminds = remindsProvider.reminds;
+                                    // for (var remind in reminds) {
+                                    //   debugPrint(remind.toString());
+                                    // }
+
                                     FrontTool.showError('登入成功!', Colors.green, Colors.white);
                                     if (!mounted) return;
                                     Navigator.pushReplacement(
