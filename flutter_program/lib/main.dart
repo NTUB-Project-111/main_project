@@ -1,7 +1,11 @@
 import 'package:drw/backend/models/records_model.dart';
 import 'package:drw/backend/models/reminds_model.dart';
 import 'package:drw/backend/models/report_model.dart';
-import 'package:drw/frontend/pages/tabs/hospital_page.dart';
+import 'package:drw/backend/provider/remind_provider.dart'; //
+import 'package:drw/backend/provider/report_provider.dart'; //
+import 'package:drw/backend/provider/user_provider.dart'; //
+import 'package:drw/frontend/pages/remind_page.dart';
+// import 'package:drw/frontend/pages/tabs/hospital_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'backend/models/user_model.dart';
@@ -20,6 +24,9 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => Report()),
         ChangeNotifierProvider(create: (_) => Records()),
         ChangeNotifierProvider(create: (_) => Reminds()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => ReportProvider()),
+        ChangeNotifierProvider(create: (_) => RemindProvider()),
       ],
       child: const MyApp(),
     ),
@@ -34,10 +41,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      // home: LoginPage(),
+      home: LoginPage(),
       // home: Tabs(),
-      // home:RemindPage()
-      home: HospitalPage(),
+      // home: RemindPage(),
+      // home: HospitalPage(),
     );
   }
 }

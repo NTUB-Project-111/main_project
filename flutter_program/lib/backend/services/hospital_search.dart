@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class HospitalSearch {
-  static const String googleMapsApiKey = "";
+  static const String googleMapsApiKey = "AIzaSyCDjOjWfvAM9JpXwMRdJVhKL77lCOfvezs";
 
   static Future<List<Map<String, dynamic>>> getNearbyHospitals() async {
     try {

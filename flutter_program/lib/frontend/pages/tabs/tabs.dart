@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'camera_page.dart';
-import 'records_page.dart';
+import 'gallery_page.dart';
 import 'hospital_page.dart';
 import 'personal_page.dart';
 
@@ -19,7 +19,7 @@ class _TabsState extends State<Tabs> {
     const HomePage(),
     const HospitalPage(),
     const CameraPage(),
-    const RecordsPage(),
+    const GalleryPage(),
     const PersonalPage(),
   ];
 

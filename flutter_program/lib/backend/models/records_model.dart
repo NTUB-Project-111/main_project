@@ -45,11 +45,12 @@ class UserRecord {
       日期: $date
       照片: $photo
       類型: $type
-      OK時間: $oktime
+      癒合時間: $oktime
       照護步驟: $careSteps
       是否提醒: $ifcall
       標籤: $tags
       自我紀錄: $selfRecord
+      =================
     ''';
   }
 }
