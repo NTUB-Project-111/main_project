@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:drw/backend/models/report_model.dart';
 import 'package:drw/backend/services/apibase.dart';
@@ -39,8 +38,6 @@ class FrontTool {
       valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF589399)),
     ));
   }
-
-  
 
   // 顯示確認對話框
   static void showImageDialog(BuildContext context, File image, String title, String confirm,
@@ -87,12 +84,13 @@ class FrontTool {
                 backgroundColor: const Color(0xFF589399),
                 side: BorderSide.none,
               ),
-              onPressed: () {
+              onPressed: () async {
                 Navigator.pop(context); // 關閉對話框
                 Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => nextPage),
-                );
+                    context,
+                    MaterialPageRoute(builder: (context) => nextPage),
+                  );
+                
               },
               child: Text(
                 confirm,

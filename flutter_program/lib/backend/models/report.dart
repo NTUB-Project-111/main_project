@@ -2,6 +2,7 @@ import 'package:drw/backend/models/remind.dart';
 
 class UserReport {
   final int id;
+  final int userId;
   final String date;
   final String type;
   final String oktime;
@@ -10,10 +11,11 @@ class UserReport {
   final String choosekind;
   final String recording;
   final String photo;
-  final List<UserRemind> reminds;
+  List<UserRemind> reminds;
 
   UserReport({
     required this.id,
+    required this.userId,
     required this.date,
     required this.type,
     required this.oktime,
@@ -28,6 +30,7 @@ class UserReport {
   factory UserReport.fromJson(Map<String, dynamic> json) {
     return UserReport(
       id: json['id'],
+      userId: json['userId'],
       date: json['date'],
       type: json['type'],
       oktime: json['oktime'],

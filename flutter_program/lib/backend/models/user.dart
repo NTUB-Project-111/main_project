@@ -7,7 +7,7 @@ class UserInfo {
   final String birthday;
   final String picture;
   final String email;
-  final List<UserReport> reports;
+  List<UserReport> reports;
 
   UserInfo({
     required this.id,
