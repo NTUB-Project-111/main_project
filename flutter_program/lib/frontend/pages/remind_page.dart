@@ -1,8 +1,11 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:drw/backend/models/reminder.dart';
-
+import 'package:drw/backend/provider/remind_provider.dart';
+import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
+import 'package:drw/backend/services/record_service.dart';
+import 'package:drw/backend/viewmodels/remind_view_model.dart';
 import 'package:drw/frontend/tools/front_tool.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,18 +26,21 @@ class _RemindPageState extends State<RemindPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_isInitialized) return;
+    loadReminders(); // 改成呼叫這個方法
+    _isInitialized = true;
+  }
+
+  Future<void> loadReminders() async {
     final userInfo = Provider.of<UserProvider>(context, listen: false).user;
     if (userInfo != null) {
-      // final reminderList =
-      //     userInfo.reports.where((r) => r.ifcall == 'Y').map((r) => toReminderData(r)).toList();
-      final reminderList = userInfo.reports
-          .where((r) => r.ifcall == 'Y')
-          .map((r) => Reminder.fromReport(r))
-          .toList();
-
-      setState(() => reminders.addAll(reminderList));
+      setState(() {
+        reminders
+          ..clear()
+          ..addAll(
+            userInfo.reports.where((r) => r.ifcall == 'Y').map((r) => Reminder.fromReport(r)),
+          );
+      });
     }
-    _isInitialized = true;
   }
 
   @override
@@ -48,7 +54,6 @@ class _RemindPageState extends State<RemindPage> {
           onPressed: () {
             final modifiedList = reminders.where((r) => r.isModified).toList();
             if (modifiedList.isNotEmpty) {
-              // 有資料被修改過
               debugPrint('被修改的筆數：${modifiedList.length}');
               showConfirmDialog(
                 context,
@@ -56,6 +61,7 @@ class _RemindPageState extends State<RemindPage> {
                 "確定",
                 "取消",
                 () => Navigator.pop(context),
+                modifiedList,
               );
             } else {
               Navigator.pop(context);
@@ -150,20 +156,34 @@ class _RemindPageState extends State<RemindPage> {
               const Text('換藥時間 ：', style: TextStyle(color: Color(0xFF589399))),
               GestureDetector(
                 onTap: () async {
-                  final picked =
-                      await showTimePicker(context: context, initialTime: data.selectedTime);
-                  if (picked != null) setState(() => data.selectedTime = picked);
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: Reminder.parseTime(data.selectedTime),
+                  );
+                  if (picked != null) {
+                    final formatted =
+                        '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+                    setState(() => data.selectedTime = formatted);
+                  }
                 },
-                child: _buildTimeBox(data.selectedTime.hour.toString().padLeft(2, '0')),
+                child: _buildTimeBox(
+                    Reminder.parseTime(data.selectedTime).hour.toString().padLeft(2, '0')),
               ),
               const Text(' ：'),
               GestureDetector(
                 onTap: () async {
-                  final picked =
-                      await showTimePicker(context: context, initialTime: data.selectedTime);
-                  if (picked != null) setState(() => data.selectedTime = picked);
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: Reminder.parseTime(data.selectedTime),
+                  );
+                  if (picked != null) {
+                    final formatted =
+                        '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+                    setState(() => data.selectedTime = formatted);
+                  }
                 },
-                child: _buildTimeBox(data.selectedTime.minute.toString().padLeft(2, '0')),
+                child: _buildTimeBox(
+                    Reminder.parseTime(data.selectedTime).minute.toString().padLeft(2, '0')),
               ),
             ],
           ),
@@ -177,7 +197,6 @@ class _RemindPageState extends State<RemindPage> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Flexible(
             child: Stack(
@@ -226,8 +245,10 @@ class _RemindPageState extends State<RemindPage> {
 
   TextStyle _infoStyle() => const TextStyle(fontSize: 14, color: Color(0xFF589399), height: 1.5);
 
-  String _formatTime(TimeOfDay time) =>
-      '${time.hour.toString().padLeft(2, '0')} ：${time.minute.toString().padLeft(2, '0')}';
+  String _formatTime(String timeStr) {
+    final time = Reminder.parseTime(timeStr);
+    return '${time.hour.toString().padLeft(2, '0')} ：${time.minute.toString().padLeft(2, '0')}';
+  }
 
   Widget _buildTimeBox(String text) => Container(
         margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -240,74 +261,71 @@ class _RemindPageState extends State<RemindPage> {
             style: const TextStyle(
                 fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF264E5C))),
       );
-  void showConfirmDialog(
-      BuildContext context, String title, String confirm, String cancel, VoidCallback onConfirm) {
+
+  void showConfirmDialog(BuildContext context, String title, String confirm, String cancel,
+      VoidCallback onConfirm, List<Reminder> reminds) {
     showDialog(
-      barrierDismissible: false, // 禁止點擊外部區域關閉對話框
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(
-            color: Color(0xFF589399),
-            width: 2,
-          ),
+          side: const BorderSide(color: Color(0xFF589399), width: 2),
         ),
         backgroundColor: Colors.white,
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 20,
-            color: Color(0xFF589399),
-            fontWeight: FontWeight.w700,
-          ),
-          textAlign: TextAlign.center,
-        ),
+        title: Text(title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+                fontSize: 20, color: Color(0xFF589399), fontWeight: FontWeight.w700)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             OutlinedButton(
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 70),
                 backgroundColor: const Color(0xFF589399),
-                side: BorderSide.none,
               ),
-              onPressed: () {
-                
-                Navigator.pop(context); // 關閉對話框
-                onConfirm();
+              onPressed: () async {
+                Navigator.pop(context);
+                RemindViewModel remind = RemindViewModel();
+                final message = await remind.updateRemind(reminds);
+                if (message) {
+                  FrontTool.showError('儲存成功!', Colors.green, Colors.white);
+
+                  final userReport = await RecordService.fetchReports(reminds[0].userId);
+                  final userProvider = Provider.of<UserProvider>(context, listen: false);
+                  final user = userProvider.user;
+                  if (user != null) {
+                    user.reports = userReport;
+                    userProvider.setUserInfo(user); // 若有定義 setter，否則手動觸發 notifyListeners()
+                  }
+
+                  // 儲存 provider 資料前，請確保 context 還活著
+                  if (mounted) {
+                    Provider.of<ReportProvider>(context, listen: false).setReports(userReport);
+                    final allReminds = userReport.expand((r) => r.reminds).toList();
+                    Provider.of<RemindProvider>(context, listen: false).setReminds(allReminds);
+                    onConfirm();
+                    await loadReminders();
+                  }
+                } else {
+                  FrontTool.showError('儲存變更失敗，請稍後再試', Colors.red, Colors.white);
+                }
               },
-              child: Text(
-                confirm,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              child: Text(confirm,
+                  style: const TextStyle(
+                      color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700)),
             ),
             const SizedBox(height: 10),
             OutlinedButton(
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 70),
-                side: const BorderSide(
-                  width: 2,
-                  color: Color(0xFF589399),
-                ),
+                side: const BorderSide(width: 2, color: Color(0xFF589399)),
               ),
-              onPressed: () {
-                Navigator.pop(context); // 關閉對話框
-              },
-              child: Text(
-                cancel,
-                style: const TextStyle(
-                  color: Color(0xFF589399),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              onPressed: () => Navigator.pop(context),
+              child: Text(cancel,
+                  style: const TextStyle(
+                      color: Color(0xFF589399), fontSize: 15, fontWeight: FontWeight.w700)),
             ),
           ],
         ),

@@ -5,7 +5,7 @@ import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
 
 class WoundAnalysis {
-  static const String apiKey = "B0Imj5OwU9lbQC4ApdmC"; // API 金鑰
+  static const String apiKey = ""; // API 金鑰
 
   static Future<Map<String, dynamic>> analyzeWound(File imageFile) async {
     try {

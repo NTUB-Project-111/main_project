@@ -47,7 +47,8 @@ class RemindService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final List recordsJson = data;
-        final List<UserRemind> reminds = recordsJson.map((json) => UserRemind.fromJson(json)).toList();
+        final List<UserRemind> reminds =
+            recordsJson.map((json) => UserRemind.fromJson(json)).toList();
         Provider.of<Reminds>(context, listen: false).setReminds(reminds);
       } else {
         debugPrint('取得提醒失敗: ${response.statusCode}');
@@ -55,6 +56,24 @@ class RemindService {
       }
     } catch (e) {
       debugPrint('例外錯誤: $e');
+    }
+  }
+
+  Future<bool> updateRemindTime(int fkRecordId, int fkUserId, String time) async {
+    final url = Uri.parse('${ApiBase.baseUrl}/updateRemindTime');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'fk_record_id': fkRecordId,
+        'fk_user_id': fkUserId,
+        'time': time,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

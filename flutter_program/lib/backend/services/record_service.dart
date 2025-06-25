@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:drw/backend/models/records_model.dart';
+import 'package:drw/backend/models/report.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -55,8 +56,6 @@ class RecordService {
     }
   }
 
- 
-
   static Future<void> getRecords(BuildContext context, String userId) async {
     try {
       final response = await http.get(
@@ -66,7 +65,8 @@ class RecordService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final List recordsJson = data['records'];
-        final List<UserRecord> records = recordsJson.map((json) => UserRecord.fromJson(json)).toList();
+        final List<UserRecord> records =
+            recordsJson.map((json) => UserRecord.fromJson(json)).toList();
 
         Provider.of<Records>(context, listen: false).setRecords(records);
       } else {
@@ -75,6 +75,20 @@ class RecordService {
       }
     } catch (e) {
       debugPrint('例外錯誤: $e');
+    }
+  }
+
+  static Future<List<UserReport>> fetchReports(int userId) async {
+    final url = Uri.parse('${ApiBase.baseUrl}/getRecordRemind?id=$userId');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonData = json.decode(response.body);
+      final List<dynamic> reportsJson = jsonData['reports'];
+
+      return reportsJson.map((r) => UserReport.fromJson(r)).toList();
+    } else {
+      throw Exception('Failed to load reports');
     }
   }
 }

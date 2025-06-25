@@ -108,6 +108,7 @@ class AuthService {
     if (response.statusCode == 200) {
       return data['accessToken'];
     } else {
+      debugPrint(data['message']);
       throw Exception(data['message'] ?? '登入失敗');
     }
   }

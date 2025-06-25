@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:drw/backend/models/records_model.dart';
 import 'package:drw/backend/models/reminds_model.dart';
 import 'package:drw/backend/models/user_model.dart';
@@ -192,6 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                                       MaterialPageRoute(builder: (context) => const Tabs()),
                                     );
                                   } else {
+                                    debugPrint('email:${login.email} psd:${login.password}');
                                     FrontTool.showError('登入失敗，帳號或密碼輸入錯誤', Colors.red, Colors.white);
                                   }
                                 },

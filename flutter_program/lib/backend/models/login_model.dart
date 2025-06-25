@@ -27,13 +27,12 @@ class Login extends ChangeNotifier {
   Future<bool> login(String email, String password) async {
     isLoading = true;
     notifyListeners(); // 通知 UI 開始 loading
-
     try {
       final token = await _authService.login(email, password);
       _accessToken = token;
-      
       return true;
     } catch (e) {
+      debugPrint('❌ login 發生錯誤: $e');
       return false;
     } finally {
       isLoading = false;
