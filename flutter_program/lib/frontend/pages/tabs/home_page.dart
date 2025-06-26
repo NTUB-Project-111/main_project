@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drw/backend/models/home_remind.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
+import 'package:drw/frontend/pages/remind_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -59,6 +60,7 @@ class _HomePageState extends State<HomePage> {
         });
       }
     }
+
   }
 
   @override
@@ -73,15 +75,36 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: FrontUtil.bkColor,
-      appBar: AppBar(
-        backgroundColor: FrontUtil.bkColor,
-        leading: Image.asset('images/icon.png'),
-        title: Text('Dr.W',
-            style: TextStyle(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 5, right: 3),
+          child: AppBar(
+            backgroundColor: FrontUtil.bkColor,
+            leading: Image.asset('images/icon.png'),
+            title: Text(
+              'Dr.W',
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
                 height: 2.5,
-                color: FrontUtil.textColor)),
+                color: FrontUtil.textColor,
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.notifications, color: FrontUtil.textColor),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RemindPage()),
+                  );
+                  await loadHomeReminds(); //重新載入提醒
+                },
+              ),
+            ],
+          ),
+        ),
       ),
       body: Column(
         children: [
