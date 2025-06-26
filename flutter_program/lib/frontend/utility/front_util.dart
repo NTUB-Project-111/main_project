@@ -7,6 +7,9 @@ import 'package:flutter_dash/flutter_dash.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class FrontUtil {
+  static Color bkColor = const Color(0xFFEBFEFF); //主畫面的背景顏色
+  static Color textColor = const Color(0xFF669FA5); //主要文字顏色
+
   static void showError(String errorMessage, Color bkcolor, Color textcolor) {
     Fluttertoast.showToast(
       msg: errorMessage,
@@ -87,10 +90,9 @@ class FrontUtil {
               onPressed: () async {
                 Navigator.pop(context); // 關閉對話框
                 Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => nextPage),
-                  );
-                
+                  context,
+                  MaterialPageRoute(builder: (context) => nextPage),
+                );
               },
               child: Text(
                 confirm,
