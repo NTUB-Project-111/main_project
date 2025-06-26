@@ -10,7 +10,7 @@ import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/backend/services/remind_service.dart';
 
 import 'forget_page.dart';
-import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../backend/models/login_model.dart';
@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                               ? null
                               : () async {
                                   if (!login.isFilled()) {
-                                    FrontTool.showError('請填寫帳號及密碼', Colors.red, Colors.white);
+                                    FrontUtil.showError('請填寫帳號及密碼', Colors.red, Colors.white);
                                     return;
                                   }
                                   final error = await login.login(login.email, login.password);
@@ -168,26 +168,26 @@ class _LoginPageState extends State<LoginPage> {
                                         debugPrint("     頻率：${remind.freq}");
                                       }
                                     }
-                                    // await UserService.getUserInfo(myContext, login.accessToken!);
-                                    // if (!mounted) return;
-                                    // final user = Provider.of<User>(myContext, listen: false);
-                                    // await RecordService.getRecords(myContext, user.id);
-                                    // final recordsProvider =
-                                    //     Provider.of<Records>(myContext, listen: false);
-                                    // final records = recordsProvider.records;
-                                    // debugPrint(user.toString());
-                                    // for (var record in records) {
-                                    //   debugPrint(record.toString());
-                                    // }
-                                    // await RemindService.getReminds(myContext, user.id);
-                                    // final remindsProvider =
-                                    //     Provider.of<Reminds>(myContext, listen: false);
-                                    // final reminds = remindsProvider.reminds;
-                                    // for (var remind in reminds) {
-                                    //   debugPrint(remind.toString());
-                                    // }
+                                    //   await UserService.getUserInfo(myContext, login.accessToken!);
+                                    //   if (!mounted) return;
+                                    //   final user = Provider.of<User>(myContext, listen: false);
+                                    //   await RecordService.getRecords(myContext, user.id);
+                                    //   final recordsProvider =
+                                    //       Provider.of<Records>(myContext, listen: false);
+                                    //   final records = recordsProvider.records;
+                                    //   debugPrint(user.toString());
+                                    //   for (var record in records) {
+                                    //     debugPrint(record.toString());
+                                    //   }
+                                    //   await RemindService.getReminds(myContext, user.id);
+                                    //   final remindsProvider =
+                                    //       Provider.of<Reminds>(myContext, listen: false);
+                                    //   final reminds = remindsProvider.reminds;
+                                    //   for (var remind in reminds) {
+                                    //     debugPrint(remind.toString());
+                                    //   }
 
-                                    FrontTool.showError('登入成功!', Colors.green, Colors.white);
+                                    FrontUtil.showError('登入成功!', Colors.green, Colors.white);
                                     if (!mounted) return;
                                     Navigator.pushReplacement(
                                       myContext,
@@ -195,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                   } else {
                                     debugPrint('email:${login.email} psd:${login.password}');
-                                    FrontTool.showError('登入失敗，帳號或密碼輸入錯誤', Colors.red, Colors.white);
+                                    FrontUtil.showError('登入失敗，帳號或密碼輸入錯誤', Colors.red, Colors.white);
                                   }
                                 },
                           style: ElevatedButton.styleFrom(

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class FrontTool {
+class FrontUtil {
   static void showError(String errorMessage, Color bkcolor, Color textcolor) {
     Fluttertoast.showToast(
       msg: errorMessage,

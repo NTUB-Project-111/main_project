@@ -76,4 +76,25 @@ class RemindService {
       return false;
     }
   }
+
+  Future<bool> deleteRemind(int fkUserId, int fkRecordId) async {
+    final url = Uri.parse('${ApiBase.baseUrl}/deleteRemind');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'fk_user_id': fkUserId,
+        'fk_record_id': fkRecordId,
+      }),
+    );
+    if (response.statusCode == 200) {
+      // 刪除成功
+      debugPrint(jsonDecode(response.body)['message']);
+      return true;
+    } else {
+      // 刪除失敗，可視情況處理錯誤訊息
+      debugPrint('錯誤 ${response.statusCode}: ${response.body}');
+      return false;
+    }
+  }
 }

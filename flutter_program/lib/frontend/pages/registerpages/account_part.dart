@@ -1,4 +1,4 @@
-import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart'; //用於顯示數字鍵盤
@@ -90,9 +90,9 @@ class _AccountSetupState extends State<AccountSetup> {
                         final error = await register.sendCode();
                         if (error == null) {
                           register.showVerification = true;
-                          FrontTool.showError('驗證碼已寄出，請於電子郵件查看', Colors.green, Colors.white);
+                          FrontUtil.showError('驗證碼已寄出，請於電子郵件查看', Colors.green, Colors.white);
                         } else {
-                          FrontTool.showError(error, Colors.red, Colors.white);
+                          FrontUtil.showError(error, Colors.red, Colors.white);
                         }
                       },
                 style: ElevatedButton.styleFrom(
@@ -161,9 +161,9 @@ class _AccountSetupState extends State<AccountSetup> {
                         final error = await register.verifyCode();
                         if (error == null) {
                           register.showPassword = true;
-                          FrontTool.showError('驗證碼成功!請設定密碼', Colors.green, Colors.white);
+                          FrontUtil.showError('驗證碼成功!請設定密碼', Colors.green, Colors.white);
                         } else {
-                          FrontTool.showError(error, Colors.red, Colors.white);
+                          FrontUtil.showError(error, Colors.red, Colors.white);
                         }
                       }
                     : null,
@@ -284,17 +284,17 @@ class _AccountSetupState extends State<AccountSetup> {
                       ? null
                       : () async {
                           if (!register.isFilled()) {
-                            FrontTool.showError('尚有欄位未填寫', Colors.red, Colors.white);
+                            FrontUtil.showError('尚有欄位未填寫', Colors.red, Colors.white);
                             return;
                           }
                           final error = await register.register();
                           if (!context.mounted) return; //確認 widget 還在畫面上，才繼續操作 context
                           if (error == null) {
-                            FrontTool.showError('註冊成功!請登入帳號', Colors.green, Colors.white);
+                            FrontUtil.showError('註冊成功!請登入帳號', Colors.green, Colors.white);
                             Navigator.pushReplacement(context,
                                 MaterialPageRoute(builder: (context) => const LoginPage()));
                           } else {
-                            FrontTool.showError(error, Colors.red, Colors.white);
+                            FrontUtil.showError(error, Colors.red, Colors.white);
                           }
                           debugPrint(register.toString());
                         },

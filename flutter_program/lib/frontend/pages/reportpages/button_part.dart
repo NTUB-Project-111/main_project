@@ -2,7 +2,7 @@ import 'package:drw/backend/models/report_model.dart';
 import 'package:drw/backend/models/user_model.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/frontend/pages/tabs/tabs.dart';
-import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,7 +63,7 @@ class _ButtonPartState extends State<ButtonPart> {
                                 final result = await report.uploadData(user.id);
                                 if (result) {
                                   await RecordService.getRecords(context, user.id);
-                                  FrontTool.showError('報告儲存成功!', Colors.green, Colors.white);
+                                  FrontUtil.showError('報告儲存成功!', Colors.green, Colors.white);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -71,7 +71,7 @@ class _ButtonPartState extends State<ButtonPart> {
                                                 currentIndex: 0,
                                               )));
                                 } else {
-                                  FrontTool.showError('報告儲存失敗', Colors.red, Colors.white);
+                                  FrontUtil.showError('報告儲存失敗', Colors.red, Colors.white);
                                 }
                               },
                         style: ElevatedButton.styleFrom(

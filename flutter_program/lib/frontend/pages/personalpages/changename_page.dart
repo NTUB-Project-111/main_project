@@ -1,6 +1,6 @@
 import 'package:drw/backend/models/profiles_model.dart';
 import 'package:drw/backend/models/user_model.dart';
-import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:drw/frontend/headers/header4.dart';
 import 'package:provider/provider.dart';
@@ -75,14 +75,14 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
                           child: ElevatedButton(
                             onPressed: () async {
                               if (!profiles.isFilled()) {
-                                FrontTool.showError('請填寫新暱稱', Colors.red, Colors.white);
+                                FrontUtil.showError('請填寫新暱稱', Colors.red, Colors.white);
                                 return;
                               }
                               final user = Provider.of<User>(context, listen: false);
                               final success = await profiles.updateUserName(user.id, profiles.name);
                               if (success) {
                                 user.name = profiles.name;
-                                FrontTool.showError('名稱更新成功', Colors.green, Colors.white);
+                                FrontUtil.showError('名稱更新成功', Colors.green, Colors.white);
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -90,7 +90,7 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
                                   ),
                                 );
                               } else {
-                                FrontTool.showError('名稱更新失敗', Colors.red, Colors.white);
+                                FrontUtil.showError('名稱更新失敗', Colors.red, Colors.white);
                               }
                             },
                             style: ElevatedButton.styleFrom(

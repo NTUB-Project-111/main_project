@@ -6,7 +6,7 @@ import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/backend/viewmodels/remind_view_model.dart';
-import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +26,7 @@ class _RemindPageState extends State<RemindPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_isInitialized) return;
-    loadReminders(); // 改成呼叫這個方法
+    loadReminders();
     _isInitialized = true;
   }
 
@@ -36,9 +36,11 @@ class _RemindPageState extends State<RemindPage> {
       setState(() {
         reminders
           ..clear()
-          ..addAll(
-            userInfo.reports.where((r) => r.ifcall == 'Y').map((r) => Reminder.fromReport(r)),
-          );
+          ..addAll(userInfo.reports
+                  .where((r) => r.ifcall == 'Y')
+                  .map((r) => Reminder.fromReport(r))
+                  .whereType<Reminder>() // 過濾掉 null
+              );
       });
     }
   }
@@ -53,6 +55,7 @@ class _RemindPageState extends State<RemindPage> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF669FA5)),
           onPressed: () {
             final modifiedList = reminders.where((r) => r.isModified).toList();
+            debugPrint('${modifiedList}');
             if (modifiedList.isNotEmpty) {
               debugPrint('被修改的筆數：${modifiedList.length}');
               showConfirmDialog(
@@ -87,7 +90,11 @@ class _RemindPageState extends State<RemindPage> {
       body: ListView.builder(
         padding: const EdgeInsets.all(15),
         itemCount: reminders.length,
-        itemBuilder: (context, index) => buildReminderCard(index),
+        itemBuilder: (context, index) {
+          final reminder = reminders[index];
+          if (reminder.isDelete) return const SizedBox(); // 或 return Container()
+          return buildReminderCard(index);
+        },
       ),
     );
   }
@@ -235,7 +242,11 @@ class _RemindPageState extends State<RemindPage> {
               margin: const EdgeInsets.only(left: 3),
               child: IconButton(
                 icon: const Icon(Icons.cancel, color: Colors.red, size: 30),
-                onPressed: () => setState(() => reminders.removeAt(index)),
+                onPressed: () => setState(() {
+                  reminders[index].isDelete = true;
+
+                  // reminders.removeAt(index);
+                }),
               ),
             ),
         ],
@@ -286,21 +297,19 @@ class _RemindPageState extends State<RemindPage> {
                 backgroundColor: const Color(0xFF589399),
               ),
               onPressed: () async {
-                Navigator.pop(context);
                 RemindViewModel remind = RemindViewModel();
                 final message = await remind.updateRemind(reminds);
                 if (message) {
-                  FrontTool.showError('儲存成功!', Colors.green, Colors.white);
+                  FrontUtil.showError('儲存成功!', Colors.green, Colors.white);
 
                   final userReport = await RecordService.fetchReports(reminds[0].userId);
                   final userProvider = Provider.of<UserProvider>(context, listen: false);
                   final user = userProvider.user;
                   if (user != null) {
                     user.reports = userReport;
-                    userProvider.setUserInfo(user); // 若有定義 setter，否則手動觸發 notifyListeners()
+                    userProvider.setUserInfo(user);
                   }
 
-                  // 儲存 provider 資料前，請確保 context 還活著
                   if (mounted) {
                     Provider.of<ReportProvider>(context, listen: false).setReports(userReport);
                     final allReminds = userReport.expand((r) => r.reminds).toList();
@@ -308,8 +317,10 @@ class _RemindPageState extends State<RemindPage> {
                     onConfirm();
                     await loadReminders();
                   }
+
+                  Navigator.pop(context);
                 } else {
-                  FrontTool.showError('儲存變更失敗，請稍後再試', Colors.red, Colors.white);
+                  FrontUtil.showError('儲存變更失敗，請稍後再試', Colors.red, Colors.white);
                 }
               },
               child: Text(confirm,

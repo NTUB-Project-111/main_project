@@ -1,16 +1,15 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
 
 class WoundAnalysis {
-  static const String apiKey = ""; // API 金鑰
-
   static Future<Map<String, dynamic>> analyzeWound(File imageFile) async {
     try {
-      const String modelUrl = "https://detect.roboflow.com/wound-ebsdw/10?api_key=$apiKey";
-
+      final apiKey = dotenv.env['YOLO_API_KEY'];
+      final String modelUrl = "https://detect.roboflow.com/wound-ebsdw/10?api_key=$apiKey";
       final bytes = await imageFile.readAsBytes();
       final decoded = img.decodeImage(bytes);
       if (decoded == null) throw Exception("無法解析圖片");
