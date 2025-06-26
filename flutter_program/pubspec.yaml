@@ -53,6 +53,7 @@ dependencies:
   google_maps_webservice: ^0.0.20-nullsafety.5  # Google Places & 距離計算
   flutter_dotenv: ^5.2.1 #使用.env檔案
   url_launcher: ^6.3.1 #跳轉至外部網站
+  carousel_slider: ^5.1.1 #輪播圖片
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +82,9 @@ flutter:
     - images/icon.png
     - images/line.png
     - images/hospital.png
+    - images/cut.png
+    - images/burn.png
+    - images/bruise.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -55,7 +55,7 @@ class _RemindPageState extends State<RemindPage> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF669FA5)),
           onPressed: () {
             final modifiedList = reminders.where((r) => r.isModified).toList();
-            debugPrint('${modifiedList}');
+            debugPrint('$modifiedList');
             if (modifiedList.isNotEmpty) {
               debugPrint('被修改的筆數：${modifiedList.length}');
               showConfirmDialog(
