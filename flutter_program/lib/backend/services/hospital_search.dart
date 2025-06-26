@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HospitalSearch {
-  static const String googleMapsApiKey = "";
-
+  static var apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'];
   static Future<List<Map<String, dynamic>>> getNearbyHospitals() async {
     try {
       Location location = Location();
@@ -37,7 +37,7 @@ class HospitalSearch {
           "&radius=2000"
           "&type=hospital"
           "&language=zh-TW"
-          "&key=$googleMapsApiKey";
+          "&key=$apiKey";
 
       final placesResponse = await http.get(Uri.parse(placesUrl));
       if (placesResponse.statusCode != 200) return [];
@@ -68,16 +68,14 @@ class HospitalSearch {
       if (hospitalList.isEmpty) return [];
 
       // 取得距離與步行時間
-      String destinations = hospitalList
-          .map((h) => "${h['lat']},${h['lng']}")
-          .join('|');
+      String destinations = hospitalList.map((h) => "${h['lat']},${h['lng']}").join('|');
 
       String distanceUrl = "https://maps.googleapis.com/maps/api/distancematrix/json"
           "?origins=$lat,$lng"
           "&destinations=$destinations"
           "&mode=walking"
           "&language=zh-TW"
-          "&key=$googleMapsApiKey";
+          "&key=$apiKey";
 
       final distanceResponse = await http.get(Uri.parse(distanceUrl));
       if (distanceResponse.statusCode != 200) return [];

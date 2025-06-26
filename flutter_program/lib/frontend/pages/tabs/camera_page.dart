@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:drw/backend/models/report_model.dart';
 import 'package:drw/frontend/pages/report_page.dart';
-import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +45,7 @@ class _CameraPageState extends State<CameraPage> {
       final fileImage = File(photo.path);
       if (!mounted) return;
       Provider.of<Report>(context, listen: false).setImage(fileImage);
-      FrontTool.showImageDialog(
+      FrontUtil.showImageDialog(
         context,
         fileImage,
         '確認傷口照片',
@@ -107,7 +107,7 @@ class _CameraPageState extends State<CameraPage> {
       final fileImage = File(image.path);
       if (!mounted) return;
       Provider.of<Report>(context, listen: false).setImage(fileImage);
-      FrontTool.showImageDialog(
+      FrontUtil.showImageDialog(
         context,
         fileImage,
         '確認傷口照片',
@@ -149,7 +149,7 @@ class _CameraPageState extends State<CameraPage> {
                           child: CameraPreview(_controller!),
                         ),
                       )
-                    : FrontTool.loading(),
+                    : FrontUtil.loading(),
                 Positioned(
                   left: 10,
                   top: 30,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../backend/models/register_model.dart';
 import '../headers/header1.dart';
-import '../tools/front_tool.dart';
+import '../utility/front_util.dart';
 import 'registerpages/personal_part.dart';
 import 'registerpages/account_part.dart';
 
@@ -32,7 +32,7 @@ class RegisterPage extends StatelessWidget {
                     child: Column(
                       children: [
                         const PersonalInfo(),
-                        FrontTool.dash(MediaQuery.of(context).size.width),
+                        FrontUtil.dash(MediaQuery.of(context).size.width),
                         const AccountSetup()
                       ],
                     ),

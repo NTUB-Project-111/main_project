@@ -3,7 +3,7 @@ import 'package:drw/backend/models/user_model.dart';
 import 'package:drw/frontend/headers/header4.dart';
 import 'package:drw/frontend/pages/tabs/personal_page.dart';
 import 'package:drw/frontend/pages/tabs/tabs.dart';
-import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:drw/frontend/views/auth_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -196,7 +196,7 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                           child: ElevatedButton(
                             onPressed: () async {
                               if (!changePwd.isFilled()) {
-                                FrontTool.showError('請填寫完所有欄位', Colors.red, Colors.white);
+                                FrontUtil.showError('請填寫完所有欄位', Colors.red, Colors.white);
                                 return;
                               }
                               final user = Provider.of<User>(context, listen: false);
@@ -204,17 +204,17 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                               error = await changePwd.verifyPassword(user.id);
                               if (error == null) {
                                 if (!Auth.validatePassword(changePwd.newPwd)) {
-                                  FrontTool.showError(
+                                  FrontUtil.showError(
                                       '新密碼請設定長度為8-16的英文加數字組合', Colors.red, Colors.white);
                                   return;
                                 }
                                 if (!Auth.verifyPassword(changePwd.newPwd, changePwd.rePwd)) {
-                                  FrontTool.showError('密碼不一致', Colors.red, Colors.white);
+                                  FrontUtil.showError('密碼不一致', Colors.red, Colors.white);
                                   return;
                                 }
                                 error = await changePwd.updatePassword(user.id);
                                 if (error == null) {
-                                  FrontTool.showError('密碼修改成功!', Colors.green, Colors.white);
+                                  FrontUtil.showError('密碼修改成功!', Colors.green, Colors.white);
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
@@ -224,10 +224,10 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                                     ),
                                   );
                                 } else {
-                                  FrontTool.showError(error, Colors.red, Colors.white);
+                                  FrontUtil.showError(error, Colors.red, Colors.white);
                                 }
                               } else {
-                                FrontTool.showError(error, Colors.red, Colors.white);
+                                FrontUtil.showError(error, Colors.red, Colors.white);
                               }
                               debugPrint(changePwd.toString());
                             },

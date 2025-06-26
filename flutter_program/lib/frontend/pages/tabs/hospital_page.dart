@@ -1,6 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:drw/backend/services/google_map.dart';
-import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:drw/frontend/views/hospital_view.dart';
@@ -59,7 +59,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                     if (!hospital.showDropDownForm) _buildTopBar(hospital),
                     Expanded(
                       child: _currentPosition == null
-                          ? Center(child: FrontTool.loading())
+                          ? Center(child: FrontUtil.loading())
                           : Consumer<GoogleMapService>(
                               builder: (context, mapService, _) {
                                 return mapService.buildGoogleMap(

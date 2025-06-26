@@ -1,5 +1,5 @@
 import 'package:drw/backend/models/report_model.dart';
-import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,7 +35,7 @@ class _CarePartState extends State<CarePart> {
                   return IconButton(
                     onPressed: () {
                       report.toggleNotify();
-                      if (report.notify) FrontTool.showRemindDialog(context, report);
+                      if (report.notify) FrontUtil.showRemindDialog(context, report);
                     },
                     icon: report.notify
                         ? const Icon(

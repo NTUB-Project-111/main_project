@@ -1,5 +1,5 @@
 import 'package:drw/frontend/headers/header2.dart';
-import 'package:drw/frontend/tools/front_tool.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../backend/models/forget_model.dart';
@@ -72,10 +72,10 @@ class _ForgetPageState extends State<ForgetPage> {
                                     final error = await forget.sendCode();
                                     if (error == null) {
                                       forget.showVerification = true;
-                                      FrontTool.showError(
+                                      FrontUtil.showError(
                                           '驗證碼已寄出，請於電子郵件查看', Colors.green, Colors.white);
                                     } else {
-                                      FrontTool.showError(error, Colors.red, Colors.white);
+                                      FrontUtil.showError(error, Colors.red, Colors.white);
                                     }
                                   },
                             style: TextButton.styleFrom(
@@ -132,10 +132,10 @@ class _ForgetPageState extends State<ForgetPage> {
                                       final error = await forget.verifyCode();
                                       if (error == null) {
                                         forget.showPassword = true;
-                                        FrontTool.showError(
+                                        FrontUtil.showError(
                                             '驗證成功，請輸入新密碼', Colors.green, Colors.white);
                                       } else {
-                                        FrontTool.showError(error, Colors.red, Colors.white);
+                                        FrontUtil.showError(error, Colors.red, Colors.white);
                                       }
                                     }
                                   : null,
@@ -245,7 +245,7 @@ class _ForgetPageState extends State<ForgetPage> {
 
                           if (!forget.isFilled()) {
                             debugPrint("欄位未填寫");
-                            FrontTool.showError('尚有欄位未填寫', Colors.red, Colors.white);
+                            FrontUtil.showError('尚有欄位未填寫', Colors.red, Colors.white);
                             return;
                           }
 
@@ -260,10 +260,10 @@ class _ForgetPageState extends State<ForgetPage> {
                               myContext,
                               MaterialPageRoute(builder: (context) => const LoginPage()),
                             );
-                            FrontTool.showError('密碼修改成功!', Colors.green, Colors.white);
+                            FrontUtil.showError('密碼修改成功!', Colors.green, Colors.white);
                           } else {
                             debugPrint("重設密碼失敗：$error");
-                            FrontTool.showError(error, Colors.red, Colors.white);
+                            FrontUtil.showError(error, Colors.red, Colors.white);
                           }
 
                           debugPrint("forget 狀態：${forget.toString()}");
