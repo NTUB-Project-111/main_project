@@ -1,22 +1,22 @@
+import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header3.dart';
 import 'package:drw/frontend/pages/gallerypages/showreport_page.dart';
 import 'package:drw/frontend/pages/remind_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:drw/backend/models/records_model.dart';
 
 class TotalPage extends StatefulWidget {
-  final List<UserRecord> yearlyRecords;
+  final List<UserReport> yearlyReports;
 
-  const TotalPage({super.key, required this.yearlyRecords});
+  const TotalPage({super.key, required this.yearlyReports});
 
   @override
   State<TotalPage> createState() => _TotalPageState();
 }
 
 class _TotalPageState extends State<TotalPage> {
-  late Map<String, List<UserRecord>> monthlyRecords;
+  late Map<String, List<UserReport>> monthlyReports;
 
   @override
   void initState() {
@@ -25,13 +25,13 @@ class _TotalPageState extends State<TotalPage> {
   }
 
   void _groupImagesByMonth() {
-    monthlyRecords = {};
-    for (UserRecord record in widget.yearlyRecords) {
-      DateTime date = DateTime.parse(record.date);
+    monthlyReports = {};
+    for (UserReport report in widget.yearlyReports) {
+      DateTime date = DateTime.parse(report.date);
       String monthKey = DateFormat('MM月').format(date);
 
-      monthlyRecords.putIfAbsent(monthKey, () => []);
-      monthlyRecords[monthKey]!.add(record);
+      monthlyReports.putIfAbsent(monthKey, () => []);
+      monthlyReports[monthKey]!.add(report);
     }
   }
 
@@ -86,8 +86,8 @@ class _TotalPageState extends State<TotalPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (var month in monthlyRecords.keys.toList()..sort())
-                      _buildMonth(month, monthlyRecords[month]!),
+                    for (var month in monthlyReports.keys.toList()..sort())
+                      _buildMonth(month, monthlyReports[month]!),
                   ],
                 ),
               ),
@@ -98,7 +98,7 @@ class _TotalPageState extends State<TotalPage> {
     );
   }
 
-  Widget _buildMonth(String month, List<UserRecord> records) {
+  Widget _buildMonth(String month, List<UserReport> records) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -120,7 +120,7 @@ class _TotalPageState extends State<TotalPage> {
     );
   }
 
-  Widget _buildImage(String imageUrl, UserRecord userRecord) {
+  Widget _buildImage(String imageUrl, UserReport userReport) {
     return GestureDetector(
       child: Container(
         margin: const EdgeInsets.only(right: 10, bottom: 10),
@@ -144,7 +144,7 @@ class _TotalPageState extends State<TotalPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ShowReportPage(record: userRecord),
+            builder: (context) => ShowReportPage(report: userReport),
           ),
         );
       },

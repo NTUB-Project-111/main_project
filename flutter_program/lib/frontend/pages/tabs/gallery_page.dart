@@ -1,4 +1,5 @@
-import 'package:drw/backend/models/records_model.dart';
+import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header3.dart';
 import 'package:drw/frontend/pages/gallerypages/showreport_page.dart';
@@ -26,26 +27,27 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     // 分類 userRecords
-    List<UserRecord> cuts = [];
-    List<UserRecord> abrasions = [];
-    List<UserRecord> bruises = [];
-    List<UserRecord> burns = [];
-    final records = context.watch<Records>().records;
+    List<UserReport> cuts = [];
+    List<UserReport> abrasions = [];
+    List<UserReport> bruises = [];
+    List<UserReport> burns = [];
+    final reportProvider = context.watch<ReportProvider>();
+    final reports = reportProvider.reports;
 
-    if (records.isNotEmpty) {
-      for (var record in records) {
-        switch (record.type) {
+    if (reports.isNotEmpty) {
+      for (var report in reports) {
+        switch (report.type) {
           case '割傷':
-            cuts.add(record);
+            cuts.add(report);
             break;
           case '擦傷':
-            abrasions.add(record);
+            abrasions.add(report);
             break;
           case '瘀青':
-            bruises.add(record);
+            bruises.add(report);
             break;
           case '燒傷':
-            burns.add(record);
+            burns.add(report);
             break;
         }
       }
@@ -89,7 +91,7 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                 physics: const NeverScrollableScrollPhysics(),
                 controller: _tabController,
                 children: [
-                  _buildImagePage(records), // 全部
+                  _buildImagePage(reports), // 全部
                   _buildImagePage(cuts), // 割傷
                   _buildImagePage(abrasions), // 擦傷
                   _buildImagePage(bruises), // 瘀青
@@ -101,7 +103,7 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
         ));
   }
 
-  Widget _buildImagePage(List<UserRecord> records) {
+  Widget _buildImagePage(List<UserReport> reports) {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Padding(
@@ -116,21 +118,21 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: records.map((record) => _buildRecentImage(record)).toList(),
+                children: reports.map((report) => _buildRecentImage(report)).toList(),
               ),
             ),
             const SizedBox(height: 8),
             const Divider(color: Color(0xFF589399)),
-            _buildYearlyImage('2025', records),
-            _buildYearlyImage('2024', records),
-            _buildYearlyImage('2023', records),
+            _buildYearlyImage('2025', reports),
+            _buildYearlyImage('2024', reports),
+            _buildYearlyImage('2023', reports),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildRecentImage(UserRecord record) {
+  Widget _buildRecentImage(UserReport report) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: Column(
@@ -146,7 +148,7 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(10), // 設定圓角半徑 (可自行調整)
                     child: Image.network(
-                      Uri.parse(ApiBase.baseUrl).resolve(record.photo).toString(),
+                      Uri.parse(ApiBase.baseUrl).resolve(report.photo).toString(),
                       width: 82,
                       height: 82,
                       fit: BoxFit.cover,
@@ -160,12 +162,12 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                   context,
                   MaterialPageRoute(
                       builder: (context) => ShowReportPage(
-                            record: record,
+                            report: report,
                           )));
             },
           ),
           Text(
-            record.date,
+            report.date,
             style: const TextStyle(
               color: Color(0xFF589399),
               fontSize: 10,
@@ -177,10 +179,10 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildYearlyImage(String y, List<UserRecord>? records) {
+  Widget _buildYearlyImage(String y, List<UserReport>? reports) {
     // 篩選出該年份的記錄
-    List<UserRecord> yearlyRecords = records?.where((record) {
-          return record.date.startsWith(y);
+    List<UserReport> yearlyReports = reports?.where((report) {
+          return report.date.startsWith(y);
         }).toList() ??
         [];
 
@@ -200,7 +202,7 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                     context,
                     MaterialPageRoute(
                         builder: (context) => TotalPage(
-                              yearlyRecords: yearlyRecords,
+                              yearlyReports: yearlyReports,
                             )));
               },
               style: TextButton.styleFrom(
@@ -234,7 +236,7 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
           ),
           width: double.infinity,
           height: 200,
-          child: yearlyRecords.isEmpty
+          child: yearlyReports.isEmpty
               ? Center(
                   child: Text(
                     '無 $y 年的傷口紀錄',
@@ -247,18 +249,18 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          if (yearlyRecords.isNotEmpty) {
+                          if (yearlyReports.isNotEmpty) {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ShowReportPage(
-                                          record: yearlyRecords[0],
+                                          report: yearlyReports[0],
                                         )));
                           }
                         },
                         // onLongPress: () {
                         //   _showConfirmationDialog(
-                        //       yearlyRecords[0]['photo'], yearlyRecords[0]['type']);
+                        //       yearlyReports[0]['photo'], yearlyReports[0]['type']);
                         // },
                         child: Container(
                           margin: const EdgeInsets.only(right: 10),
@@ -268,7 +270,7 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: Image.network(
-                              Uri.parse(ApiBase.baseUrl).resolve(yearlyRecords[0].photo).toString(),
+                              Uri.parse(ApiBase.baseUrl).resolve(yearlyReports[0].photo).toString(),
                               width: double.infinity,
                               height: double.infinity,
                               fit: BoxFit.cover,
@@ -279,14 +281,14 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                     ),
                     // 右側小圖片區域
                     Expanded(
-                      child: yearlyRecords.length > 1
+                      child: yearlyReports.length > 1
                           ? Column(
                               children: [
                                 // 右側上方兩張圖片
                                 Expanded(
                                   child: Row(
                                     children: [
-                                      if (yearlyRecords.length > 1)
+                                      if (yearlyReports.length > 1)
                                         Expanded(
                                           child: GestureDetector(
                                             onTap: () {
@@ -294,18 +296,18 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) => ShowReportPage(
-                                                            record: yearlyRecords[1],
+                                                            report: yearlyReports[1],
                                                           )));
                                             },
                                             // onLongPress: () {
-                                            //   _showConfirmationDialog(yearlyRecords[1]['photo'],
-                                            //       yearlyRecords[1]['type']);
+                                            //   _showConfirmationDialog(yearlyReports[1]['photo'],
+                                            //       yearlyReports[1]['type']);
                                             // },
                                             child: ClipRRect(
                                               borderRadius: BorderRadius.circular(10),
                                               child: Image.network(
                                                 Uri.parse(ApiBase.baseUrl)
-                                                    .resolve(yearlyRecords[1].photo)
+                                                    .resolve(yearlyReports[1].photo)
                                                     .toString(),
                                                 width: double.infinity,
                                                 height: double.infinity,
@@ -314,8 +316,8 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                                             ),
                                           ),
                                         ),
-                                      if (yearlyRecords.length > 2) const SizedBox(width: 10),
-                                      if (yearlyRecords.length > 2)
+                                      if (yearlyReports.length > 2) const SizedBox(width: 10),
+                                      if (yearlyReports.length > 2)
                                         Expanded(
                                           child: GestureDetector(
                                             onTap: () {
@@ -323,18 +325,18 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) => ShowReportPage(
-                                                            record: yearlyRecords[2],
+                                                            report: yearlyReports[2],
                                                           )));
                                             },
                                             // onLongPress: () {
-                                            //   _showConfirmationDialog(yearlyRecords[2]['photo'],
-                                            //       yearlyRecords[2]['type']);
+                                            //   _showConfirmationDialog(yearlyReports[2]['photo'],
+                                            //       yearlyReports[2]['type']);
                                             // },
                                             child: ClipRRect(
                                               borderRadius: BorderRadius.circular(10),
                                               child: Image.network(
                                                 Uri.parse(ApiBase.baseUrl)
-                                                    .resolve(yearlyRecords[2].photo)
+                                                    .resolve(yearlyReports[2].photo)
                                                     .toString(),
                                                 width: double.infinity,
                                                 height: double.infinity,
@@ -348,7 +350,7 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                                 ),
                                 const SizedBox(height: 10), // 間距
                                 // 右側下方單獨一張圖片
-                                if (yearlyRecords.length > 3)
+                                if (yearlyReports.length > 3)
                                   Expanded(
                                     child: GestureDetector(
                                       onTap: () {
@@ -356,18 +358,18 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) => ShowReportPage(
-                                                      record: yearlyRecords[3],
+                                                      report: yearlyReports[3],
                                                     )));
                                       },
                                       // onLongPress: () {
                                       //   _showConfirmationDialog(
-                                      //       yearlyRecords[3]['photo'], yearlyRecords[3]['type']);
+                                      //       yearlyReports[3]['photo'], yearlyReports[3]['type']);
                                       // },
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
                                         child: Image.network(
                                           Uri.parse(ApiBase.baseUrl)
-                                              .resolve(yearlyRecords[3].photo)
+                                              .resolve(yearlyReports[3].photo)
                                               .toString(),
                                           width: double.infinity,
                                           height: double.infinity,

@@ -17,5 +17,12 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateUserName(String newName) {
+    if (_user != null) {
+      _user = _user!.copyWith(name: newName);
+      notifyListeners();
+    }
+  }
+
   List<UserReport> get reports => _user?.reports ?? [];
 }

@@ -1,10 +1,11 @@
-import 'package:drw/backend/models/user_model.dart';
+import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header3.dart';
 import 'package:drw/frontend/pages/login_page.dart';
 import 'package:drw/frontend/pages/personalpages/changepwd_page.dart';
 import 'package:drw/frontend/pages/personalpages/profiles_page.dart';
 import 'package:drw/frontend/pages/remind_page.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -43,7 +44,8 @@ class _PersonalPageState extends State<PersonalPage> {
                         ),
                       ],
                     ),
-                    child: Consumer<User>(builder: (context, user, _) {
+                    child: Consumer<UserProvider>(builder: (context, userProvider, _) {
+                      final user = userProvider.user;
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -56,7 +58,7 @@ class _PersonalPageState extends State<PersonalPage> {
                               shape: BoxShape.circle,
                             ),
                             child: ClipOval(
-                              child: user.picture.isNotEmpty
+                              child: user!.picture.isNotEmpty
                                   ? Image.network(
                                       Uri.parse(ApiBase.baseUrl).resolve(user.picture).toString(),
                                       width: 100,
@@ -101,9 +103,7 @@ class _PersonalPageState extends State<PersonalPage> {
                 _buildDetailItem(
                   const Icon(Icons.lock, color: Color(0xFF669FA5), size: 30),
                   "變更密碼",
-                  targetPage: const ChangePwdPage(
-                    userPassword: '1234',
-                  ),
+                  targetPage: const ChangePwdPage(),
                 ),
                 _buildDetailItem(
                   const Icon(Icons.settings, color: Color(0xFF669FA5), size: 30),
@@ -114,7 +114,22 @@ class _PersonalPageState extends State<PersonalPage> {
                   const Icon(Icons.logout, color: Color(0xFF669FA5), size: 30),
                   "登出",
                   targetPage: null,
-                  onPressed: () {},
+                  onPressed: () {
+                    FrontUtil.showTextDialog(
+                      context,
+                      '確定要登出嗎？',
+                      '確認',
+                      '取消',
+                      onConfirm: () {
+                        // 你要執行的動作，例如：
+                        context.read<UserProvider>().clearUser();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
+                        );
+                      },
+                    );
+                  },
                 ),
               ],
             ),
