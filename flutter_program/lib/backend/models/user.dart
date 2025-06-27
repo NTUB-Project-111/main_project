@@ -19,6 +19,25 @@ class UserInfo {
     required this.reports,
   });
 
+  UserInfo copyWith({
+    String? name,
+    String? gender,
+    String? birthday,
+    String? picture,
+    String? email,
+    List<UserReport>? reports,
+  }) {
+    return UserInfo(
+      id: id,
+      name: name ?? this.name,
+      gender: gender ?? this.gender,
+      birthday: birthday ?? this.birthday,
+      picture: picture ?? this.picture,
+      email: email ?? this.email,
+      reports: reports ?? this.reports,
+    );
+  }
+
   factory UserInfo.fromJson(Map<String, dynamic> json) {
     return UserInfo(
       id: json['id'],

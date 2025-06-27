@@ -1,5 +1,5 @@
 import 'package:drw/backend/models/profiles_model.dart';
-import 'package:drw/backend/models/user_model.dart';
+import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:drw/frontend/headers/header4.dart';
@@ -78,10 +78,13 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
                                 FrontUtil.showError('請填寫新暱稱', Colors.red, Colors.white);
                                 return;
                               }
-                              final user = Provider.of<User>(context, listen: false);
-                              final success = await profiles.updateUserName(user.id, profiles.name);
+                              final userProvider =
+                                  Provider.of<UserProvider>(context, listen: false);
+                              final user = userProvider.user;
+                              final success =
+                                  await profiles.updateUserName(user!.id.toString(), profiles.name);
                               if (success) {
-                                user.name = profiles.name;
+                                userProvider.updateUserName(profiles.name);
                                 FrontUtil.showError('名稱更新成功', Colors.green, Colors.white);
                                 Navigator.pushReplacement(
                                   context,

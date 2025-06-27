@@ -1,11 +1,12 @@
-import 'package:drw/backend/models/records_model.dart';
+
+import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header5.dart';
 import 'package:flutter/material.dart';
 
 class ShowReportPage extends StatefulWidget {
-  final UserRecord record;
-  const ShowReportPage({super.key, required this.record});
+  final UserReport report;
+  const ShowReportPage({super.key, required this.report});
 
   @override
   State<ShowReportPage> createState() => _ShowReportPageState();
@@ -17,13 +18,13 @@ class _ShowReportPageState extends State<ShowReportPage> {
   @override
   void initState() {
     super.initState();
-    careSteps = widget.record.careSteps
+    careSteps = widget.report.caremode
         .replaceAll('[', '') // 移除左方括號
         .replaceAll(']', '') // 移除右方括號
         .split(',') // 用逗號切割字串
         .map((e) => e.trim()) // 去除每個元素前後的空格
         .toList();
-    tags = widget.record.tags
+    tags = widget.report.choosekind
         .split(',') // 用逗號切割字串
         .map((e) => e.trim()) // 去除每個元素前後的空格
         .toList();
@@ -102,7 +103,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                           ),
                           // 使用系統抓取的日期顯示
                           Text(
-                            widget.record.date,
+                            widget.report.date,
                             style: const TextStyle(
                               color: Color(0xFF589399),
                               fontSize: 12,
@@ -129,7 +130,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                 borderRadius: BorderRadius.circular(10),
                                 child: Image.network(
                                   Uri.parse(ApiBase.baseUrl)
-                                      .resolve(widget.record.photo)
+                                      .resolve(widget.report.photo)
                                       .toString(),
                                   height: 180,
                                   width: 180,
@@ -158,7 +159,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                 ),
                               ),
                               Text(
-                                widget.record.type,
+                                widget.report.type,
                                 style: const TextStyle(
                                   color: Color(0xFF589399),
                                   fontSize: 48,
@@ -177,7 +178,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                       ),
                                     ),
                                     Text(
-                                      widget.record.oktime,
+                                      widget.report.oktime,
                                       style: const TextStyle(
                                         color: Color(0xFF589399),
                                         fontSize: 26,
@@ -231,7 +232,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                 boxShadow: const [
                                   BoxShadow(color: Color(0x4D000000), blurRadius: 1)
                                 ]),
-                            child: Text(widget.record.selfRecord,
+                            child: Text(widget.report.recording,
                                 style: const TextStyle(color: Color(0xFF589399)))),
                         const SizedBox(
                           height: 15,

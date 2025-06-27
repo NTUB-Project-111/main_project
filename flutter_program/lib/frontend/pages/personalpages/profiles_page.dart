@@ -1,9 +1,8 @@
-import 'package:drw/backend/models/user_model.dart';
+import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header4.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../tabs/tabs.dart';
 import 'changename_page.dart';
 
@@ -25,7 +24,8 @@ class _ProfilesPageState extends State<ProfilesPage> {
           Column(
             children: [
               // 使用者頭像（靜態）
-              Consumer<User>(builder: (context, user, _) {
+              Consumer<UserProvider>(builder: (context, userProvider, _) {
+                final user = userProvider.user;
                 return Container(
                   margin: const EdgeInsets.only(top: 30, bottom: 22),
                   width: 110,
@@ -40,27 +40,33 @@ class _ProfilesPageState extends State<ProfilesPage> {
                     ],
                     shape: BoxShape.circle,
                   ),
-                  child: user.picture.isNotEmpty
-                      ? Image.network(
-                          Uri.parse(ApiBase.baseUrl).resolve(user.picture).toString(),
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Center(child: Text("圖片載入失敗"));
-                          },
-                        )
-                      : const Icon(
-                          Icons.person,
-                          color: Color(0xFF669FA5),
-                          size: 80,
-                        ),
+                  child: ClipOval(
+                    child: user!.picture.isNotEmpty
+                        ? Image.network(
+                            Uri.parse(ApiBase.baseUrl).resolve(user.picture).toString(),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Center(child: Text("圖片載入失敗"));
+                            },
+                          )
+                        : const Icon(
+                            Icons.person,
+                            color: Color(0xFF669FA5),
+                            size: 80,
+                          ),
+                  ),
                 );
               }),
 
               // 更換頭像按鈕（無動作）
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  // final userProvider = context.read<UserProvider>();
+                  // final user = userProvider.user;
+                  // final message = await UserService.updateImage(userId: user!.id, imageFile: imageFile);
+                },
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
                   backgroundColor: const Color.fromRGBO(102, 159, 165, 1),
@@ -104,9 +110,10 @@ class _ProfilesPageState extends State<ProfilesPage> {
                               style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
                           Row(
                             children: [
-                              Consumer<User>(builder: (context, user, _) {
+                              Consumer<UserProvider>(builder: (context, userProvider, _) {
+                                final user = userProvider.user;
                                 return Text(
-                                  user.name,
+                                  user!.name,
                                   style: const TextStyle(
                                     fontSize: 13,
                                     color: Color.fromARGB(255, 140, 140, 140),
@@ -144,9 +151,10 @@ class _ProfilesPageState extends State<ProfilesPage> {
                         children: [
                           const Text('生日',
                               style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
-                          Consumer<User>(builder: (context, user, _) {
+                          Consumer<UserProvider>(builder: (context, userProvider, _) {
+                            final user = userProvider.user;
                             return Text(
-                              user.birthday,
+                              user!.birthday,
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: Color.fromARGB(255, 140, 140, 140),
@@ -166,9 +174,10 @@ class _ProfilesPageState extends State<ProfilesPage> {
                         children: [
                           const Text('電子信箱',
                               style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
-                          Consumer<User>(builder: (context, user, _) {
+                          Consumer<UserProvider>(builder: (context, userProvider, _) {
+                            final user = userProvider.user;
                             return Text(
-                              user.email,
+                              user!.email,
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: Color.fromARGB(255, 140, 140, 140),

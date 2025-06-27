@@ -42,6 +42,83 @@ class FrontUtil {
     ));
   }
 
+  static void showTextDialog(BuildContext context, String title, String confirm, String cancel,
+      {VoidCallback? onConfirm}) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(
+            color: Color(0xFF589399),
+            width: 2,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            color: Color(0xFF589399),
+            fontWeight: FontWeight.w700,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 70),
+                backgroundColor: const Color(0xFF589399),
+                side: BorderSide.none,
+              ),
+              onPressed: () {
+                Navigator.pop(context); // 關閉對話框
+                if (onConfirm != null) {
+                  onConfirm(); // ✅ 執行傳入的動作
+                }
+                
+              },
+              child: Text(
+                confirm,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 70),
+                side: const BorderSide(
+                  width: 2,
+                  color: Color(0xFF589399),
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                cancel,
+                style: const TextStyle(
+                  color: Color(0xFF589399),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // 顯示確認對話框
   static void showImageDialog(BuildContext context, File image, String title, String confirm,
       String cancle, Widget nextPage) {

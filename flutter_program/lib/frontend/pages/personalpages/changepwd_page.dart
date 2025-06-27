@@ -1,5 +1,5 @@
 import 'package:drw/backend/models/changepwd_model.dart';
-import 'package:drw/backend/models/user_model.dart';
+import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/frontend/headers/header4.dart';
 import 'package:drw/frontend/pages/tabs/personal_page.dart';
 import 'package:drw/frontend/pages/tabs/tabs.dart';
@@ -9,8 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ChangePwdPage extends StatefulWidget {
-  final String userPassword;
-  const ChangePwdPage({super.key, required this.userPassword});
+  const ChangePwdPage({super.key});
 
   @override
   State<ChangePwdPage> createState() => _ChangePwdPageState();
@@ -199,9 +198,11 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                                 FrontUtil.showError('請填寫完所有欄位', Colors.red, Colors.white);
                                 return;
                               }
-                              final user = Provider.of<User>(context, listen: false);
+                              final userProvider =
+                                  Provider.of<UserProvider>(context, listen: false);
+                              final user = userProvider.user;
                               String? error;
-                              error = await changePwd.verifyPassword(user.id);
+                              error = await changePwd.verifyPassword(user!.id.toString());
                               if (error == null) {
                                 if (!Auth.validatePassword(changePwd.newPwd)) {
                                   FrontUtil.showError(
@@ -212,7 +213,7 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                                   FrontUtil.showError('密碼不一致', Colors.red, Colors.white);
                                   return;
                                 }
-                                error = await changePwd.updatePassword(user.id);
+                                error = await changePwd.updatePassword(user.id.toString());
                                 if (error == null) {
                                   FrontUtil.showError('密碼修改成功!', Colors.green, Colors.white);
                                   Navigator.pushReplacement(

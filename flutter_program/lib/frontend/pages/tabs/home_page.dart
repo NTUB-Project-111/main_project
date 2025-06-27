@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Padding(
-          padding: const EdgeInsets.only(left: 5, right: 3),
+          padding: const EdgeInsets.only(left: 8, right: 3),
           child: AppBar(
             backgroundColor: FrontUtil.bkColor,
             leading: Image.asset('images/icon.png'),

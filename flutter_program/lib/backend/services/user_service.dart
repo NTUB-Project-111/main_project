@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:drw/backend/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'apibase.dart';
 import '../models/user_model.dart';
@@ -103,6 +107,42 @@ class UserService {
       return UserInfo.fromJson(userJson);
     } else {
       throw Exception('取得使用者資料失敗: ${response.body}');
+    }
+  }
+
+  static Future<String?> updateImage({
+    required int userId,
+    required File imageFile,
+  }) async {
+    final uri = Uri.parse('${ApiBase.baseUrl}/updateImage');
+    final request = http.MultipartRequest('POST', uri);
+    // 文字欄位
+    request.fields['id'] = userId.toString();
+    // 圖片檔案
+    final mimeType = lookupMimeType(imageFile.path) ?? 'image/jpeg';
+    request.files.add(await http.MultipartFile.fromPath(
+      'picture',
+      imageFile.path,
+      contentType: MediaType.parse(mimeType),
+      filename: basename(imageFile.path),
+    ));
+    try {
+      final response = await request.send();
+      if (response.statusCode == 200) {
+        final responseBody = await response.stream.bytesToString();
+        final jsonData = json.decode(responseBody);
+
+        // 從後端回傳中抓出新圖片路徑
+        final newPath = jsonData['path'];
+        debugPrint('✅ 新圖片路徑: $newPath');
+        return newPath;
+      } else {
+        debugPrint('❌ 上傳失敗，狀態碼: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('❌ 上傳錯誤: $e');
+      return null;
     }
   }
 }
