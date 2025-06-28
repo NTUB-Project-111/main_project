@@ -5,6 +5,7 @@ import 'package:drw/backend/services/apibase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class FrontUtil {
   static Color bkColor = const Color(0xFFEBFEFF); //主畫面的背景顏色
@@ -81,7 +82,6 @@ class FrontUtil {
                 if (onConfirm != null) {
                   onConfirm(); // ✅ 執行傳入的動作
                 }
-                
               },
               child: Text(
                 confirm,
@@ -166,9 +166,17 @@ class FrontUtil {
               ),
               onPressed: () async {
                 Navigator.pop(context); // 關閉對話框
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => nextPage),
+                  MaterialPageRoute(
+                    builder: (_) => ChangeNotifierProvider(
+                        create: (_) {
+                          final report = Report();
+                          report.setImage(image); // ← 設定圖片
+                          return report;
+                        },
+                        child: nextPage),
+                  ),
                 );
               },
               child: Text(

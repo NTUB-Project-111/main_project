@@ -5,6 +5,7 @@ import 'package:drw/frontend/pages/reportpages/care_part.dart';
 import 'package:drw/frontend/pages/reportpages/hospital_part.dart';
 import 'package:drw/frontend/pages/reportpages/record_part.dart';
 import 'package:drw/frontend/pages/reportpages/wound_part.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:drw/frontend/pages/reportpages/title_part.dart';
@@ -17,17 +18,27 @@ class ReportPage extends StatefulWidget {
 }
 
 class _ReportPageState extends State<ReportPage> {
-  bool _analyzed = false;
+  // bool _analyzed = false;
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   // 確保只分析一次
+  //   if (!_analyzed) {
+  //     final report = Provider.of<Report>(context, listen: false);
+  //     report.loadData();
+  //     _analyzed = true;
+  //   }
+  // }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // 確保只分析一次
-    if (!_analyzed) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final report = Provider.of<Report>(context, listen: false);
-      report.loadData();
-      _analyzed = true;
-    }
+      report.isLoading = true; // <-- 這行很關鍵！每次都要先設為 loading
+      await report.loadData(); // 這樣 Consumer 才會觸發 CircularProgressIndicator
+    });
   }
 
   @override
@@ -35,8 +46,8 @@ class _ReportPageState extends State<ReportPage> {
     return Consumer<Report>(
       builder: (context, report, _) {
         if (report.isLoading) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          return Scaffold(
+            body: Center(child: FrontUtil.loading()),
           );
         }
         return const Scaffold(
