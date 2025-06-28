@@ -1,14 +1,6 @@
-import 'dart:math';
-
-import 'package:drw/backend/models/records_model.dart';
-import 'package:drw/backend/models/reminds_model.dart';
-import 'package:drw/backend/models/user_model.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
-import 'package:drw/backend/services/record_service.dart';
-import 'package:drw/backend/services/remind_service.dart';
-
 import 'forget_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -168,24 +160,6 @@ class _LoginPageState extends State<LoginPage> {
                                         debugPrint("     頻率：${remind.freq}");
                                       }
                                     }
-                                    // await UserService.getUserInfo(myContext, login.accessToken!);
-                                    // if (!mounted) return;
-                                    // final user = Provider.of<User>(myContext, listen: false);
-                                    // await RecordService.getRecords(myContext, user.id);
-                                    // final recordsProvider =
-                                    //     Provider.of<Records>(myContext, listen: false);
-                                    // final records = recordsProvider.records;
-                                    // debugPrint(user.toString());
-                                    // for (var record in records) {
-                                    //   debugPrint(record.toString());
-                                    // }
-                                    // await RemindService.getReminds(myContext, user.id);
-                                    // final remindsProvider =
-                                    //     Provider.of<Reminds>(myContext, listen: false);
-                                    // final reminds = remindsProvider.reminds;
-                                    // for (var remind in reminds) {
-                                    //   debugPrint(remind.toString());
-                                    // }
 
                                     FrontUtil.showError('登入成功!', Colors.green, Colors.white);
                                     if (!mounted) return;

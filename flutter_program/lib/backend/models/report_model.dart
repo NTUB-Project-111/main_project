@@ -137,8 +137,8 @@ class Report extends ChangeNotifier {
 
   Future<void> loadData() async {
     try {
-      // await Future.wait([_fetchHospitals(), _analyzeWoundImage()]);
-      await Future.wait([_analyzeWoundImage()]);
+      await Future.wait([_fetchHospitals(), _analyzeWoundImage()]);
+      // await Future.wait([_analyzeWoundImage()]);
     } finally {
       isLoading = false;
       notifyListeners();
@@ -204,11 +204,21 @@ class Report extends ChangeNotifier {
     recordResult = await _addRecord(userId);
     if (notify) remindResult = await _addRemind(userId);
     isSaving = false;
+    woundType = '';
+    careSteps = [];
+    oktime = '';
+    hospitals = [];
+    injuryParts = [];
+    woundReactions = [];
+    selfRecord = '';
+    updateButton = false;
+    newOktime = '';
+    remindList = [];
+    image = null;
+    notifyListeners();
     notifyListeners();
     return recordResult && remindResult;
   }
-
-  
 
   @override
   String toString() {
