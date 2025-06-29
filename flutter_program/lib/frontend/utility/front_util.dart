@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 class FrontUtil {
   static Color bkColor = const Color(0xFFEBFEFF); //主畫面的背景顏色
+  static Color bkColor2 = const Color(0xFFF5FEFF); //註冊帳號的背景顏色
   static Color textColor = const Color(0xFF669FA5); //主要文字顏色
 
   static void showError(String errorMessage, Color bkcolor, Color textcolor) {

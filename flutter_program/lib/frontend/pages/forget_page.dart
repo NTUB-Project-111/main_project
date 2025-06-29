@@ -241,8 +241,6 @@ class _ForgetPageState extends State<ForgetPage> {
                       height: 45,
                       child: ElevatedButton(
                         onPressed: () async {
-                          debugPrint("按鈕被按了");
-
                           if (!forget.isFilled()) {
                             debugPrint("欄位未填寫");
                             FrontUtil.showError('尚有欄位未填寫', Colors.red, Colors.white);
