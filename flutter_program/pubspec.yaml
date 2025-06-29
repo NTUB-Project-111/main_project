@@ -85,6 +85,8 @@ flutter:
     - images/cut.png
     - images/burn.png
     - images/bruise.png
+    - images/register_icon.png
+    - images/nurse_bear.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
