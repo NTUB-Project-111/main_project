@@ -8,6 +8,11 @@ class Register extends ChangeNotifier {
   String code = '';
   String password = '';
   String rePassword = '';
+  int birthday = 2025;
+  String smokingFreq = '無';
+  String drinkingFreq = '無';
+  String betelNutFreq = '無';
+  List<String> diseases = ['無'];
 
   final AuthService _authService = AuthService();
 
@@ -36,10 +41,37 @@ class Register extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setBirthday(int value) {
+    birthday = value;
+    notifyListeners();
+  }
+
+  void setSmokingFreq(String value) {
+    smokingFreq = value;
+    notifyListeners();
+  }
+
+  void setDrinkingFreq(String value) {
+    drinkingFreq = value;
+    notifyListeners();
+  }
+
+  void setBetelNutFreq(String value) {
+    betelNutFreq = value;
+    notifyListeners();
+  }
+
+  void setDisease(List<String> values) {
+    diseases = values;
+    notifyListeners();
+  }
+
   //發送驗證碼
   Future<String?> sendCode() async {
     if (email.trim().isEmpty) return '請輸入Email';
     if (!Auth.validateEmail(email)) return '無效的Email格式';
+    final result = await _authService.checkEmailExists(email);
+    if (result['exists']) return result['message'];
     final error = await _authService.sendCode(email.trim());
     return error; // null 表示成功，其它是錯誤訊息
   }
@@ -60,21 +92,16 @@ class Register extends ChangeNotifier {
     return null;
   }
 
-  // Future<String?> register() async {
-  //   if (!Auth.validatePassword(password)) return '請輸入8至16位的英文字母及數字組合';
-  //   if (!Auth.verifyPassword(password, rePassword)) return '密碼不一致，請重新輸入';
-  //   String formatted = formatBirthday(birthday!);
-  //   isRegistering = true;
-  //   notifyListeners();
-  //   final error = await _authService.register(
-  //       name: name,
-  //       gender: gender,
-  //       birthday: formatted,
-  //       email: email,
-  //       password: password,
-  //       imageFile: picture);
-  //   isRegistering = false;
-  //   notifyListeners();
-  //   return error;
-  // }
+  Future<String?> register() async {
+    final error = await _authService.register(
+        name: name,
+        gender: 'F',
+        birthday: '${birthday.toString()}-01-01',
+        email: email,
+        password: password,
+        imageFile: null,
+        disease: diseases.toString(),
+        freq: '$smokingFreq、$drinkingFreq、$betelNutFreq');
+    return error;
+  }
 }

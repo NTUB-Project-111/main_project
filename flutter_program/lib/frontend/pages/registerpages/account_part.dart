@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart'; //用於顯示數字鍵盤
 import '../../../backend/models/register_model.dart';
-import '../login_page.dart';
+// import '../login_page.dart';
 
 class AccountSetup extends StatefulWidget {
   const AccountSetup({super.key});
@@ -287,15 +287,15 @@ class _AccountSetupState extends State<AccountSetup> {
                             FrontUtil.showError('尚有欄位未填寫', Colors.red, Colors.white);
                             return;
                           }
-                          final error = await register.register();
-                          if (!context.mounted) return; //確認 widget 還在畫面上，才繼續操作 context
-                          if (error == null) {
-                            FrontUtil.showError('註冊成功!請登入帳號', Colors.green, Colors.white);
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: (context) => const LoginPage()));
-                          } else {
-                            FrontUtil.showError(error, Colors.red, Colors.white);
-                          }
+                          // final error = await register.register();
+                          // if (!context.mounted) return; //確認 widget 還在畫面上，才繼續操作 context
+                          // if (error == null) {
+                          //   FrontUtil.showError('註冊成功!請登入帳號', Colors.green, Colors.white);
+                          //   Navigator.pushReplacement(context,
+                          //       MaterialPageRoute(builder: (context) => const LoginPage()));
+                          // } else {
+                          //   FrontUtil.showError(error, Colors.red, Colors.white);
+                          // }
                           debugPrint(register.toString());
                         },
                   style: ElevatedButton.styleFrom(
