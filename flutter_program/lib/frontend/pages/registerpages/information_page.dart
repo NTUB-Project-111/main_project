@@ -1,4 +1,5 @@
-import 'package:drw/backend/models/register_model.dart';
+
+import 'package:drw/backend/viewmodels/register_view_model.dart';
 import 'package:drw/frontend/headers/header6.dart';
 import 'package:drw/frontend/pages/registerpages/birthday_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';

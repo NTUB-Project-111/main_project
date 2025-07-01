@@ -2,7 +2,12 @@ import 'package:drw/backend/models/report_model.dart';
 import 'package:drw/backend/provider/remind_provider.dart'; //
 import 'package:drw/backend/provider/report_provider.dart'; //
 import 'package:drw/backend/provider/user_provider.dart'; //
+import 'package:drw/backend/viewmodels/register_view_model.dart';
 import 'package:drw/frontend/pages/registerpages/account_page.dart';
+import 'package:drw/frontend/pages/registerpages/birthday_page.dart';
+import 'package:drw/frontend/pages/registerpages/disease_page.dart';
+import 'package:drw/frontend/pages/registerpages/habit_page.dart';
+import 'package:drw/frontend/pages/registerpages/information2_page.dart';
 import 'package:drw/frontend/pages/registerpages/information_page.dart';
 import 'package:drw/frontend/pages/registerpages/register_flow.dart';
 import 'package:drw/frontend/pages/registerpages/username_page.dart';
@@ -23,6 +28,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ReportProvider()),
         ChangeNotifierProvider(create: (_) => RemindProvider()),
+        ChangeNotifierProvider(create: (_) => Register()),
       ],
       child: const MyApp(),
     ),
@@ -38,9 +44,13 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
         debugShowCheckedModeBanner: false,
         // home: LoginPage(),
-        // home: RegisterFlow()
+        home: RegisterFlow()
         // home: AccountPage()
-        home : InformationPage()
+        // home : InformationPage()
+        // home:BirthdayPage()
+        // home:HabitPage()
+        // home : DiseasePage()
+        // home:Information2Page()
         );
   }
 }

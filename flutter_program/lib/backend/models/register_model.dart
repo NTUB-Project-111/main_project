@@ -106,23 +106,23 @@ class Register extends ChangeNotifier {
     return error; // null 表示成功，其它是錯誤訊息
   }
 
-  Future<String?> register() async {
-    if (!Auth.validatePassword(password)) return '請輸入8至16位的英文字母及數字組合';
-    if (!Auth.verifyPassword(password, rePassword)) return '密碼不一致，請重新輸入';
-    String formatted = formatBirthday(birthday!);
-    isRegistering = true;
-    notifyListeners();
-    final error = await _authService.register(
-        name: name,
-        gender: gender,
-        birthday: formatted,
-        email: email,
-        password: password,
-        imageFile: picture);
-    isRegistering = false;
-    notifyListeners();
-    return error;
-  }
+  // Future<String?> register() async {
+  //   if (!Auth.validatePassword(password)) return '請輸入8至16位的英文字母及數字組合';
+  //   if (!Auth.verifyPassword(password, rePassword)) return '密碼不一致，請重新輸入';
+  //   String formatted = formatBirthday(birthday!);
+  //   isRegistering = true;
+  //   notifyListeners();
+  //   final error = await _authService.register(
+  //       name: name,
+  //       gender: gender,
+  //       birthday: formatted,
+  //       email: email,
+  //       password: password,
+  //       imageFile: picture);
+  //   isRegistering = false;
+  //   notifyListeners();
+  //   return error;
+  // }
 
   @override
   String toString() {

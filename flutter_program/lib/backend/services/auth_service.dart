@@ -57,6 +57,8 @@ class AuthService {
     required String birthday,
     required String email,
     required String password,
+    required String disease,
+    required String freq,
     File? imageFile,
   }) async {
     final uri = Uri.parse('${ApiBase.baseUrl}/register');
@@ -66,7 +68,9 @@ class AuthService {
       ..fields['gender'] = gender
       ..fields['birthday'] = birthday
       ..fields['email'] = email
-      ..fields['password'] = password;
+      ..fields['password'] = password
+      ..fields['disease'] = disease
+      ..fields['freq'] = freq;
 
     if (imageFile != null) {
       final fileName = path.basename(imageFile.path);
