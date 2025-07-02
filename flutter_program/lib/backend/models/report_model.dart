@@ -118,12 +118,25 @@ class Report extends ChangeNotifier {
     debugPrint(remindList.toString());
   }
 
-  Future<void> _analyzeWoundImage() async {
+  // Future<void> _analyzeWoundImage() async {
+  //   try {
+  //     final result = await WoundAnalysis.analyzeWound(image!);
+  //     woundType = result['woundType'];
+  //     careSteps = result["careSteps"];
+  //     oktime = result["oktime"];
+  //   } catch (e) {
+  //     woundType = "分析失敗";
+  //     careSteps = ["錯誤: $e"];
+  //   }
+  // }
+  Future<void> _analyzeWoundImage(String birthday, String disease, String freq) async {
     try {
       final result = await WoundAnalysis.analyzeWound(image!);
-      woundType = result['woundType'];
-      careSteps = result["careSteps"];
-      oktime = result["oktime"];
+      Map<String, String>? response =
+          await CareInfo.getCareSteps(woundType, birthday, disease, freq);
+      woundType = result;
+      oktime = response != null ? (response['healTime'] ?? '0') : '0';
+      careSteps = response != null ? (response['steps']?.split(',') ?? []) : [];
     } catch (e) {
       woundType = "分析失敗";
       careSteps = ["錯誤: $e"];
@@ -135,9 +148,9 @@ class Report extends ChangeNotifier {
     hospitals = hospitallist;
   }
 
-  Future<void> loadData() async {
+  Future<void> loadData(String birthday, String disease, String freq) async {
     try {
-      await Future.wait([_fetchHospitals(), _analyzeWoundImage()]);
+      await Future.wait([_fetchHospitals(), _analyzeWoundImage(birthday, disease, freq)]);
       // await Future.wait([_analyzeWoundImage()]);
     } finally {
       isLoading = false;
@@ -149,7 +162,7 @@ class Report extends ChangeNotifier {
     isUpdating = true;
     notifyListeners();
     try {
-      newOktime = await OktimeUpdate.getOktime(
+      newOktime = await CareInfo.getOktime(
           woundType, injuryParts.toString(), woundReactions.toString(), selfRecord);
       oktime = newOktime;
       notifyListeners();

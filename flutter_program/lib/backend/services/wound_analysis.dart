@@ -6,7 +6,48 @@ import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as path;
 
 class WoundAnalysis {
-  static Future<Map<String, dynamic>> analyzeWound(File imageFile) async {
+  // static Future<Map<String, dynamic>> analyzeWound(File imageFile) async {
+  //   try {
+  //     final apiKey = dotenv.env['YOLO_API_KEY'];
+  //     final String modelUrl = "https://detect.roboflow.com/wound-ebsdw/10?api_key=$apiKey";
+  //     final bytes = await imageFile.readAsBytes();
+  //     final decoded = img.decodeImage(bytes);
+  //     if (decoded == null) throw Exception("無法解析圖片");
+  //     final resized = img.copyResize(decoded, width: 640, height: 640);
+
+  //     final tempDir = Directory.systemTemp;
+  //     final tempFilePath = path.join(tempDir.path, "resized_img.jpg");
+  //     final tempFile = File(tempFilePath);
+  //     await tempFile.writeAsBytes(img.encodeJpg(resized));
+
+  //     var request = http.MultipartRequest('POST', Uri.parse(modelUrl));
+  //     request.fields["confidence"] = "50";
+  //     request.fields["overlap"] = "50";
+  //     request.files.add(await http.MultipartFile.fromPath("file", tempFilePath));
+
+  //     var response = await request.send();
+  //     if (response.statusCode != 200) throw Exception("API 請求失敗: ${response.statusCode}");
+
+  //     var responseData = await response.stream.bytesToString();
+  //     var results = json.decode(responseData);
+
+  //     Set<String> detectedWoundTypes = {};
+  //     for (var obj in results["predictions"]) {
+  //       if (obj["class"] != null) detectedWoundTypes.add(obj["class"]);
+  //     }
+
+  //     final String woundType = detectedWoundTypes.isNotEmpty ? detectedWoundTypes.first : "無異常";
+  //     final List<String> careSteps = _getCareInfo(woundType);
+
+  //     return {"woundType": careSteps[0], "oktime": careSteps[1], "careSteps": careSteps.sublist(2)};
+  //   } catch (e) {
+  //     return {
+  //       "woundType": "分析失敗",
+  //       "careSteps": ["錯誤：$e"]
+  //     };
+  //   }
+  // }
+  static Future<String> analyzeWound(File imageFile) async {
     try {
       final apiKey = dotenv.env['YOLO_API_KEY'];
       final String modelUrl = "https://detect.roboflow.com/wound-ebsdw/10?api_key=$apiKey";
@@ -37,38 +78,34 @@ class WoundAnalysis {
       }
 
       final String woundType = detectedWoundTypes.isNotEmpty ? detectedWoundTypes.first : "無異常";
-      final List<String> careSteps = _getCareInfo(woundType);
 
-      return {"woundType": careSteps[0], "oktime": careSteps[1], "careSteps": careSteps.sublist(2)};
+      return woundType;
     } catch (e) {
-      return {
-        "woundType": "分析失敗",
-        "careSteps": ["錯誤：$e"]
-      };
+      return "分析失敗";
     }
   }
 
-  static List<String> _getCareInfo(String woundType) {
-    final Map<String, List<String>> careInfo = {
-      "Abrasions": ["擦傷", "7~10", "用生理食鹽水清洗傷口", "較髒的傷口可擦優碘消毒殺菌，等優碘滲入傷口便可擦除多餘的優碘", "蓋上人工皮"],
-      "Bruise": [
-        "瘀青",
-        "7~14",
-        "冰敷:於發生的72小時內冰敷，使局部血管收縮，減少血液流出造成組織腫脹",
-        "抹藥：若出血過多導致血腫可用藥來幫助緩解，若出現嚴重性血腫，使傷口越來越大，請一定要就醫",
-        "熱敷:72小時後可給予熱敷按摩，以促進血液循環、代謝殘餘血塊"
-      ],
-      "Burn": [
-        "燒傷",
-        "8~30",
-        "將燒、燙傷部位用冷水沖洗或浸於冷水中約20分鐘",
-        "若傷口未消腫，則脫除戒指、皮帶、鞋子或其它緊身衣物",
-        "不可在傷口處擦拭黏性敷料、乳液、軟膏",
-        "若有起水泡，注意不可將水泡搓破"
-      ],
-      "Cut": ["割傷", "7~10", "在傷口處放一塊乾淨且能吸水的布，以手壓緊", "將受傷的地方高舉超過心臟", "止血後用乾淨的開水或生理食鹽水輕輕洗淨"],
-      "無異常": ["無異常", "", "未檢測到異常傷口"],
-    };
-    return careInfo[woundType] ?? ["無異常", "", "未檢測到異常傷口"];
-  }
+  // static List<String> _getCareInfo(String woundType) {
+  //   final Map<String, List<String>> careInfo = {
+  //     "Abrasions": ["擦傷", "7~10", "用生理食鹽水清洗傷口", "較髒的傷口可擦優碘消毒殺菌，等優碘滲入傷口便可擦除多餘的優碘", "蓋上人工皮"],
+  //     "Bruise": [
+  //       "瘀青",
+  //       "7~14",
+  //       "冰敷:於發生的72小時內冰敷，使局部血管收縮，減少血液流出造成組織腫脹",
+  //       "抹藥：若出血過多導致血腫可用藥來幫助緩解，若出現嚴重性血腫，使傷口越來越大，請一定要就醫",
+  //       "熱敷:72小時後可給予熱敷按摩，以促進血液循環、代謝殘餘血塊"
+  //     ],
+  //     "Burn": [
+  //       "燒傷",
+  //       "8~30",
+  //       "將燒、燙傷部位用冷水沖洗或浸於冷水中約20分鐘",
+  //       "若傷口未消腫，則脫除戒指、皮帶、鞋子或其它緊身衣物",
+  //       "不可在傷口處擦拭黏性敷料、乳液、軟膏",
+  //       "若有起水泡，注意不可將水泡搓破"
+  //     ],
+  //     "Cut": ["割傷", "7~10", "在傷口處放一塊乾淨且能吸水的布，以手壓緊", "將受傷的地方高舉超過心臟", "止血後用乾淨的開水或生理食鹽水輕輕洗淨"],
+  //     "無異常": ["無異常", "", "未檢測到異常傷口"],
+  //   };
+  //   return careInfo[woundType] ?? ["無異常", "", "未檢測到異常傷口"];
+  // }
 }

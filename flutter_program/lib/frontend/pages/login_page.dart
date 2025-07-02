@@ -143,6 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                                     Provider.of<RemindProvider>(context, listen: false)
                                         .setReminds(allReminds);
                                     // 打印診斷報告與每筆報告底下的提醒
+                                    debugPrint(userInfo.toString());
                                     for (var report in userInfo.reports) {
                                       debugPrint("====== 報告 ======");
                                       debugPrint("報告ID：${report.id}");
