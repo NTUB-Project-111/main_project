@@ -1,6 +1,6 @@
 import 'package:drw/frontend/headers/header1.dart';
+import 'package:drw/frontend/pages/registerpages/register_flow.dart';
 import 'package:flutter/material.dart';
-import '../register_page.dart';
 
 class DisclaimerPage extends StatelessWidget {
   final void Function()? onAgree;
@@ -48,7 +48,7 @@ class DisclaimerPage extends StatelessWidget {
                         () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const RegisterPage()),
+                            MaterialPageRoute(builder: (context) => const RegisterFlow()),
                           );
                         },
                     style: ElevatedButton.styleFrom(

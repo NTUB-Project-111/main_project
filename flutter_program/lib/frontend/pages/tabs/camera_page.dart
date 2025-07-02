@@ -93,9 +93,10 @@ class _CameraPageState extends State<CameraPage> {
 
   @override
   void dispose() {
-    if (_controller != null) {
-      _controller!.dispose();
-      _controller = null;
+    try {
+      _controller?.dispose();
+    } catch (e) {
+      debugPrint("CameraController dispose 時發生錯誤: $e");
     }
     super.dispose();
   }

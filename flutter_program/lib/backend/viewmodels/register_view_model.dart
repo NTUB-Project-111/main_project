@@ -96,7 +96,7 @@ class Register extends ChangeNotifier {
     final error = await _authService.register(
         name: name,
         gender: 'F',
-        birthday: '${birthday.toString()}-01-01',
+        birthday: birthday.toString(),
         email: email,
         password: password,
         imageFile: null,

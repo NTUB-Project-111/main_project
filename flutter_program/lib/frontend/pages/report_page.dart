@@ -1,4 +1,5 @@
 import 'package:drw/backend/models/report_model.dart';
+import 'package:drw/backend/models/user.dart';
 import 'package:drw/frontend/headers/header5.dart';
 import 'package:drw/frontend/pages/reportpages/button_part.dart';
 import 'package:drw/frontend/pages/reportpages/care_part.dart';
@@ -36,8 +37,9 @@ class _ReportPageState extends State<ReportPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final report = Provider.of<Report>(context, listen: false);
+      final user = Provider.of<UserInfo>(context, listen: false);
       report.isLoading = true; // <-- 這行很關鍵！每次都要先設為 loading
-      await report.loadData(); // 這樣 Consumer 才會觸發 CircularProgressIndicator
+      await report.loadData(user.birthday,user.disease,user.freq); // 這樣 Consumer 才會觸發 CircularProgressIndicator
     });
   }
 

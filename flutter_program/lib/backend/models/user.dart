@@ -7,6 +7,8 @@ class UserInfo {
   final String birthday;
   final String picture;
   final String email;
+  final String disease;
+  final String freq;
   List<UserReport> reports;
 
   UserInfo({
@@ -16,6 +18,8 @@ class UserInfo {
     required this.birthday,
     required this.picture,
     required this.email,
+    required this.disease,
+    required this.freq,
     required this.reports,
   });
 
@@ -25,6 +29,8 @@ class UserInfo {
     String? birthday,
     String? picture,
     String? email,
+    String? disease,
+    String? freq,
     List<UserReport>? reports,
   }) {
     return UserInfo(
@@ -34,6 +40,8 @@ class UserInfo {
       birthday: birthday ?? this.birthday,
       picture: picture ?? this.picture,
       email: email ?? this.email,
+      disease: disease ?? this.disease,
+      freq: freq ?? this.freq,
       reports: reports ?? this.reports,
     );
   }
@@ -44,10 +52,27 @@ class UserInfo {
       name: json['name'],
       gender: json['gender'],
       birthday: json['birthday'],
-      picture: json['picture'],
+      picture: json['picture'] ?? '',
       email: json['email'],
+      disease: json['disease'],
+      freq: json['freq'],
       reports:
           (json['reports'] as List).map((reportJson) => UserReport.fromJson(reportJson)).toList(),
     );
+  }
+
+  @override
+  String toString() {
+    return '''
+      === 使用者資料 === 
+      id: $id
+      姓名: $name
+      生日: $birthday
+      性別: $gender
+      照片路徑: $picture
+      Email: $email
+      疾病: $disease
+      習慣頻率: $freq
+    ''';
   }
 }
