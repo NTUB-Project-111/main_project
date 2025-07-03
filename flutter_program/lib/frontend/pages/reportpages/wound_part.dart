@@ -90,7 +90,7 @@ class _WoundPartState extends State<WoundPart> {
                                       ),
                                     ),
                               const Text(
-                                '天癒合',
+                                '癒合',
                                 style: TextStyle(
                                   color: Color(0xFF589399),
                                   fontSize: 16,

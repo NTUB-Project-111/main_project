@@ -1,4 +1,5 @@
 import 'package:drw/backend/models/report_model.dart';
+import 'package:drw/backend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -234,14 +235,14 @@ class _RecordPartState extends State<RecordPart> {
                 child: ElevatedButton(
                   onPressed: (report.updateButton && !report.isUpdating)
                       ? () async {
-                          report.updateOktime();
+                          final userProvider = Provider.of<UserProvider>(context, listen: false);
+                          final user = userProvider.user;
+                          report.updateOktime(user!.birthday, user.disease, user.freq);
                         }
                       : null,
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(
-                      report.updateButton
-                          ? const Color(0xFF589399)
-                          : const Color(0xFFBED7DA),
+                      report.updateButton ? const Color(0xFF589399) : const Color(0xFFBED7DA),
                     ),
                     padding: WidgetStateProperty.all(
                       const EdgeInsets.symmetric(vertical: 12),

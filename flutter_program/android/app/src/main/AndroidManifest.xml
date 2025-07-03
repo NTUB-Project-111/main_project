@@ -1,11 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.CAMERA" /> <!--允許應用程式使用裝置的相機功能-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!--允許應用程式寫入外部儲存空間-->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!--允許應用程式讀取外部儲存空間裡的檔案-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/> <!--允許應用程式讀取外部儲存空間裡的檔案-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!--取得小範圍位置-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!--取得大範圍位置-->
     <uses-permission android:name="android.permission.INTERNET"/> <!--允許應用程式連上外部網站-->
-
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!--允許應用程式存取圖片-->
     <application
         android:label="drw"
         android:name="${applicationName}"

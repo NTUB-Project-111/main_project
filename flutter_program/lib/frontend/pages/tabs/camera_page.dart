@@ -4,8 +4,9 @@ import 'package:drw/backend/models/report_model.dart';
 import 'package:drw/frontend/pages/report_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -21,7 +22,7 @@ class _CameraPageState extends State<CameraPage> {
   CameraController? _controller;
   bool isCameraInitialized = false;
   int _currentCameraIndex = 0;
-  final ImagePicker _picker = ImagePicker();
+  // final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -39,20 +40,26 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
-  Future<void> _pickPicture() async {
-    final XFile? photo = await _picker.pickImage(source: ImageSource.gallery);
-    if (photo != null) {
-      final fileImage = File(photo.path);
-      if (!mounted) return;
-      Provider.of<Report>(context, listen: false).setImage(fileImage);
-      FrontUtil.showImageDialog(
-        context,
-        fileImage,
-        '確認傷口照片',
-        '送出診斷',
-        '重新拍攝',
-        const ReportPage(),
-      );
+  Future<void> _pickPicture(BuildContext context) async {
+    try {
+      final result = await FilePicker.platform.pickFiles(type: FileType.image);
+      if (result != null && result.files.single.path != null) {
+        final fileImage = File(result.files.single.path!);
+        debugPrint("成功選擇圖片：${fileImage.path}");
+        Provider.of<Report>(context, listen: false).setImage(fileImage);
+        FrontUtil.showImageDialog(
+          context,
+          fileImage,
+          '確認傷口照片',
+          '送出診斷',
+          '重新拍攝',
+          const ReportPage(),
+        );
+      } else {
+        debugPrint("使用者取消選圖或路徑為空");
+      }
+    } catch (e) {
+      debugPrint("file_picker 選擇圖片失敗：$e");
     }
   }
 
@@ -246,7 +253,8 @@ class _CameraPageState extends State<CameraPage> {
                             border: Border.all(color: const Color(0xFF589399), width: 2),
                           ),
                           child: IconButton(
-                            onPressed: _pickPicture,
+                            // onPressed: _pickPicture(),
+                            onPressed: () => _pickPicture(context),
                             icon: const Icon(Icons.photo),
                             iconSize: 30,
                             color: const Color(0xFF589399),

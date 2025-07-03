@@ -54,6 +54,8 @@ dependencies:
   flutter_dotenv: ^5.2.1 #使用.env檔案
   url_launcher: ^6.3.1 #跳轉至外部網站
   carousel_slider: ^5.1.1 #輪播圖片
+  permission_handler: ^11.3.0 #權限請求
+  file_picker: ^10.2.0 #另一種圖片選擇器
 
 dev_dependencies:
   flutter_test:
