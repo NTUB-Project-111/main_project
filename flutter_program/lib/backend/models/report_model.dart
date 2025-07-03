@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:drw/backend/services/hospital_search.dart';
-import 'package:drw/backend/services/oktime_update.dart';
+import 'package:drw/backend/services/careinfo_gpt.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/backend/services/remind_service.dart';
 import 'package:drw/backend/services/wound_analysis.dart';
@@ -132,11 +132,21 @@ class Report extends ChangeNotifier {
   Future<void> _analyzeWoundImage(String birthday, String disease, String freq) async {
     try {
       final result = await WoundAnalysis.analyzeWound(image!);
+      woundType = result;
       Map<String, String>? response =
           await CareInfo.getCareSteps(woundType, birthday, disease, freq);
-      woundType = result;
       oktime = response != null ? (response['healTime'] ?? '0') : '0';
-      careSteps = response != null ? (response['steps']?.split(',') ?? []) : [];
+      careSteps = response != null ? (response['steps']?.split('。') ?? []) : [];
+      careSteps = careSteps
+          .map((e) => e.replaceAll(RegExp(r'\s+'), '')) // 移除所有空白、換行、tab
+          .where((e) => e.isNotEmpty) // 移除空字串
+          .toList();
+
+      debugPrint(careSteps.toString());
+      // careSteps = response != null
+      //     ? (response['steps']?.split(',').map((e) => e.replaceAll(RegExp(r'\s+'), '')).toList() ??
+      //         [])
+      //     : [];
     } catch (e) {
       woundType = "分析失敗";
       careSteps = ["錯誤: $e"];
@@ -149,6 +159,7 @@ class Report extends ChangeNotifier {
   }
 
   Future<void> loadData(String birthday, String disease, String freq) async {
+    debugPrint('$birthday\n$disease\n$freq');
     try {
       await Future.wait([_fetchHospitals(), _analyzeWoundImage(birthday, disease, freq)]);
       // await Future.wait([_analyzeWoundImage()]);
@@ -158,12 +169,12 @@ class Report extends ChangeNotifier {
     }
   }
 
-  Future<void> updateOktime() async {
+  Future<void> updateOktime(String birthday, String disease, String freq) async {
     isUpdating = true;
     notifyListeners();
     try {
-      newOktime = await CareInfo.getOktime(
-          woundType, injuryParts.toString(), woundReactions.toString(), selfRecord);
+      newOktime = await CareInfo.getOktime(woundType, injuryParts.toString(),
+          woundReactions.toString(), selfRecord, birthday, disease, freq);
       oktime = newOktime;
       notifyListeners();
     } finally {

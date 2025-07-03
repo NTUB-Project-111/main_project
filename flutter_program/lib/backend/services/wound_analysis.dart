@@ -48,6 +48,13 @@ class WoundAnalysis {
   //   }
   // }
   static Future<String> analyzeWound(File imageFile) async {
+    Map<String, String> woundMap = {
+      'Abrasions': '擦傷',
+      'Bruise': '瘀青',
+      'Burn': '燒傷',
+      'Cut': '割傷',
+      '無異常': '無異常'
+    };
     try {
       final apiKey = dotenv.env['YOLO_API_KEY'];
       final String modelUrl = "https://detect.roboflow.com/wound-ebsdw/10?api_key=$apiKey";
@@ -79,7 +86,7 @@ class WoundAnalysis {
 
       final String woundType = detectedWoundTypes.isNotEmpty ? detectedWoundTypes.first : "無異常";
 
-      return woundType;
+      return woundMap[woundType] ?? '無異常';
     } catch (e) {
       return "分析失敗";
     }

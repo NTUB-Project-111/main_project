@@ -1,4 +1,4 @@
-import 'package:drw/backend/services/oktime_update.dart';
+import 'package:drw/backend/services/careinfo_gpt.dart';
 import 'package:flutter/material.dart';
 
 class TestPage extends StatefulWidget {
