@@ -84,28 +84,28 @@ router.post('/updatePassword', async (req, res) => {
 
 // === 更新大頭照 ===
 router.post('/updateImage', upload.single('picture'), async (req, res) => {
-  const { id } = req.body;
-  const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
-  if (!id) {
-    return res.status(400).json({ error: 'User ID is required' });
-  }
-  if (!imagePath) {
-    return res.status(400).json({ error: 'No image uploaded' });
-  }
-  try {
-    const [result] = await db.query(
-      'UPDATE user SET picture = ? WHERE id = ?',
-      [imagePath, id]
-    );
-    console.log('圖片更新成功', result);
-    return res.json({
-      message: 'User picture updated successfully',
-      path: imagePath,
-    });
-  } catch (err) {
-    console.error('資料庫錯誤:', err);
-    return res.status(500).json({ error: 'Database error', details: err });
-  }
+    const { id } = req.body;
+    const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+    if (!id) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
+    if (!imagePath) {
+        return res.status(400).json({ error: 'No image uploaded' });
+    }
+    try {
+        const [result] = await db.query(
+            'UPDATE user SET picture = ? WHERE id = ?',
+            [imagePath, id]
+        );
+        console.log('圖片更新成功', result);
+        return res.json({
+            message: 'User picture updated successfully',
+            path: imagePath,
+        });
+    } catch (err) {
+        console.error('資料庫錯誤:', err);
+        return res.status(500).json({ error: 'Database error', details: err });
+    }
 });
 
 
@@ -121,7 +121,7 @@ router.get('/getUserDetail', async (req, res) => {
         const email = decoded.email;
         // 查使用者
         const [userRows] = await db.query(
-            `SELECT id, name, gender, DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday, picture, email FROM user WHERE email = ?`,
+            `SELECT id, name, gender, birthday, picture, email ,disease, freq FROM user WHERE email = ?`,
             [email]
         );
         if (userRows.length === 0) return res.status(404).json({ message: '找不到使用者' });
