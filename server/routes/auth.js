@@ -51,7 +51,7 @@ router.post('/verifyCode', async (req, res) => {
 
 // === 註冊帳號 ===
 router.post('/register', upload.single('picture'), async (req, res) => {
-  const { name, gender, birthday, email, password } = req.body;
+  const { name, gender, birthday, email, password, disease, freq } = req.body;
   const picture = req.file ? req.file.path : null;
   if (!name || !gender || !birthday || !email || !password) {
     return res.status(400).json({ message: '尚有欄位未填寫' });
@@ -63,8 +63,8 @@ router.post('/register', upload.single('picture'), async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     await db.query(
-      'INSERT INTO user (name, gender, birthday, picture, email, password) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, gender, birthday, picture, email, hashedPassword]
+      'INSERT INTO user (name, gender, birthday, picture, email, password, disease, freq) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, gender, birthday, picture, email, hashedPassword, disease, freq]
     );
     res.status(201).json({ message: '註冊成功' });
   } catch (error) {
@@ -99,6 +99,7 @@ router.post('/login', async (req, res) => {
     console.error('登入錯誤:', err);
     res.status(500).json({ message: '伺服器錯誤' });
   }
+
 });
 
 
