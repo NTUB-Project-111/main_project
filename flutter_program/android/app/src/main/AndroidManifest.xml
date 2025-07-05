@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET"/> <!--允許應用程式連上外部網站-->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!--允許應用程式存取圖片-->
     <application
-        android:label="drw"
+        android:label="Dr.w"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <meta-data
