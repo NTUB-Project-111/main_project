@@ -1,3 +1,4 @@
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'camera_page.dart';
@@ -95,12 +96,14 @@ class _TabsState extends State<Tabs> {
             shape: const CircleBorder(side: BorderSide(color: Colors.white, width: 2.0)),
             child: const Icon(Icons.camera_alt, size: 35),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const CameraPage(),
-                ),
-              );
+              FrontUtil.showButtonDialog('拍攝新照片', '舊照片續拍', () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CameraPage(),
+                  ),
+                );
+              }, () {}, context);
             }),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
