@@ -7,14 +7,14 @@ class Profiles extends ChangeNotifier {
 
   void setName(value) {
     name = value;
-    notifyListeners();
+    notifyListeners(); //呼叫畫面更新setState
   }
 
   bool isFilled() {
     return name.isNotEmpty;
   }
 
-  Future<bool> updateUserName(String id,String newName) async {
+  Future<bool> updateUserName(String id, String newName) async {
     final success = await _user.updateUserName(id, newName);
     if (success) {
       name = newName;

@@ -543,4 +543,72 @@ class FrontUtil {
       ),
     );
   }
+
+  //拍攝照片時跳出兩個按鈕
+  static void showButtonDialog(
+      String text1, String text2, VoidCallback onTap1, VoidCallback onTap2, BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: const BorderSide(
+            color: Color(0xFF589399),
+            width: 2,
+          ),
+        ),
+        backgroundColor: const Color(0xFFF5FEFF),
+        contentPadding: EdgeInsets.zero,
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pop(); // 點完關閉 dialog
+                onTap1(); // 執行傳入的第一個方法
+              },
+              splashColor: const Color(0xFFDFF6F7),
+              highlightColor: const Color(0xFFDFF6F7),
+              borderRadius: BorderRadius.circular(15),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Color(0xFF669FA5))),
+                ),
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    const Icon(Icons.camera_alt, color: Color(0xFF589399)),
+                    const SizedBox(width: 15),
+                    Text(text1, style: const TextStyle(color: Color(0xFF589399), fontSize: 14)),
+                  ],
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pop(); // 點完關閉 dialog
+                onTap2(); // 執行傳入的第二個方法
+              },
+              splashColor: const Color(0xFFDFF6F7),
+              highlightColor: const Color(0xFFDFF6F7),
+              borderRadius: BorderRadius.circular(15),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    const Icon(Icons.photo, color: Color(0xFF589399)),
+                    const SizedBox(width: 15),
+                    Text(text2, style: const TextStyle(color: Color(0xFF589399), fontSize: 14)),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
