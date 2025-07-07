@@ -1,0 +1,7 @@
+all_photos：815
+
+- abrosion_set：280
+
+- bruise_set：316
+
+- cut_set：319
