@@ -24,6 +24,7 @@ class _BirthdayPageState extends State<BirthdayPage> {
         content: YearSelectorDialog(
           selectedYear: selectedYear,
           maxYear: DateTime.now().year,
+          minYear: 1900,
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),

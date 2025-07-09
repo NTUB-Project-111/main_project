@@ -7,11 +7,13 @@ enum PickerMode { yearList, decadeList }
 class YearSelectorDialog extends StatefulWidget {
   final int? selectedYear;
   final int maxYear;
+  final int minYear;
 
   const YearSelectorDialog({
     super.key,
     this.selectedYear,
     this.maxYear = 2025, // 預設值，可傳入 DateTime.now().year
+    this.minYear = 1900,
   });
 
   @override
@@ -21,21 +23,44 @@ class YearSelectorDialog extends StatefulWidget {
 class _YearSelectorDialogState extends State<YearSelectorDialog> {
   PickerMode _mode = PickerMode.yearList;
   late int _startYear;
+  int _decadeStartYear = 1900;
 
   @override
   void initState() {
     super.initState();
+
+    // 年份選擇格用
     _startYear = widget.maxYear - (widget.maxYear % 9);
+
+    // Decade 起點：讓 maxYear 所在 decade 出現在頁面中間
+    final decadeOfMaxYear = (widget.maxYear ~/ 9) * 9;
+    _decadeStartYear = decadeOfMaxYear - (9 * 4); // 顯示 9 組，第5格是 maxYear 所在
   }
 
   void _nextPage() {
-    if (_startYear + 9 <= widget.maxYear) {
-      setState(() => _startYear += 9);
-    }
+    setState(() {
+      if (_mode == PickerMode.yearList) {
+        if (_startYear + 9 <= widget.maxYear) {
+          _startYear += 9;
+        }
+      } else {
+        _decadeStartYear += 9 * 9; // 一次跳 9 組 decade
+      }
+    });
   }
 
   void _prevPage() {
-    setState(() => _startYear -= 9);
+    setState(() {
+      if (_mode == PickerMode.yearList) {
+        if (_startYear - 9 >= widget.minYear) {
+          _startYear -= 9;
+        }
+      } else {
+        if (_decadeStartYear - 9 * 9 >= widget.minYear) {
+          _decadeStartYear -= 9 * 9;
+        }
+      }
+    });
   }
 
   void _switchToDecadeMode() {
@@ -57,10 +82,10 @@ class _YearSelectorDialogState extends State<YearSelectorDialog> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white, // 👈 這裡改背景顏色
+        color: Colors.white, 
         borderRadius: BorderRadius.circular(16),
       ),
-      padding: const EdgeInsets.all(16), // 👈 加內距
+      padding: const EdgeInsets.all(16), 
       child: SizedBox(
         width: 300,
         child: Column(
@@ -90,7 +115,7 @@ class _YearSelectorDialogState extends State<YearSelectorDialog> {
         GestureDetector(
           onTap: _switchToDecadeMode,
           child: const Text(
-            '西元年份',
+            '請選擇年份',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -154,7 +179,10 @@ class _YearSelectorDialogState extends State<YearSelectorDialog> {
   }
 
   Widget _buildDecadeGrid() {
-    final List<int> decades = List.generate(9, (i) => 1900 + i * 9);
+    final List<int> decades = List.generate(9, (i) => _decadeStartYear + i * 9)
+        .where((year) => year + 8 >= widget.minYear && year <= widget.maxYear)
+        .toList();
+    ;
     return GridView.count(
       crossAxisCount: 3,
       shrinkWrap: true,
@@ -169,7 +197,7 @@ class _YearSelectorDialogState extends State<YearSelectorDialog> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: const Color(0xFFEAF6F8),
+              color: Colors.white,
             ),
             child: Text(
               '$baseYear ~ ${baseYear + 9}',
