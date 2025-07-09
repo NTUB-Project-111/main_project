@@ -91,4 +91,91 @@ class RecordService {
       throw Exception('Failed to load reports');
     }
   }
+
+  Future<List<int>> fetchGroup(String userId) async {
+    final uri = Uri.parse('${ApiBase.baseUrl}/getGroup?userId=$userId');
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        if (jsonResponse['success'] == true) {
+          final data = jsonResponse['data'];
+
+          // 確保 data 是 List 並過濾掉 null，再轉為 int
+          final List<int> groupList = (data is List)
+              ? data
+                  .where((id) => id != null)
+                  .map((id) => int.tryParse(id.toString()) ?? 0)
+                  .toList()
+              : [0];
+
+          return groupList;
+        } else {
+          throw Exception('API 回傳失敗：${jsonResponse['message']}');
+        }
+      } else {
+        throw Exception('HTTP 錯誤：${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('取得 group_id 時發生錯誤: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> updateGroupId(
+    int userId,
+    int recordId1,
+    int recordId2,
+    int groupId,
+  ) async {
+    final url = Uri.parse('${ApiBase.baseUrl}/updateGroupId');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'userId': userId,
+          'recordId1': recordId1,
+          'recordId2': recordId2,
+          'groupId': groupId,
+        }),
+      );
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      if (response.statusCode == 200 && jsonResponse['success'] == true) {
+        debugPrint('更新成功');
+        return true;
+      } else {
+        debugPrint('更新失敗：${jsonResponse['message']}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('發送更新請求時發生錯誤：$e');
+      return false;
+    }
+  }
+
+  Future<int?> fetchGroupId(
+    int userId,
+    int recordId,
+  ) async {
+    final uri = Uri.parse('${ApiBase.baseUrl}/getGroupId?userId=$userId&recordId=$recordId');
+    try {
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data['success'] == true) {
+          return data['groupId']; // 回傳 groupId 整數值
+        } else {
+          debugPrint('API 回傳失敗：${data['message']}');
+        }
+      } else {
+        debugPrint('HTTP 錯誤：${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('取得 groupId 時發生錯誤：$e');
+    }
+
+    return null; // 若失敗則回傳 null
+  }
 }
