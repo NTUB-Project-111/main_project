@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import 'frontend/pages/login_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'frontend/pages/registerpages/birthday_page.dart';
+
 Future<void> main() async {
   // 初始化 .env 檔案
   await dotenv.load(fileName: ".env");
@@ -35,11 +37,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: LoginPage(),
-        // home: TestPage(),
-
-        );
+      debugShowCheckedModeBanner: false,
+      // home: LoginPage(),
+      home: BirthdayPage(),
+      // home: TestPage(),
+    );
   }
 }
 // 因為目前的部分還沒完成，所以先打註解代替

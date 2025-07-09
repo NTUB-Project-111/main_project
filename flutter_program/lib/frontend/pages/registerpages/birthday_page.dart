@@ -4,6 +4,7 @@ import 'package:drw/frontend/pages/registerpages/habit_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:drw/frontend/views/year_selector_dialog.dart';
 
 class BirthdayPage extends StatefulWidget {
   const BirthdayPage({super.key});
@@ -13,88 +14,25 @@ class BirthdayPage extends StatefulWidget {
 }
 
 class _BirthdayPageState extends State<BirthdayPage> {
-  int selectedYear = 2025;
+  int selectedYear = DateTime.now().year;
 
   Future<void> _selectYear() async {
-    final picked = await showModalBottomSheet<int>(
+    final picked = await showDialog<int>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: 0.6,
-          minChildSize: 0.4,
-          maxChildSize: 0.9,
-          builder: (_, controller) {
-            return Container(
-              margin: const EdgeInsets.all(12),
-              // padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-              padding: const EdgeInsets.symmetric(
-                vertical: 10,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    '選擇西元年份',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: FrontUtil.textColor,
-                    ),
-                  ),
-                  const Divider(
-                    thickness: 1.5,
-                    color: Color(0xFF2F7E87),
-                    height: 25,
-                  ),
-                  Expanded(
-                    child: GridView.builder(
-                      controller: controller,
-                      itemCount: 2025 - 1900 + 1, // 共 126 年
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3, // 每列 3 個年份
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                        childAspectRatio: 2.5, // 控制區塊寬高比例
-                      ),
-                      itemBuilder: (context, index) {
-                        final year = 1900 + index;
-                        return GestureDetector(
-                          onTap: () => Navigator.pop(context, year),
-                          child: Container(
-                            alignment: Alignment.center,
-                            // decoration: BoxDecoration(
-                            //   color: const Color(0xFFE0F7FA),
-                            //   borderRadius: BorderRadius.circular(10),
-                            // ),
-                            child: Text(
-                              year.toString(),
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: FrontUtil.textColor,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+      builder: (context) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: YearSelectorDialog(
+          selectedYear: selectedYear,
+          maxYear: DateTime.now().year,
+          minYear: 1900,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      ),
     );
+
     if (picked != null && picked != selectedYear) {
-      final register = context.read<Register>(); // ← 改成 read
-      register.setBirthday(picked); // ← 修正 set 的值為 picked
+      final register = context.read<Register>();
+      register.setBirthday(picked);
       setState(() {
         selectedYear = picked;
       });
@@ -156,9 +94,11 @@ class _BirthdayPageState extends State<BirthdayPage> {
                     height: 100,
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 20),
                     decoration: BoxDecoration(
-                      border: Border.all(color: FrontUtil.textColor, width: 1.5),
+                      border:
+                          Border.all(color: FrontUtil.textColor, width: 1.5),
                       borderRadius: BorderRadius.circular(15),
                       color: Colors.white,
                     ),
