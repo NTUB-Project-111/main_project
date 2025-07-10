@@ -79,7 +79,8 @@ class _AccountPageState extends State<AccountPage> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
-                        border: Border.all(color: FrontUtil.textColor, width: 1.5),
+                        border:
+                            Border.all(color: FrontUtil.textColor, width: 1.5),
                       ),
                       child: ClipOval(
                         child: Image.asset('images/register_icon.png'),
@@ -142,8 +143,9 @@ class _AccountPageState extends State<AccountPage> {
                                   controller: _confirmPasswordController,
                                   hidden: hideConfirmPassword,
                                   enabled: isPwdEnabled,
-                                  onToggle: () =>
-                                      setState(() => hideConfirmPassword = !hideConfirmPassword),
+                                  onToggle: () => setState(() =>
+                                      hideConfirmPassword =
+                                          !hideConfirmPassword),
                                   register: register);
                             },
                           ),
@@ -160,14 +162,16 @@ class _AccountPageState extends State<AccountPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ChangeNotifierProvider.value(
+                                builder: (context) =>
+                                    ChangeNotifierProvider.value(
                                   value: register,
                                   child: const InformationPage(),
                                 ),
                               ),
                             );
                           } else {
-                            FrontUtil.showError(error, Colors.red, Colors.white);
+                            FrontUtil.showError(
+                                error, Colors.red, Colors.white);
                           }
                         },
                         icon: Icon(
@@ -345,8 +349,9 @@ class _AccountPageState extends State<AccountPage> {
           Expanded(
             child: TextField(
               controller: controller,
-              onChanged: (value) =>
-                  label == '密碼' ? register.setPassword(value) : register.setRePassword(value),
+              onChanged: (value) => label == '密碼'
+                  ? register.setPassword(value)
+                  : register.setRePassword(value),
               obscureText: hidden,
               style: const TextStyle(fontSize: 16),
               enabled: enabled,
@@ -371,7 +376,8 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   /// === 右側按鈕樣式 ===
-  Widget _roundedButton(String text, VoidCallback onPressed, bool enabled, bool isLoading) {
+  Widget _roundedButton(
+      String text, VoidCallback onPressed, bool enabled, bool isLoading) {
     return ElevatedButton(
       onPressed: enabled ? onPressed : null,
       style: ElevatedButton.styleFrom(

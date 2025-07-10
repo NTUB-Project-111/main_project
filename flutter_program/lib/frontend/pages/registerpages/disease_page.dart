@@ -2,6 +2,7 @@ import 'package:drw/backend/viewmodels/register_view_model.dart';
 import 'package:drw/frontend/headers/header6.dart';
 import 'package:drw/frontend/pages/login_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:drw/frontend/utility/bear_message.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,8 +33,10 @@ class _DiseasePageState extends State<DiseasePage> {
               const SizedBox(height: 12),
               const Text(
                 '選擇症狀',
-                style:
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF5E9CA0)),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF5E9CA0)),
               ),
               const Divider(
                 color: Color(0xFF5E9CA0),
@@ -54,7 +57,7 @@ class _DiseasePageState extends State<DiseasePage> {
                         selectedSymptoms.remove(symptom);
                       }
                     });
-                    
+
                     setState(() {}); // 更新主畫面顯示
                   },
                 );
@@ -122,28 +125,7 @@ class _DiseasePageState extends State<DiseasePage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset(
-                    'images/nurse_bear.png',
-                    width: 110,
-                    height: 110,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: FrontUtil.textColor, width: 1.5),
-                      borderRadius: BorderRadius.circular(15),
-                      color: Colors.white,
-                    ),
-                    child: Text(
-                      '請問您有哪些症狀呢?',
-                      style: TextStyle(
-                        color: FrontUtil.textColor,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                  const BearWithTextBox(text: '請問您有哪些症狀呢?'),
                   const SizedBox(
                     height: 10,
                   ),
@@ -155,10 +137,12 @@ class _DiseasePageState extends State<DiseasePage> {
                           onTap: _showMultiSelect,
                           child: Container(
                             width: 180,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 10),
                             decoration: const BoxDecoration(
                               border: Border(
-                                bottom: BorderSide(color: Color(0xFF5E9CA0), width: 1),
+                                bottom: BorderSide(
+                                    color: Color(0xFF5E9CA0), width: 1),
                               ),
                             ),
                             child: const Row(
@@ -173,7 +157,8 @@ class _DiseasePageState extends State<DiseasePage> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                Icon(Icons.arrow_drop_down, color: Color(0xFF5E9CA0)),
+                                Icon(Icons.arrow_drop_down,
+                                    color: Color(0xFF5E9CA0)),
                               ],
                             ),
                           ),
@@ -198,7 +183,8 @@ class _DiseasePageState extends State<DiseasePage> {
                       register.setDisease(selectedSymptoms);
                       final error = await register.register();
                       if (error == null) {
-                        FrontUtil.showError('註冊成功!請登入帳號', Colors.green, Colors.white);
+                        FrontUtil.showError(
+                            '註冊成功!請登入帳號', Colors.green, Colors.white);
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (_) => const LoginPage()),
