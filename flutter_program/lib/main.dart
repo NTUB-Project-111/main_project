@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'frontend/pages/login_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'frontend/pages/registerpages/habit_page.dart';
 // import 'frontend/pages/registerpages/birthday_page.dart';
 
 Future<void> main() async {
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: LoginPage(),
-      // home: BirthdayPage(),
+      // home: HabitPage(),
       // home: TestPage(),
     );
   }

@@ -34,14 +34,16 @@ class _Information2PageState extends State<Information2Page> {
                 children: [
                   Image.asset(
                     'images/nurse_bear.png',
-                    width: 100,
-                    height: 100,
+                    width: 110,
+                    height: 110,
                   ),
                   Container(
                     margin: const EdgeInsets.only(bottom: 15),
-                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 20),
                     decoration: BoxDecoration(
-                      border: Border.all(color: FrontUtil.textColor, width: 1.5),
+                      border:
+                          Border.all(color: FrontUtil.textColor, width: 1.5),
                       borderRadius: BorderRadius.circular(15),
                       color: Colors.white,
                     ),
@@ -66,7 +68,8 @@ class _Information2PageState extends State<Information2Page> {
                   const SizedBox(height: 20),
                   // 白底說明框
                   Container(
-                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 18, horizontal: 16),
                     margin: const EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
                       color: Colors.white,

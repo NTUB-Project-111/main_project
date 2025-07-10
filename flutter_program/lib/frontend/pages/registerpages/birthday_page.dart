@@ -90,8 +90,8 @@ class _BirthdayPageState extends State<BirthdayPage> {
                 children: [
                   Image.asset(
                     'images/nurse_bear.png',
-                    width: 100,
-                    height: 100,
+                    width: 110,
+                    height: 110,
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(

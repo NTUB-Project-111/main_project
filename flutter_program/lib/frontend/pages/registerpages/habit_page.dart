@@ -73,118 +73,163 @@ class _HabitPageState extends State<HabitPage> {
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 50),
-                    Image.asset(
-                      'images/nurse_bear.png',
-                      width: 100,
-                      height: 100,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 20),
-                      decoration: BoxDecoration(
-                        border:
-                            Border.all(color: FrontUtil.textColor, width: 1.5),
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white,
-                      ),
-                      child: Text(
-                        '請問您有以下習慣嗎?',
-                        style: TextStyle(
-                          color: FrontUtil.textColor,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    Container(
-                      padding: const EdgeInsets.fromLTRB(20, 28, 5, 10),
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: const [
-                          BoxShadow(
-                              color: Color(0x80589399), offset: Offset(0, -1)),
-                          BoxShadow(
-                            color: Colors.white,
-                            spreadRadius: -0.5,
-                            blurRadius: 1.5,
-                          ),
-                        ],
-                      ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints:
+                        BoxConstraints(minHeight: constraints.maxHeight),
+                    child: IntrinsicHeight(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          buildOptionRow(
-                            '抽菸',
-                            smoking,
-                            (value) => setState(() {
-                              smoking = value;
-                              if (value != null) {
-                                register.setSmokingFreq(
-                                    ['無', '偶爾 (每週1~6根)', '經常'][value.index]);
-                              }
-                            }),
-                            ['無', '偶爾 (每週1~6根)', '經常'],
-                          ),
-                          buildOptionRow(
-                            '喝酒',
-                            drinking,
-                            (value) => setState(() {
-                              drinking = value;
-                              if (value != null) {
-                                register.setDrinkingFreq(
-                                    ['無', '偶爾 (每月1~3次)', '經常'][value.index]);
-                              }
-                            }),
-                            ['無', '偶爾 (每月1~3次)', '經常'],
-                          ),
-                          buildOptionRow(
-                            '嚼檳榔',
-                            betelNut,
-                            (value) => setState(() {
-                              betelNut = value;
-                              if (value != null) {
-                                register.setBetelNutFreq(
-                                    ['無', '偶爾 (每月1~5次)', '經常'][value.index]);
-                              }
-                            }),
-                            ['無', '偶爾 (每月1~5次)', '經常'],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    IconButton(
-                      onPressed: () {
-                        // 可取 selectedYear 來傳到下一頁
-                        final register = context.read<Register>();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ChangeNotifierProvider.value(
-                              value: register,
-                              child: const Information2Page(),
+                          Expanded(
+                            child: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const SizedBox(height: 30),
+                                  Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom: 45), // 微調圖片下緣位置
+                                        child: Image.asset(
+                                          'images/nurse_bear.png',
+                                          width: 110,
+                                          height: 110,
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(
+                                            top: 60), // 增加與圖片的間距（必要時微調）
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 15,
+                                          horizontal: 20,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: FrontUtil.textColor,
+                                              width: 1.5),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          color: Colors.white,
+                                        ),
+                                        child: Text(
+                                          '請問您有以下習慣嗎?',
+                                          style: TextStyle(
+                                            color: FrontUtil.textColor,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.5,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 40),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.88,
+                                    padding: const EdgeInsets.fromLTRB(
+                                        25, 30, 20, 10),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 20),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                            color: Color(0x80589399),
+                                            offset: Offset(0, -1)),
+                                        BoxShadow(
+                                          color: Colors.white,
+                                          spreadRadius: -0.5,
+                                          blurRadius: 1.5,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        buildOptionRow(
+                                          '抽菸',
+                                          smoking,
+                                          (value) => setState(() {
+                                            smoking = value;
+                                            if (value != null) {
+                                              register.setSmokingFreq([
+                                                '無',
+                                                '偶爾 (每週1~6根)',
+                                                '經常'
+                                              ][value.index]);
+                                            }
+                                          }),
+                                          ['無', '偶爾 (每週1~6根)', '經常'],
+                                        ),
+                                        buildOptionRow(
+                                          '喝酒',
+                                          drinking,
+                                          (value) => setState(() {
+                                            drinking = value;
+                                            if (value != null) {
+                                              register.setDrinkingFreq([
+                                                '無',
+                                                '偶爾 (每月1~3次)',
+                                                '經常'
+                                              ][value.index]);
+                                            }
+                                          }),
+                                          ['無', '偶爾 (每月1~3次)', '經常'],
+                                        ),
+                                        buildOptionRow(
+                                          '嚼檳榔',
+                                          betelNut,
+                                          (value) => setState(() {
+                                            betelNut = value;
+                                            if (value != null) {
+                                              register.setBetelNutFreq([
+                                                '無',
+                                                '偶爾 (每月1~5次)',
+                                                '經常'
+                                              ][value.index]);
+                                            }
+                                          }),
+                                          ['無', '偶爾 (每月1~5次)', '經常'],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 30),
+                                  IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ChangeNotifierProvider.value(
+                                            value: register,
+                                            child: const Information2Page(),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.arrow_circle_right_sharp,
+                                      size: 40,
+                                      color: FrontUtil.textColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.arrow_circle_right_sharp,
-                        size: 40,
-                        color: FrontUtil.textColor,
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ],
