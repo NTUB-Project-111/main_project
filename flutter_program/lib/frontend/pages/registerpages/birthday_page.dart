@@ -4,7 +4,7 @@ import 'package:drw/frontend/pages/registerpages/habit_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:drw/frontend/views/year_selector_dialog.dart';
+import 'package:drw/frontend/pages/registerpages/birthday_year_selector_part.dart';
 
 class BirthdayPage extends StatefulWidget {
   const BirthdayPage({super.key});
@@ -90,8 +90,8 @@ class _BirthdayPageState extends State<BirthdayPage> {
                 children: [
                   Image.asset(
                     'images/nurse_bear.png',
-                    width: 100,
-                    height: 100,
+                    width: 110,
+                    height: 110,
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(

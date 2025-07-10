@@ -29,12 +29,15 @@ class _YearSelectorDialogState extends State<YearSelectorDialog> {
   void initState() {
     super.initState();
 
-    // 年份選擇格用
-    _startYear = widget.maxYear - (widget.maxYear % 9);
+    // 根據已選年份決定初始位置
+    final baseYear = widget.selectedYear ?? widget.maxYear;
 
-    // Decade 起點：讓 maxYear 所在 decade 出現在頁面中間
-    final decadeOfMaxYear = (widget.maxYear ~/ 9) * 9;
-    _decadeStartYear = decadeOfMaxYear - (9 * 4); // 顯示 9 組，第5格是 maxYear 所在
+    // 年份選擇格用（9 年一組）
+    _startYear = baseYear - (baseYear % 9);
+
+    // Decade 起點：讓目前年份出現在中間（第 5 格）
+    final decadeOfBase = (baseYear ~/ 9) * 9;
+    _decadeStartYear = decadeOfBase - (9 * 4); // 顯示 9 組 decade
   }
 
   void _nextPage() {
@@ -82,12 +85,12 @@ class _YearSelectorDialogState extends State<YearSelectorDialog> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white, 
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      padding: const EdgeInsets.all(16), 
+      padding: const EdgeInsets.all(16),
       child: SizedBox(
-        width: 300,
+        width: 280,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -200,7 +203,7 @@ class _YearSelectorDialogState extends State<YearSelectorDialog> {
               color: Colors.white,
             ),
             child: Text(
-              '$baseYear ~ ${baseYear + 9}',
+              '$baseYear ~ ${baseYear + 8}',
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,

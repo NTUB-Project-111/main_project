@@ -124,8 +124,8 @@ class _DiseasePageState extends State<DiseasePage> {
                 children: [
                   Image.asset(
                     'images/nurse_bear.png',
-                    width: 100,
-                    height: 100,
+                    width: 110,
+                    height: 110,
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
