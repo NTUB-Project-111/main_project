@@ -85,9 +85,11 @@ class _HabitPageState extends State<HabitPage> {
                       height: 100,
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15, horizontal: 20),
                       decoration: BoxDecoration(
-                        border: Border.all(color: FrontUtil.textColor, width: 1.5),
+                        border:
+                            Border.all(color: FrontUtil.textColor, width: 1.5),
                         borderRadius: BorderRadius.circular(15),
                         color: Colors.white,
                       ),
@@ -108,7 +110,8 @@ class _HabitPageState extends State<HabitPage> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: const [
-                          BoxShadow(color: Color(0x80589399), offset: Offset(0, -1)),
+                          BoxShadow(
+                              color: Color(0x80589399), offset: Offset(0, -1)),
                           BoxShadow(
                             color: Colors.white,
                             spreadRadius: -0.5,
@@ -125,7 +128,8 @@ class _HabitPageState extends State<HabitPage> {
                             (value) => setState(() {
                               smoking = value;
                               if (value != null) {
-                                register.setSmokingFreq(['無', '偶爾 (每週1~6根)', '經常'][value.index]);
+                                register.setSmokingFreq(
+                                    ['無', '偶爾 (每週1~6根)', '經常'][value.index]);
                               }
                             }),
                             ['無', '偶爾 (每週1~6根)', '經常'],
@@ -136,7 +140,8 @@ class _HabitPageState extends State<HabitPage> {
                             (value) => setState(() {
                               drinking = value;
                               if (value != null) {
-                                register.setDrinkingFreq(['無', '偶爾 (每月1~3次)', '經常'][value.index]);
+                                register.setDrinkingFreq(
+                                    ['無', '偶爾 (每月1~3次)', '經常'][value.index]);
                               }
                             }),
                             ['無', '偶爾 (每月1~3次)', '經常'],
@@ -147,7 +152,8 @@ class _HabitPageState extends State<HabitPage> {
                             (value) => setState(() {
                               betelNut = value;
                               if (value != null) {
-                                register.setBetelNutFreq(['無', '偶爾 (每月1~5次)', '經常'][value.index]);
+                                register.setBetelNutFreq(
+                                    ['無', '偶爾 (每月1~5次)', '經常'][value.index]);
                               }
                             }),
                             ['無', '偶爾 (每月1~5次)', '經常'],
