@@ -3,6 +3,7 @@ import 'package:drw/frontend/headers/header6.dart';
 import 'package:drw/frontend/pages/login_page.dart';
 import 'package:drw/frontend/pages/registerpages/disease_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:drw/frontend/utility/bear_message.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,7 @@ enum SpecialCondition { has, none }
 
 class _Information2PageState extends State<Information2Page> {
   SpecialCondition? condition = SpecialCondition.none;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,31 +34,8 @@ class _Information2PageState extends State<Information2Page> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset(
-                    'images/nurse_bear.png',
-                    width: 110,
-                    height: 110,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 15),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 20),
-                    decoration: BoxDecoration(
-                      border:
-                          Border.all(color: FrontUtil.textColor, width: 1.5),
-                      borderRadius: BorderRadius.circular(15),
-                      color: Colors.white,
-                    ),
-                    child: Text(
-                      '請問您有以下特殊症狀嗎?',
-                      style: TextStyle(
-                        color: FrontUtil.textColor,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                  const BearWithTextBox(text: '請問您有以下特殊症狀嗎?'),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -66,7 +45,6 @@ class _Information2PageState extends State<Information2Page> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // 白底說明框
                   Container(
                     padding: const EdgeInsets.symmetric(
                         vertical: 18, horizontal: 16),
@@ -98,19 +76,15 @@ class _Information2PageState extends State<Information2Page> {
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   IconButton(
                     onPressed: () {
                       if (condition == SpecialCondition.none) {
-                        // 選擇「沒有」→ 跳轉到 LoginPage
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (_) => const LoginPage()),
                         );
                       } else if (condition == SpecialCondition.has) {
-                        // 選擇「有」→ 跳轉到 DiseasePage
                         final register = context.read<Register>();
                         Navigator.push(
                           context,
@@ -122,7 +96,6 @@ class _Information2PageState extends State<Information2Page> {
                           ),
                         );
                       } else {
-                        // 尚未選擇 → 顯示錯誤提示
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('請先選擇是否有特殊症狀'),
@@ -137,7 +110,6 @@ class _Information2PageState extends State<Information2Page> {
                       color: FrontUtil.textColor,
                     ),
                   ),
-
                   const SizedBox(height: 40),
                 ],
               ),
@@ -156,7 +128,7 @@ class _Information2PageState extends State<Information2Page> {
           groupValue: condition,
           onChanged: (SpecialCondition? newValue) {
             setState(() {
-              condition = newValue; // ✅ 只更新狀態，不跳頁
+              condition = newValue;
             });
           },
           activeColor: const Color(0xFF5E9CA0),

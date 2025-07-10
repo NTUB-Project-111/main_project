@@ -2,9 +2,11 @@ import 'package:drw/backend/viewmodels/register_view_model.dart';
 import 'package:drw/frontend/headers/header6.dart';
 import 'package:drw/frontend/pages/registerpages/habit_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:drw/frontend/utility/bear_message.dart';
+import 'package:drw/frontend/pages/registerpages/birthday_year_selector_part.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:drw/frontend/pages/registerpages/birthday_year_selector_part.dart';
+
 
 class BirthdayPage extends StatefulWidget {
   const BirthdayPage({super.key});
@@ -88,30 +90,7 @@ class _BirthdayPageState extends State<BirthdayPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset(
-                    'images/nurse_bear.png',
-                    width: 110,
-                    height: 110,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 20),
-                    decoration: BoxDecoration(
-                      border:
-                          Border.all(color: FrontUtil.textColor, width: 1.5),
-                      borderRadius: BorderRadius.circular(15),
-                      color: Colors.white,
-                    ),
-                    child: Text(
-                      '請問您出生的西元年份為?',
-                      style: TextStyle(
-                        color: FrontUtil.textColor,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                  const BearWithTextBox(text: '請問您出生的西元年份為?'),
                   _buildButton(), // ⭐ 用內部方法
                   IconButton(
                     onPressed: () {
