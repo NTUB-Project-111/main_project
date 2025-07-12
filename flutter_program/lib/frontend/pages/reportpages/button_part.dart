@@ -9,7 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ButtonPart extends StatefulWidget {
-  const ButtonPart({super.key});
+  final bool isExtra;
+  final int? id;
+  const ButtonPart({super.key, required this.isExtra, this.id});
 
   @override
   State<ButtonPart> createState() => _ButtonPartState();
@@ -65,7 +67,8 @@ class _ButtonPartState extends State<ButtonPart> {
                                     Provider.of<UserProvider>(context, listen: false);
                                 final user = userProvider.user;
                                 if (user == null) return;
-                                final result = await report.uploadData(user.id.toString());
+                                final result = await report.uploadData(
+                                    user.id.toString(), widget.isExtra, widget.id ?? 0);
                                 if (result) {
                                   // 重新取得該使用者所有報告資料
                                   final userReports = await RecordService.fetchReports(user.id);
@@ -84,6 +87,7 @@ class _ButtonPartState extends State<ButtonPart> {
                                   }
                                   // 可能額外需要觸發資料儲存/紀錄刷新
                                   await RecordService.getRecords(context, user.id.toString());
+                                  
                                   // 顯示成功訊息並跳頁
                                   FrontUtil.showError('報告儲存成功!', Colors.green, Colors.white);
                                   Navigator.pushReplacement(
