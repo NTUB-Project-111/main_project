@@ -12,7 +12,9 @@ import 'package:provider/provider.dart';
 import 'package:drw/frontend/pages/reportpages/title_part.dart';
 
 class ReportPage extends StatefulWidget {
-  const ReportPage({super.key});
+  final bool isExtra;
+  final int? id;
+  const ReportPage({super.key,required this.isExtra, this.id});
 
   @override
   State<ReportPage> createState() => _ReportPageState();
@@ -54,20 +56,20 @@ class _ReportPageState extends State<ReportPage> {
             body: Center(child: FrontUtil.loading()),
           );
         }
-        return const Scaffold(
-            backgroundColor: Color(0xFFEBFEFF),
+        return Scaffold(
+            backgroundColor: const Color(0xFFEBFEFF),
             body: SingleChildScrollView(
                 child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 children: [
-                  Header5(),
-                  TitlePart(),
-                  WoundPart(),
-                  CarePart(),
-                  HospitalPart(),
-                  RecordPart(),
-                  ButtonPart()
+                  const Header5(),
+                  const TitlePart(),
+                  const WoundPart(),
+                  const CarePart(),
+                  const HospitalPart(),
+                  const RecordPart(),
+                  ButtonPart(isExtra: widget.isExtra, id: widget.id)
                 ],
               ),
             )));

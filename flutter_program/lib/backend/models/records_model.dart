@@ -10,6 +10,7 @@ class UserRecord {
   String ifcall;
   String tags;
   String selfRecord;
+  int groupId;
 
   UserRecord({
     required this.recordId,
@@ -21,6 +22,7 @@ class UserRecord {
     required this.ifcall,
     required this.tags,
     required this.selfRecord,
+    required this.groupId,
   });
 
   factory UserRecord.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class UserRecord {
       ifcall: json['ifcall'] ?? '',
       tags: json['choosekind'] ?? '',
       selfRecord: json['recording'] ?? '',
+      groupId: json['group_id'] ?? 0,
     );
   }
 
@@ -50,6 +53,7 @@ class UserRecord {
       是否提醒: $ifcall
       標籤: $tags
       自我紀錄: $selfRecord
+      group: $groupId
       =================
     ''';
   }

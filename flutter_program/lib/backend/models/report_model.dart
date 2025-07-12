@@ -220,13 +220,39 @@ class Report extends ChangeNotifier {
     return result;
   }
 
-  Future<bool> uploadData(String userId) async {
+  Future<bool> _addGroup(String userId, int id) async {
+    bool result = true;
+    final grouplist = await _record.fetchGroup(userId);
+    if (grouplist.length == 1 && grouplist.first == 0) {
+      //先顯查此使用者有沒有任何的group
+      //沒有的話設定groupId為1
+      result = await _record.updateGroupId(int.parse(userId), recordId, id, 1);
+    } else {
+      //有的話檢查選擇的照片有沒有設定群組
+      final groupId = await _record.fetchGroupId(int.parse(userId), id);
+      if (groupId != null) {
+        //若已經有設定群組則沿用groupId
+        result = await _record.updateGroupId(int.parse(userId), recordId, id, groupId);
+      } else {
+        final groupId = grouplist.reduce((a, b) => a > b ? a : b);
+        result = await _record.updateGroupId(int.parse(userId), recordId, id, groupId + 1);
+      }
+    }
+    return result;
+  }
+
+  Future<bool> uploadData(String userId, bool isExtra, int id) async {
     isSaving = true;
     notifyListeners();
     bool recordResult = true;
     bool remindResult = true;
+    bool groupResult = true;
     recordResult = await _addRecord(userId);
     if (notify) remindResult = await _addRemind(userId);
+    if (isExtra) {
+      //建立群組
+      groupResult = await _addGroup(userId, id);
+    }
     isSaving = false;
     woundType = '';
     careSteps = [];
@@ -240,8 +266,7 @@ class Report extends ChangeNotifier {
     remindList = [];
     image = null;
     notifyListeners();
-    notifyListeners();
-    return recordResult && remindResult;
+    return recordResult && remindResult && groupResult;
   }
 
   @override

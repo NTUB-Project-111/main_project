@@ -1,3 +1,4 @@
+import 'package:drw/frontend/pages/pick_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
@@ -19,7 +20,9 @@ class _TabsState extends State<Tabs> {
   final List<Widget> _pages = [
     const HomePage(),
     const HospitalPage(),
-    const CameraPage(),
+    const CameraPage(
+      isExtra: false,
+    ),
     const GalleryPage(),
     const PersonalPage(),
   ];
@@ -100,10 +103,19 @@ class _TabsState extends State<Tabs> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const CameraPage(),
+                    builder: (context) => const CameraPage(
+                      isExtra: false,
+                    ),
                   ),
                 );
-              }, () {}, context);
+              }, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PickPage(),
+                  ),
+                );
+              }, context);
             }),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
