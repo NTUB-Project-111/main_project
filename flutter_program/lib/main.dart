@@ -3,7 +3,7 @@ import 'package:drw/backend/provider/remind_provider.dart'; //
 import 'package:drw/backend/provider/report_provider.dart'; //
 import 'package:drw/backend/provider/user_provider.dart'; //
 import 'package:drw/backend/viewmodels/register_view_model.dart';
-import 'package:drw/frontend/pages/test_page.dart';
+import 'package:drw/frontend/pages/tabs/tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'frontend/pages/login_page.dart';
@@ -34,9 +34,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        // brightness: Brightness.light,
+        fontFamily: 'NotoSansTC',
+      ),
       home: LoginPage(),
+      // home: const Tabs(),
+
       // home: HabitPage(),
       // home: TestPage(),
     );

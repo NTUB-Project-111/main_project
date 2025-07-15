@@ -1,3 +1,4 @@
+import 'package:drw/frontend/animation/wound_option_button.dart';
 import 'package:drw/frontend/pages/pick_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,8 @@ class _TabsState extends State<Tabs> {
         child: BottomNavigationBar(
           onTap: (index) {
             setState(() {
-              _currentIndex = index != 2 ? index : _currentIndex; //setState會重新跑build
+              _currentIndex =
+                  index != 2 ? index : _currentIndex; //setState會重新跑build
             });
           },
           selectedFontSize: 13,
@@ -96,28 +98,68 @@ class _TabsState extends State<Tabs> {
         child: FloatingActionButton(
             foregroundColor: Colors.white,
             backgroundColor: const Color(0xFF669FA5),
-            shape: const CircleBorder(side: BorderSide(color: Colors.white, width: 2.0)),
+            shape: const CircleBorder(
+              side: BorderSide(color: Colors.white, width: 2.0),
+            ),
             child: const Icon(Icons.camera_alt, size: 35),
             onPressed: () {
-              FrontUtil.showButtonDialog('拍攝新照片', '舊照片續拍', () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CameraPage(
-                      isExtra: false,
+              showDialog(
+                context: context,
+                barrierColor:
+                    const Color.fromARGB(255, 121, 156, 162).withOpacity(0.4),
+                builder: (BuildContext context) {
+                  return Dialog(
+                    backgroundColor: Colors.transparent, // 完全透明背景
+                    elevation: 0,
+                    insetPadding: const EdgeInsets.symmetric(vertical: 250),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          WoundOptionButton(
+                            label: "舊傷口追蹤",
+                            imagePath: 'images/old_photo_icon.png',
+                            backgroundColor:
+                                const Color.fromARGB(255, 242, 225, 217),
+                            borderColor: Colors.transparent,
+                            textColor: const Color.fromARGB(255, 155, 109, 87),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const PickPage(),
+                                ),
+                              );
+                            },
+                          ),
+                          // const SizedBox(width: 5),
+                          WoundOptionButton(
+                            label: "新傷口拍攝",
+                            imagePath: 'images/new_photo_icon.png',
+                            backgroundColor:
+                                const Color.fromARGB(255, 92, 141, 147),
+                            borderColor: Colors.transparent,
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CameraPage(isExtra: false),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }, () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PickPage(),
-                  ),
-                );
-              }, context);
+                  );
+                },
+              );
             }),
       ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
