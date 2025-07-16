@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         // brightness: Brightness.light,
         fontFamily: 'NotoSansTC',
       ),
-      home: LoginPage(),
+      home: const LoginPage(),
       // home: const Tabs(),
 
       // home: HabitPage(),

@@ -106,7 +106,8 @@ class _TabsState extends State<Tabs> {
               showDialog(
                 context: context,
                 barrierColor:
-                    const Color.fromARGB(255, 121, 156, 162).withOpacity(0.4),
+                    // const Color.fromARGB(255, 121, 156, 162).withOpacity(0.4),
+                    const Color.fromARGB(255, 154, 182, 187).withOpacity(0.4),
                 builder: (BuildContext context) {
                   return Dialog(
                     backgroundColor: Colors.transparent, // 完全透明背景
