@@ -194,7 +194,7 @@ class _DiseasePageState extends State<DiseasePage> {
                       }
                     },
                     icon: Icon(
-                      Icons.arrow_circle_right_sharp,
+                      Icons.check_circle_rounded,
                       size: 40,
                       color: FrontUtil.textColor,
                     ),
