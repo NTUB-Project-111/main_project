@@ -33,7 +33,13 @@ class _PickPageState extends State<PickPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => CameraPage(isExtra: true,id: report.id,),
+                          builder: (_) => CameraPage(
+                              isExtra: true,
+                              id: report.id,
+                              oktime: report.oktime,
+                              date: report.date,
+                              woundType: report.type
+                              ),
                         ),
                       );
                       debugPrint("選擇好照片了!");
