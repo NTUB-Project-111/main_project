@@ -69,6 +69,11 @@ class RecordService {
             recordsJson.map((json) => UserRecord.fromJson(json)).toList();
 
         Provider.of<Records>(context, listen: false).setRecords(records);
+        for (var record in records) {
+          debugPrint('==========新的一筆record===========');
+          debugPrint(record.recordId.toString());
+          debugPrint(record.groupId.toString());
+        }
       } else {
         debugPrint('取得紀錄失敗: ${response.statusCode}');
         debugPrint('錯誤訊息: ${response.body}');
@@ -103,10 +108,13 @@ class RecordService {
 
           // 確保 data 是 List 並過濾掉 null，再轉為 int
           final List<int> groupList = (data is List)
-              ? data
-                  .where((id) => id != null)
-                  .map((id) => int.tryParse(id.toString()) ?? 0)
-                  .toList()
+              ? data.map((id) {
+                  if (id == null || id.toString().trim().isEmpty) {
+                    return 0;
+                  } else {
+                    return int.tryParse(id.toString()) ?? 0;
+                  }
+                }).toList()
               : [0];
 
           return groupList;
