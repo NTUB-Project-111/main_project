@@ -1,5 +1,5 @@
 import 'package:drw/backend/viewmodels/register_view_model.dart';
-import 'package:drw/frontend/headers/header6.dart';
+// import 'package:drw/frontend/headers/header6.dart';
 import 'package:drw/frontend/pages/login_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:drw/frontend/utility/bear_message.dart';
@@ -116,10 +116,10 @@ class _DiseasePageState extends State<DiseasePage> {
       backgroundColor: FrontUtil.bkColor2,
       body: Column(
         children: [
-          Header6(
-            title: '註冊帳號',
-            icon: Icon(Icons.arrow_back, color: FrontUtil.textColor),
-          ),
+          // Header6(
+          //   title: '註冊帳號',
+          //   icon: Icon(Icons.arrow_back, color: FrontUtil.textColor),
+          // ),
           Expanded(
             child: Center(
               child: Column(
@@ -194,7 +194,7 @@ class _DiseasePageState extends State<DiseasePage> {
                       }
                     },
                     icon: Icon(
-                      Icons.arrow_circle_right_sharp,
+                      Icons.check_circle_rounded,
                       size: 40,
                       color: FrontUtil.textColor,
                     ),

@@ -3,6 +3,7 @@ import 'package:drw/backend/provider/remind_provider.dart'; //
 import 'package:drw/backend/provider/report_provider.dart'; //
 import 'package:drw/backend/provider/user_provider.dart'; //
 import 'package:drw/backend/viewmodels/register_view_model.dart';
+import 'package:drw/frontend/pages/registerpages/information2_page.dart';
 import 'package:drw/frontend/pages/tabs/tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +42,9 @@ class MyApp extends StatelessWidget {
         fontFamily: 'NotoSansTC',
       ),
       home: const LoginPage(),
+      // home: const Information2Page(),
       // home: const Tabs(),
+      
 
       // home: HabitPage(),
       // home: TestPage(),
