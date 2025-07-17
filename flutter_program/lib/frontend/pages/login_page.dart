@@ -107,7 +107,13 @@ class _LoginPageState extends State<LoginPage> {
                               style: TextStyle(color: Color(0xFF669FA5))),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            // Navigator.pushReplacement(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //       builder: (context) => const ForgetPage()),
+                            // );
+                          },
                           child: const Text(
                             "訪客登入",
                             style: TextStyle(
@@ -128,8 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                               ? null
                               : () async {
                                   if (!login.isFilled()) {
-                                    FrontUtil.showError(
-                                        '請填寫帳號及密碼', Colors.red, Colors.white);
+                                    FrontUtil.showFail('請填寫帳號及密碼');
                                     return;
                                   }
                                   final error = await login.login(
@@ -178,8 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                                       }
                                     }
 
-                                    FrontUtil.showError(
-                                        '登入成功!', Colors.green, Colors.white);
+                                    FrontUtil.showSuccess('登入成功!');
                                     if (!mounted) return;
                                     Navigator.pushReplacement(
                                       myContext,
@@ -189,8 +193,9 @@ class _LoginPageState extends State<LoginPage> {
                                   } else {
                                     debugPrint(
                                         'email:${login.email} psd:${login.password}');
-                                    FrontUtil.showError('登入失敗，帳號或密碼輸入錯誤',
-                                        Colors.red, Colors.white);
+                                    FrontUtil.showFail(
+                                      '登入失敗，帳號或密碼輸入錯誤',
+                                    );
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
