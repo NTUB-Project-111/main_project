@@ -17,7 +17,7 @@ class Information2Page extends StatefulWidget {
 enum SpecialCondition { has, none }
 
 class _Information2PageState extends State<Information2Page> {
-  SpecialCondition? condition = SpecialCondition.none;
+  SpecialCondition? condition = SpecialCondition.has;
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +25,12 @@ class _Information2PageState extends State<Information2Page> {
       backgroundColor: FrontUtil.bkColor2,
       body: Column(
         children: [
-          Header6(
-            title: '註冊帳號',
-            icon: Icon(Icons.arrow_back, color: FrontUtil.textColor),
-          ),
           Expanded(
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const BearWithTextBox(text: '請問您有以下特殊症狀嗎?'),
+                  const BearWithTextBox(text: '請問您是否有特殊症狀嗎?'),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -45,46 +41,43 @@ class _Information2PageState extends State<Information2Page> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 18, horizontal: 16),
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Column(
-                      children: [
-                        Text(
-                          '↓ 『特殊症狀』 ↓',
-                          style: TextStyle(
-                            color: Color(0xFF2E6D74),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
+
+                  // 顯示「特殊症狀」資訊框與下一步按鈕（若 condition == has）
+                  if (condition == SpecialCondition.has) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 16),
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Column(
+                        children: [
+                          Text(
+                            '↓ 『特殊症狀』 ↓',
+                            style: TextStyle(
+                              color: Color(0xFF2E6D74),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          '慢性病（糖尿病、高血糖、高血脂等）\n、癌症、愛滋病、貧血等。',
-                          style: TextStyle(
-                            color: Color(0xFF2E6D74),
-                            fontSize: 14,
-                            height: 1.6,
+                          SizedBox(height: 8),
+                          Text(
+                            '慢性病（糖尿病、高血糖、高血脂等）\n、癌症、愛滋病、貧血等。',
+                            style: TextStyle(
+                              color: Color(0xFF2E6D74),
+                              fontSize: 14,
+                              height: 1.6,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  IconButton(
-                    onPressed: () {
-                      if (condition == SpecialCondition.none) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginPage()),
-                        );
-                      } else if (condition == SpecialCondition.has) {
+                    const SizedBox(height: 20),
+                    IconButton(
+                      onPressed: () {
                         final register = context.read<Register>();
                         Navigator.push(
                           context,
@@ -95,21 +88,40 @@ class _Information2PageState extends State<Information2Page> {
                             ),
                           ),
                         );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('請先選擇是否有特殊症狀'),
-                            backgroundColor: Colors.redAccent,
-                          ),
-                        );
-                      }
-                    },
-                    icon: Icon(
-                      Icons.arrow_circle_right_sharp,
-                      size: 40,
-                      color: FrontUtil.textColor,
+                      },
+                      icon: Icon(
+                        Icons.arrow_circle_right_sharp,
+                        size: 40,
+                        color: FrontUtil.textColor,
+                      ),
                     ),
-                  ),
+                  ],
+
+                  // 顯示「完成註冊」icon（若 condition == none）
+                  if (condition == SpecialCondition.none) ...[
+                    IconButton(
+                      onPressed: () async {
+                        final register = context.read<Register>();
+                        // register.setDisease(null);
+                        final error = await register.register();
+                        if (error == null) {
+                          FrontUtil.showSuccess('註冊成功!請登入帳號');
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const LoginPage()),
+                          );
+                        } else {
+                          FrontUtil.showFail(error);
+                        }
+                      },
+                      icon: Icon(
+                        Icons.check_circle_rounded,
+                        size: 40,
+                        color: FrontUtil.textColor,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 40),
                 ],
               ),
@@ -145,3 +157,11 @@ class _Information2PageState extends State<Information2Page> {
     );
   }
 }
+
+
+// ScaffoldMessenger.of(context).showSnackBar(
+                        //   const SnackBar(
+                        //     content: Text('請先選擇是否有特殊症狀'),
+                        //     backgroundColor: Colors.redAccent,
+                        //   ),
+                        // );

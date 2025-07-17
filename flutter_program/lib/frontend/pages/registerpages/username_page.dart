@@ -1,5 +1,5 @@
 import 'package:drw/backend/viewmodels/register_view_model.dart';
-import 'package:drw/frontend/headers/header6.dart';
+// import 'package:drw/frontend/headers/header6.dart';
 import 'package:drw/frontend/pages/registerpages/account_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -51,16 +51,15 @@ class _UserNamePageState extends State<UserNamePage> {
       backgroundColor: FrontUtil.bkColor2,
       body: Column(
         children: [
-          Header6(
-            title: '註冊帳號',
-            icon: Icon(Icons.arrow_back, color: FrontUtil.textColor),
-          ),
+          // Header6(
+          //   title: '註冊帳號',
+          //   icon: Icon(Icons.arrow_back, color: FrontUtil.textColor),
+          // ),
           Expanded(
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 🧸 圓形熊圖片
                   Container(
                     margin: const EdgeInsets.only(bottom: 5),
                     padding: const EdgeInsets.all(5),
@@ -117,7 +116,7 @@ class _UserNamePageState extends State<UserNamePage> {
                                     children: [
                                       Text(
                                         _nameController.text.isEmpty
-                                            ? '輸入名稱'
+                                            ? '請輸入使用者名稱'
                                             : _nameController.text,
                                         style: TextStyle(
                                           fontSize: 18,

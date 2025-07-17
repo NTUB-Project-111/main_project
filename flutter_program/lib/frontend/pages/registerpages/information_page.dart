@@ -20,13 +20,13 @@ class _InformationPageState extends State<InformationPage> {
       backgroundColor: FrontUtil.bkColor2,
       body: Column(
         children: [
-          Header6(
-            title: '註冊帳號',
-            icon: Icon(
-              Icons.arrow_back,
-              color: FrontUtil.textColor,
-            ),
-          ),
+          // Header6(
+          //   title: '註冊帳號',
+          //   icon: Icon(
+          //     Icons.arrow_back,
+          //     color: FrontUtil.textColor,
+          //   ),
+          // ),
           Expanded(
             child: Center(
               child: Column(
