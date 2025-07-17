@@ -60,26 +60,26 @@ class _ProfilesPageState extends State<ProfilesPage> {
                 );
               }),
 
-              // // 更換頭像按鈕（無動作）
-              // ElevatedButton(
-              //   onPressed: () async {
-              //     // final userProvider = context.read<UserProvider>();
-              //     // final user = userProvider.user;
-              //     // final message = await UserService.updateImage(userId: user!.id, imageFile: imageFile);
-              //   },
-              //   style: ElevatedButton.styleFrom(
-              //     elevation: 0,
-              //     backgroundColor: const Color.fromRGBO(102, 159, 165, 1),
-              //   ),
-              //   child: const Text(
-              //     "更換頭像",
-              //     style: TextStyle(
-              //       fontSize: 15,
-              //       color: Colors.white,
-              //       letterSpacing: 1.5,
-              //     ),
-              //   ),
-              // ),
+              // 更換頭像按鈕（無動作）
+              ElevatedButton(
+                onPressed: () async {
+                  // final userProvider = context.read<UserProvider>();
+                  // final user = userProvider.user;
+                  // final message = await UserService.updateImage(userId: user!.id, imageFile: imageFile);
+                },
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: const Color.fromRGBO(102, 159, 165, 1),
+                ),
+                child: const Text(
+                  "更換頭像",
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
 
               // 使用者資訊表（靜態假資料）
               Container(
