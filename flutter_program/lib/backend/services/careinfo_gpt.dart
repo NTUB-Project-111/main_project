@@ -32,8 +32,8 @@ class CareInfo {
               "role": "user",
               "content": '''
                 我的年齡為$age歲，
-                我有$diseases，
-                並且${freqs[0]}抽菸、${freqs[1]}喝酒、${freqs[2]}嚼檳榔，
+                疾病:$diseases，
+                習慣:${freqs[0]}抽菸、${freqs[1]}喝酒、${freqs[2]}嚼檳榔，
                 我有一個$woundType，
                 受傷部位: $part,
                 傷口狀態: $rection,
@@ -57,14 +57,42 @@ class CareInfo {
     }
   }
 
-  static Future<Map<String, String>?> getCareSteps(
-      String woundType, String birthday, String disease, String freq) async {
+  static Future<Map<String, String>?> getCareSteps(String woundType, String birthday,
+      String disease, String freq, bool isExtra, String? oktime, String? date) async {
     int year = DateTime.now().year;
     int age = year - int.parse(birthday);
     String diseases = disease.replaceAll('[', '').replaceAll(']', '');
     List<String> freqs = freq.split('、');
 
     try {
+      String userMessageContent;
+      DateTime today = DateTime.now();
+      int? days;
+      if (date != null) {
+        DateTime injuryDate = DateTime.parse(date);
+        days = today.difference(injuryDate).inDays;
+      }
+      if (isExtra) {
+        userMessageContent = '''
+          傷口類型: $woundType，
+          描述: 
+            我的年齡為$age歲，
+            我有$diseases，
+            並且${freqs[0]}抽菸、${freqs[1]}喝酒、${freqs[2]}嚼檳榔，
+            距離上次受傷已經過${days ?? '未知'}天，
+            請提供傷口的護理建議，不需要估算癒合時間。
+          ''';
+      } else {
+        userMessageContent = '''
+          傷口類型: $woundType，
+          描述: 
+            我的年齡為$age歲，
+            我有$diseases，
+            並且${freqs[0]}抽菸、${freqs[1]}喝酒、${freqs[2]}嚼檳榔，
+            請提供傷口的護理建議及預估癒合時間。
+          ''';
+      }
+
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: {
@@ -105,15 +133,7 @@ class CareInfo {
                   7~10天
                 '''
             },
-            {
-              "role": "user",
-              "content": '''
-                傷口類型: $woundType，
-                描述: 
-                  我的年齡為$age歲，
-                  我有$diseases，
-                  並且${freqs[0]}抽菸、${freqs[1]}喝酒、${freqs[2]}嚼檳榔，請幫我估算傷口癒合時間。'''
-            }
+            {"role": "user", "content": userMessageContent}
           ],
           "temperature": 0.7,
         }),
@@ -126,18 +146,19 @@ class CareInfo {
         //解析內容
         String steps = '';
         String healTime = '';
+        if (content.contains('護理步驟')) {
+          final stepIndex = content.indexOf('護理步驟:');
+          final healIndex = content.indexOf('癒合時間:');
 
-        if (content.contains('護理步驟') && content.contains('癒合時間')) {
-          final parts = content.split('癒合時間:');
-          final beforeHeal = parts[0];
-          healTime = parts.length > 1 ? parts[1].trim() : '';
-
-          final stepIndex = beforeHeal.indexOf('護理步驟:');
           if (stepIndex != -1) {
-            steps = beforeHeal.substring(stepIndex + '護理步驟:'.length).trim().replaceAll(' ', '');
+            final endIndex = healIndex != -1 ? healIndex : content.length;
+            steps = content.substring(stepIndex + '護理步驟:'.length, endIndex).trim();
+          }
+
+          if (!isExtra && healIndex != -1) {
+            healTime = content.substring(healIndex + '癒合時間:'.length).trim();
           }
         }
-
         return {
           'steps': steps,
           'healTime': healTime,
