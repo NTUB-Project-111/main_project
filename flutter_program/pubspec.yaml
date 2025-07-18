@@ -91,6 +91,7 @@ flutter:
     - images/nurse_bear.png
     - images/new_photo_icon.png
     - images/old_photo_icon.png
+    - images/doctor_bear.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

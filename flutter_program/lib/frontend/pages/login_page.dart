@@ -1,3 +1,4 @@
+import 'package:drw/backend/models/user.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
@@ -97,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const ForgetPage()),
@@ -108,11 +109,33 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            // Navigator.pushReplacement(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) => const ForgetPage()),
-                            // );
+                            final userProvider = Provider.of<UserProvider>(
+                                context,
+                                listen: false);
+
+                            userProvider.setUserInfo(UserInfo(
+                              id: -1,
+                              name: '訪客',
+                              gender: '未知',
+                              birthday: '',
+                              picture: '',
+                              email: '',
+                              disease: '',
+                              freq: '',
+                              reports: [],
+                            ));
+
+                            // ✅ 新增：清空診斷報告與提醒
+                            Provider.of<ReportProvider>(context, listen: false)
+                                .setReports([]);
+                            Provider.of<RemindProvider>(context, listen: false)
+                                .setReminds([]);
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const Tabs()),
+                            );
                           },
                           child: const Text(
                             "訪客登入",

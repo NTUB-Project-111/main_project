@@ -1,7 +1,10 @@
+import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/frontend/animation/wound_option_button.dart';
+import 'package:drw/frontend/pages/guestblock_page.dart';
 import 'package:drw/frontend/pages/pick_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'home_page.dart';
 import 'camera_page.dart';
 import 'gallery_page.dart';
@@ -50,6 +53,18 @@ class _TabsState extends State<Tabs> {
         ),
         child: BottomNavigationBar(
           onTap: (index) {
+            final isGuest =
+                Provider.of<UserProvider>(context, listen: false).isGuest;
+            final restrictedIndexes = [1, 2, 3, 4];
+
+            if (isGuest && restrictedIndexes.contains(index)) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const GuestBlockPage()),
+              );
+              return;
+            }
+
             setState(() {
               _currentIndex =
                   index != 2 ? index : _currentIndex; //setState會重新跑build
