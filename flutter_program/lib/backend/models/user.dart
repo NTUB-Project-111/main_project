@@ -61,6 +61,8 @@ class UserInfo {
     );
   }
 
+  // String? get role => null;
+
   @override
   String toString() {
     return '''
