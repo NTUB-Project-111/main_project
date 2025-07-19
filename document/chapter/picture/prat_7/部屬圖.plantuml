@@ -1,0 +1,86 @@
+@startuml
+'───────────────── 樣式：平面 / 無陰影 ─────────────────
+skinparam componentStyle uml2
+skinparam shadowing false          
+left to right direction
+title 圖 7-3-1  元件圖（傷口護理系統）
+
+'───────────────── 使用者端 ─────────────────
+actor "User\n一般使用者" as User
+
+
+  package  {
+    component UI        as "Flutter UI\n(Android App)"           <<component>>
+    component MediaMgr  as "Media Manager\n相機 / 相簿"           <<component>>
+    component Cam       as "YOLOv11 Inference\n本地推論"          <<component>>
+    component UploadMgr as "Upload Manager\n上傳 / Loading"       <<component>>
+    component RC        as "REST Client\nHTTP 客戶端"             <<component>>
+
+    User --> UI
+    UI   --> MediaMgr : 拍攝 / 選擇
+    MediaMgr --> UI   : 回傳影像
+    UI --> UploadMgr  : 確認送出
+    UploadMgr --> RC  : 圖片＋JSON
+    Cam ..> UI        : 推論結果 callback
+  }
+
+
+'───────────────── 伺服器端 ─────────────────
+package  {
+  component Gateway as "api-service\n(Node.js 18)" <<component>>
+
+  ' ---- 6 組公開介面 (球) ----
+  interface IHome     as "HomeAPI\n首頁資訊"
+  interface IHosp     as "HospitalAPI\n附近醫院"
+  interface ICapture  as "CaptureAPI\n傷口拍攝"
+  interface IRecord   as "RecordAPI\n紀錄冊"
+  interface IProfile  as "ProfileAPI\n個人資訊"
+  interface IReminder as "ReminderAPI\n換藥提醒"
+
+  RC ..> IHome
+  RC ..> IHosp
+  RC ..> ICapture
+  RC ..> IRecord
+  RC ..> IProfile
+  RC ..> IReminder
+
+  Gateway --o IHome
+  Gateway --o IHosp
+  Gateway --o ICapture
+  Gateway --o IRecord
+  Gateway --o IProfile
+  Gateway --o IReminder
+
+  ' ---- Service Layer ----
+  component HomeMgr     as "Home Manager\n首頁資訊管理"     <<component>>
+  component HospMgr     as "Hospital Manager\n醫院搜尋管理" <<component>>
+  component CaptureMgr  as "Capture Manager\n傷口分析管理"  <<component>>
+  component RecordMgr   as "Record Manager\n紀錄冊管理"     <<component>>
+  component ProfileMgr  as "Profile Manager\n個資管理"     <<component>>
+  component ReminderMgr as "Reminder Manager\n提醒排程管理" <<component>>
+
+  Gateway ..> HomeMgr
+  Gateway ..> HospMgr
+  Gateway ..> CaptureMgr
+  Gateway ..> RecordMgr
+  Gateway ..> ProfileMgr
+  Gateway ..> ReminderMgr
+
+
+'───────────────── Infra & SaaS ─────────────────
+component MapSvc as "Map Service\nGoogle Maps 包裝"      <<component>>
+component DAO    as "DataAccess (DAO)\n資料存取"         <<component>>
+
+HomeMgr     ..> DAO
+CaptureMgr  ..> DAO
+RecordMgr   ..> DAO
+ProfileMgr  ..> DAO
+ReminderMgr ..> DAO
+HospMgr     ..> MapSvc
+
+component DB    as "MySQL 8.0\n114-Drw_New_db\n(含照片)" <<database>>
+DAO --o DB : JDBC / TCP 3306
+
+component GMaps as "Google Maps API\n地圖服務"           <<component>>
+MapSvc --o GMaps : HTTPS
+@enduml
