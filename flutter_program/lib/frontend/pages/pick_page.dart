@@ -1,6 +1,7 @@
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/pages/tabs/camera_page.dart';
+import 'package:drw/frontend/views/gallery_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,12 +17,14 @@ class _PickPageState extends State<PickPage> {
   Widget build(BuildContext context) {
     final reportProvider = Provider.of<ReportProvider>(context);
     final reports = reportProvider.reports;
+    Gallery gallery = Gallery();
+    gallery.sortReports(reports);
     return Scaffold(
       appBar: AppBar(title: const Text('所有圖片')),
       body: ListView.builder(
-        itemCount: reports.length,
+        itemCount: gallery.reports.length,
         itemBuilder: (context, index) {
-          final report = reports[index];
+          final report = gallery.reports[index].first;
           final photoPath = report.photo;
           final imageUrl = Uri.parse(ApiBase.baseUrl).resolve(photoPath).toString();
 
@@ -38,8 +41,7 @@ class _PickPageState extends State<PickPage> {
                               id: report.id,
                               oktime: report.oktime,
                               date: report.date,
-                              woundType: report.type
-                              ),
+                              woundType: report.type),
                         ),
                       );
                       debugPrint("選擇好照片了!");
