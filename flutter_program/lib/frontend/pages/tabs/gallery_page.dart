@@ -1,6 +1,6 @@
 import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/provider/report_provider.dart';
-import 'package:drw/backend/services/apibase.dart';
+// import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header3.dart';
 import 'package:drw/frontend/pages/gallerypages/showreport_page.dart';
 import 'package:drw/frontend/pages/gallerypages/total_page.dart';
@@ -158,11 +158,18 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Image.network(
-                      Uri.parse(ApiBase.baseUrl).resolve(report.photo).toString(),
+                      report.photo.toString(),
                       width: 83,
                       height: 83,
                       fit: BoxFit.cover,
-                    ))),
+                    )
+                    // child: Image.network(
+                    //   Uri.parse(ApiBase.baseUrl).resolve(report.photo).toString(),
+                    //   width: 83,
+                    //   height: 83,
+                    //   fit: BoxFit.cover,
+                    // )
+                    )),
             onTap: () {
               Navigator.push(
                   context,
@@ -346,9 +353,13 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Image.network(
-            Uri.parse(ApiBase.baseUrl).resolve(report.photo).toString(),
+            report.photo.toString(),
             fit: BoxFit.cover,
           ),
+          // child: Image.network(
+          //   Uri.parse(ApiBase.baseUrl).resolve(report.photo).toString(),
+          //   fit: BoxFit.cover,
+          // ),
         ),
       ),
     );
@@ -412,16 +423,21 @@ class _YearImageSwitcherState extends State<_YearImageSwitcher> {
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 800),
           child: Image.network(
-            Uri.parse(ApiBase.baseUrl).resolve(report.photo).toString(),
+            report.photo.toString(),
             key: ValueKey(report.photo),
             fit: BoxFit.cover,
             width: widget.width,
             height: widget.height,
           ),
+          // child: Image.network(
+          //   Uri.parse(ApiBase.baseUrl).resolve(report.photo).toString(),
+          //   key: ValueKey(report.photo),
+          //   fit: BoxFit.cover,
+          //   width: widget.width,
+          //   height: widget.height,
+          // ),
         ),
       ),
     );
   }
 }
-
-

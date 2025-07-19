@@ -1,4 +1,3 @@
-import 'package:drw/frontend/headers/header1.dart';
 import 'package:drw/frontend/pages/registerpages/register_flow.dart';
 import 'package:flutter/material.dart';
 

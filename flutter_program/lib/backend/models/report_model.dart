@@ -118,35 +118,60 @@ class Report extends ChangeNotifier {
     debugPrint(remindList.toString());
   }
 
-  // Future<void> _analyzeWoundImage() async {
-  //   try {
-  //     final result = await WoundAnalysis.analyzeWound(image!);
-  //     woundType = result['woundType'];
-  //     careSteps = result["careSteps"];
-  //     oktime = result["oktime"];
-  //   } catch (e) {
-  //     woundType = "分析失敗";
-  //     careSteps = ["錯誤: $e"];
-  //   }
-  // }
-  Future<void> _analyzeWoundImage(String birthday, String disease, String freq) async {
+  Future<void> _analyzeWoundImage(String birthday, String disease, String freq, bool isExtra,
+      String? healTime, String? date, String? wound) async {
+    Map<String, String>? response = {};
     try {
-      final result = await WoundAnalysis.analyzeWound(image!);
-      woundType = result;
-      Map<String, String>? response =
-          await CareInfo.getCareSteps(woundType, birthday, disease, freq);
-      oktime = response != null ? (response['healTime'] ?? '0') : '0';
-      careSteps = response != null ? (response['steps']?.split('。') ?? []) : [];
-      careSteps = careSteps
-          .map((e) => e.replaceAll(RegExp(r'\s+'), '')) // 移除所有空白、換行、tab
-          .where((e) => e.isNotEmpty) // 移除空字串
-          .toList();
+      if (isExtra) {
+        if (healTime == null) throw Exception('oktime 不應為 null');
 
+        DateTime today = DateTime.now();
+        int days = 0;
+        if (date != null) {
+          DateTime injuryDate = DateTime.parse(date);
+          days = today.difference(injuryDate).inDays;
+        }
+
+        List<String> oktimeList = healTime.split('~');
+        if (oktimeList.length < 2) throw Exception('oktime 格式錯誤，預期為 "7~14天"');
+
+        // 僅擷取數字
+        String rawStart = RegExp(r'\d+').stringMatch(oktimeList[0]) ?? '0';
+        String rawEnd = RegExp(r'\d+').stringMatch(oktimeList[1]) ?? '0';
+
+        List<int> intOktimeList = [0, 0];
+        intOktimeList[0] = int.parse(rawStart) - days;
+        intOktimeList[1] = int.parse(rawEnd) - days;
+
+        // 不讓癒合時間出現負數
+        intOktimeList = intOktimeList.map((d) => d < 0 ? 0 : d).toList();
+
+        oktime = '${intOktimeList[0]}~${intOktimeList[1]}天';
+        woundType = wound ?? '未知傷口';
+        response =
+            await CareInfo.getCareSteps(wound!, birthday, disease, freq, isExtra, healTime, date);
+      } else {
+        final result = await WoundAnalysis.analyzeWound(image!);
+        woundType = result;
+        response =
+            await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, oktime, date);
+        oktime = response != null ? (response['healTime'] ?? '0') : '0';
+      }
+      careSteps = response != null ? (response['steps']?.split('。') ?? []) : [];
+      debugPrint('============護理步驟=============');
       debugPrint(careSteps.toString());
-      // careSteps = response != null
-      //     ? (response['steps']?.split(',').map((e) => e.replaceAll(RegExp(r'\s+'), '')).toList() ??
-      //         [])
-      //     : [];
+      debugPrint(response!['steps']);
+      debugPrint(woundType);
+      careSteps = careSteps
+          .map((e) => e
+                  .replaceAll(RegExp(r'^\d+\.'), '') // 移除開頭的數字+點，例如 1.、2.
+                  .replaceAll(RegExp(r'\s+'), '') // 移除所有空白、換行、tab
+              )
+          .where((e) => e.isNotEmpty)
+          .toList();
+      for (int i = 0; i < careSteps.length; i++) {
+        careSteps[i] = careSteps[i].replaceAll(RegExp(r'^\d+\.\s*'), '');
+      }
     } catch (e) {
       woundType = "分析失敗";
       careSteps = ["錯誤: $e"];
@@ -158,11 +183,14 @@ class Report extends ChangeNotifier {
     hospitals = hospitallist;
   }
 
-  Future<void> loadData(String birthday, String disease, String freq) async {
+  Future<void> loadData(String birthday, String disease, String freq, bool isExtra, String? oktime,
+      String? date, String? woundType) async {
     debugPrint('$birthday\n$disease\n$freq');
     try {
-      await Future.wait([_fetchHospitals(), _analyzeWoundImage(birthday, disease, freq)]);
-      // await Future.wait([_analyzeWoundImage()]);
+      await Future.wait([
+        _fetchHospitals(),
+        _analyzeWoundImage(birthday, disease, freq, isExtra, oktime, date, woundType)
+      ]);
     } finally {
       isLoading = false;
       notifyListeners();
@@ -223,6 +251,7 @@ class Report extends ChangeNotifier {
   Future<bool> _addGroup(String userId, int id) async {
     bool result = true;
     final grouplist = await _record.fetchGroup(userId);
+    debugPrint(grouplist.toString());
     if (grouplist.length == 1 && grouplist.first == 0) {
       //先顯查此使用者有沒有任何的group
       //沒有的話設定groupId為1

@@ -1,6 +1,4 @@
-import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 enum PickerMode { yearList, decadeList }
 
@@ -185,7 +183,7 @@ class _YearSelectorDialogState extends State<YearSelectorDialog> {
     final List<int> decades = List.generate(9, (i) => _decadeStartYear + i * 9)
         .where((year) => year + 8 >= widget.minYear && year <= widget.maxYear)
         .toList();
-    ;
+
     return GridView.count(
       crossAxisCount: 3,
       shrinkWrap: true,
