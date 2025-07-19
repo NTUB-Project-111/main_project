@@ -2,9 +2,14 @@ import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'registerpages/disclaimer_page.dart';
 
-class GuestBlockPage extends StatelessWidget {
+class GuestBlockPage extends StatefulWidget {
   const GuestBlockPage({super.key});
 
+  @override
+  State<GuestBlockPage> createState() => _GuestBlockPage();
+}
+
+class _GuestBlockPage extends State<GuestBlockPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
