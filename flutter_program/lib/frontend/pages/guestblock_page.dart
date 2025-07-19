@@ -65,7 +65,7 @@ class GuestBlockPage extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             Text(
-              '(傷口攝影、紀錄冊、我的)',
+              '(護理提醒、紀錄冊、我的)',
               style: TextStyle(color: FrontUtil.textColor, fontSize: 14),
             ),
           ],
