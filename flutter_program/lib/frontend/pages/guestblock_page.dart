@@ -1,23 +1,33 @@
-import 'package:drw/backend/provider/remind_provider.dart';
-import 'package:drw/backend/provider/report_provider.dart';
-import 'package:drw/backend/provider/user_provider.dart';
-import 'forget_page.dart';
+import 'package:drw/frontend/pages/login_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../backend/models/login_model.dart';
-import '../headers/header2.dart';
 import 'registerpages/disclaimer_page.dart';
-import 'tabs/tabs.dart';
-import '../../backend/services/user_service.dart';
 
-class GuestBlockPage extends StatelessWidget {
+class GuestBlockPage extends StatefulWidget {
   const GuestBlockPage({super.key});
 
+  @override
+  State<GuestBlockPage> createState() => _GuestBlockPage();
+}
+
+class _GuestBlockPage extends State<GuestBlockPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFEBFEFF),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFEBFEFF),
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: FrontUtil.textColor,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -63,10 +73,35 @@ class GuestBlockPage extends StatelessWidget {
                 ),
               ],
             ),
+            // const SizedBox(height: 5),
+            // Text(
+            //   '(護理提醒、紀錄冊、我的)',
+            //   style: TextStyle(color: FrontUtil.textColor, fontSize: 14),
+            // ),
             const SizedBox(height: 5),
-            Text(
-              '(護理提醒、紀錄冊、我的)',
-              style: TextStyle(color: FrontUtil.textColor, fontSize: 14),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );
+              },
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: const Size(0, 0),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                '已有帳號? 點我登入!',
+                style: TextStyle(
+                  color: FrontUtil.textColor,
+                  fontSize: 14,
+                  // decoration: TextDecoration.underline,
+                  decorationColor: FrontUtil.textColor,
+                ),
+              ),
             ),
           ],
         ),
