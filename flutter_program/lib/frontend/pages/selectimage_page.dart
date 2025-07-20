@@ -1,3 +1,4 @@
+import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/pages/tabs/camera_page.dart';
@@ -5,14 +6,14 @@ import 'package:drw/frontend/views/gallery_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PickPage extends StatefulWidget {
-  const PickPage({super.key});
+class SelectImagePage extends StatefulWidget {
+  const SelectImagePage({super.key});
 
   @override
-  State<PickPage> createState() => _PickPageState();
+  State<SelectImagePage> createState() => _SelectImagePageState();
 }
 
-class _PickPageState extends State<PickPage> {
+class _SelectImagePageState extends State<SelectImagePage> {
   @override
   Widget build(BuildContext context) {
     final reportProvider = Provider.of<ReportProvider>(context);
@@ -27,7 +28,6 @@ class _PickPageState extends State<PickPage> {
           final report = gallery.reports[index].first;
           final photoPath = report.photo;
           final imageUrl = Uri.parse(ApiBase.baseUrl).resolve(photoPath).toString();
-
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: photoPath.isNotEmpty
@@ -56,6 +56,24 @@ class _PickPageState extends State<PickPage> {
                 : const Text('無圖片'),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildWoundSection(UserReport report) {
+    final photoPath = report.photo;
+    final imageUrl = Uri.parse(ApiBase.baseUrl).resolve(photoPath).toString();
+    return Container(
+      padding: const EdgeInsets.all(15),
+      child: Row(
+        children: [
+          Image.network(
+            imageUrl,
+            width: 82,
+            height: 82,
+            fit: BoxFit.cover,
+          ),
+        ],
       ),
     );
   }

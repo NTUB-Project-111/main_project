@@ -1,7 +1,7 @@
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/frontend/animation/wound_option_button.dart';
 import 'package:drw/frontend/pages/guestblock_page.dart';
-import 'package:drw/frontend/pages/pick_page.dart';
+import 'package:drw/frontend/pages/selectimage_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'home_page.dart';
@@ -143,7 +143,7 @@ class _TabsState extends State<Tabs> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const PickPage(),
+                                  builder: (context) => const SelectImagePage(),
                                 ),
                               );
                             },
