@@ -3,6 +3,7 @@ import 'package:drw/backend/provider/remind_provider.dart'; //
 import 'package:drw/backend/provider/report_provider.dart'; //
 import 'package:drw/backend/provider/user_provider.dart'; //
 import 'package:drw/backend/viewmodels/register_view_model.dart';
+import 'package:drw/frontend/pages/test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'frontend/pages/login_page.dart';
@@ -39,12 +40,10 @@ class MyApp extends StatelessWidget {
         // brightness: Brightness.light,
         fontFamily: 'NotoSansTC',
       ),
-      home: const LoginPage(),
+      // home: const LoginPage(),
 
       // home: HabitPage(),
-      // home: TestPage(),
+      home: const TestPage(),
     );
   }
 }
-// 因為目前的部分還沒完成，所以先打註解代替
-//wwwwwwwwwwwwwww
