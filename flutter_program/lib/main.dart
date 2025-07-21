@@ -40,10 +40,10 @@ class MyApp extends StatelessWidget {
         // brightness: Brightness.light,
         fontFamily: 'NotoSansTC',
       ),
-      // home: const LoginPage(),
+      home: const LoginPage(),
 
       // home: HabitPage(),
-      home: const TestPage(),
+      // home: const TestPage(),
     );
   }
 }

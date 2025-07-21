@@ -14,7 +14,7 @@ class _TestPageState extends State<TestPage> {
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(15.0),
         child: Column(
           children: [_buildWoundSection()],
         ),
@@ -24,7 +24,7 @@ class _TestPageState extends State<TestPage> {
 
   Widget _buildWoundSection() {
     return Container(
-      color: FrontUtil.bkColor,
+      // color: FrontUtil.bkColor,
       padding: const EdgeInsets.all(5),
       width: double.infinity,
       child: Row(
@@ -32,9 +32,13 @@ class _TestPageState extends State<TestPage> {
           Container(
             width: 82,
             height: 82,
-            color: Colors.grey,
             margin: const EdgeInsets.all(10),
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+              color: Colors.grey,
+            ),
           ),
+          const SizedBox(width: 5),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,7 +51,7 @@ class _TestPageState extends State<TestPage> {
                     color: FrontUtil.textColor, // 深藍綠
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 Text(
                   '2025/07/20',
                   style: TextStyle(
@@ -60,17 +64,14 @@ class _TestPageState extends State<TestPage> {
           ),
           Container(
             margin: const EdgeInsets.only(right: 5),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
             decoration: const BoxDecoration(
               color: Color(0xFF86BCA1), // 綠色背景
               shape: BoxShape.circle,
             ),
             child: const Text(
               '擦',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           ),
         ],
