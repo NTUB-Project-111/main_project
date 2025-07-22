@@ -9,16 +9,122 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
+  bool showExtraButtons = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          children: [_buildWoundSection()],
-        ),
-      ),
+          padding: const EdgeInsets.all(15.0),
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  children: List.generate(7, (_) => _buildWoundSection()),
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x4D2E6D74),
+                      blurRadius: 16,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 13,
+                  runSpacing: 8,
+                  children: [
+                    _buildWoundButton("擦傷"),
+                    _buildWoundButton("割傷"),
+                    _buildWoundButton("痔傷"),
+                    _buildWoundButton("燒傷"),
+                    _buildWoundButton("刺傷"),
+                    _buildWoundButton("手術傷口"),
+                  ],
+                ),
+              ),
+              // 1. 日曆按鈕（最底層）
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+                right: showExtraButtons ? 155 : 15,
+                bottom: 18, // 隱藏時往下滑出畫面外
+                child: AnimatedOpacity(
+                  opacity: showExtraButtons ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: IgnorePointer(
+                    ignoring: !showExtraButtons,
+                    child: _buildCircleButton(
+                      icon: Icons.calendar_month,
+                      onTap: () => print("點擊日曆按鈕"),
+                    ),
+                  ),
+                ),
+              ),
+
+              // 2. 儀表板按鈕（中間層）
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+                right: showExtraButtons ? 90 : 15, // 拉出畫面外
+                bottom: 18,
+                child: AnimatedOpacity(
+                  opacity: showExtraButtons ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: IgnorePointer(
+                    ignoring: !showExtraButtons,
+                    child: _buildCircleButton(
+                      icon: Icons.space_dashboard_rounded,
+                      onTap: () => print("點擊儀表板按鈕"),
+                    ),
+                  ),
+                ),
+              ),
+
+              // 3. 搜尋按鈕（最上層）
+              Positioned(
+                right: 15,
+                bottom: 15,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      showExtraButtons = !showExtraButtons;
+                    });
+                    debugPrint(showExtraButtons.toString());
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: FrontUtil.textColor),
+                      shape: BoxShape.circle,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x4D2E6D74),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.search,
+                      color: FrontUtil.textColor,
+                      size: 40,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          )),
     );
   }
 
@@ -75,6 +181,54 @@ class _TestPageState extends State<TestPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCircleButton({required IconData icon, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(6.0),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x4D2E6D74),
+              blurRadius: 4,
+            ),
+          ],
+        ),
+        child: Icon(
+          icon,
+          color: FrontUtil.textColor,
+          size: 32,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWoundButton(String text) {
+    return Container(
+      // margin: const EdgeInsets.all(4),
+      width: 150,
+      // height: 50,
+      child: OutlinedButton(
+        onPressed: () {
+          // 可在這裡處理點擊事件
+        },
+        style: OutlinedButton.styleFrom(
+            side: const BorderSide(color: Color(0xFF36737B)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+            padding: const EdgeInsets.symmetric(vertical: 5)),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Color(0xFF36737B),
+          ),
+        ),
       ),
     );
   }
