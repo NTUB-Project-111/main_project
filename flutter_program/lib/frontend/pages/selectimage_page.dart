@@ -16,58 +16,157 @@ class SelectImagePage extends StatefulWidget {
 }
 
 class _SelectImagePageState extends State<SelectImagePage> {
+  bool showExtraButtons = false;
+  bool showWoundChooser = false;
+  Set<String> selectedWounds = {};
+  DateTime? selectedDate;
+
   @override
   Widget build(BuildContext context) {
     final reportProvider = Provider.of<ReportProvider>(context);
     final reports = reportProvider.reports;
     Gallery gallery = Gallery();
     gallery.sortReports(reports);
+    final filteredReports = gallery.reports.where((reportGroup) {
+      final report = reportGroup.first;
+      final matchWound = selectedWounds.isEmpty || selectedWounds.contains(report.type);
+      final matchDate = selectedDate == null ||
+          report.date ==
+              "${selectedDate!.year.toString().padLeft(4, '0')}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}";
+      return matchWound && matchDate;
+    }).toList();
+
     return Scaffold(
-      backgroundColor: FrontUtil.bkColor,
-      appBar: AppBar(
         backgroundColor: FrontUtil.bkColor,
-        title: const Text(''),
-        iconTheme: IconThemeData(color: FrontUtil.textColor),
-      ),
-      body: ListView.builder(
-        itemCount: gallery.reports.length,
-        itemBuilder: (context, index) {
-          final report = gallery.reports[index].first;
-          // final photoPath = report.photo;
-          // final imageUrl = Uri.parse(ApiBase.baseUrl).resolve(photoPath).toString();
-          return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: _buildWoundSection(report));
-          // return Padding(
-          //   padding: const EdgeInsets.all(15.0),
-          //   child: photoPath.isNotEmpty
-          //       ? GestureDetector(
-          //           onTap: () {
-          //             Navigator.push(
-          //               context,
-          //               MaterialPageRoute(
-          //                 builder: (_) => CameraPage(
-          //                     isExtra: true,
-          //                     id: report.id,
-          //                     oktime: report.oktime,
-          //                     date: report.date,
-          //                     woundType: report.type),
-          //               ),
-          //             );
-          //             debugPrint("選擇好照片了!");
-          //           },
-          //           child: Image.network(
-          //             imageUrl,
-          //             width: 82,
-          //             height: 82,
-          //             fit: BoxFit.cover,
-          //           ),
-          //         )
-          //       : const Text('無圖片'),
-          // );
-        },
-      ),
-    );
+        appBar: AppBar(
+          backgroundColor: FrontUtil.bkColor,
+          title: const Text(''),
+          iconTheme: IconThemeData(color: FrontUtil.textColor),
+        ),
+        body: Stack(
+          children: [
+            ListView.builder(
+              itemCount: filteredReports.length,
+              itemBuilder: (context, index) {
+                final report = filteredReports[index].first;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: _buildWoundSection(report),
+                );
+              },
+            ),
+            Visibility(
+              visible: showWoundChooser,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 100),
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x4D2E6D74),
+                        blurRadius: 10,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 13,
+                    runSpacing: 8,
+                    children: [
+                      _buildWoundButton("擦傷"),
+                      _buildWoundButton("割傷"),
+                      _buildWoundButton("瘀青"),
+                      _buildWoundButton("燒傷"),
+                      _buildWoundButton("刺傷"),
+                      _buildWoundButton("手術傷口"),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              right: showExtraButtons ? 162 : 25,
+              bottom: 30, // 隱藏時往下滑出畫面外
+              child: AnimatedOpacity(
+                opacity: showExtraButtons ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 300),
+                child: IgnorePointer(
+                  ignoring: !showExtraButtons,
+                  child: _buildCircleButton(
+                    icon: Icons.calendar_month,
+                    onTap: () {
+                      _showDatePicker();
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+            // 2. 儀表板按鈕（中間層）
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              right: showExtraButtons ? 100 : 25, // 拉出畫面外
+              bottom: 30,
+              child: AnimatedOpacity(
+                opacity: showExtraButtons ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 300),
+                child: IgnorePointer(
+                  ignoring: !showExtraButtons,
+                  child: _buildCircleButton(
+                    icon: Icons.space_dashboard_rounded,
+                    onTap: () {
+                      setState(() {
+                        showWoundChooser = !showWoundChooser;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+            // 3. 搜尋按鈕（最上層）
+            Positioned(
+              right: 25,
+              bottom: 25,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    showExtraButtons = !showExtraButtons;
+                    showWoundChooser = false;
+                  });
+                  debugPrint(showExtraButtons.toString());
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(6.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: FrontUtil.textColor, width: 2),
+                    shape: BoxShape.circle,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x4D2E6D74),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.search,
+                    color: FrontUtil.textColor,
+                    size: 40,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 
   Widget _buildWoundSection(UserReport report) {
@@ -160,5 +259,90 @@ class _SelectImagePageState extends State<SelectImagePage> {
       }
     }
     return woundList;
+  }
+
+  Widget _buildWoundButton(String text) {
+    final isSelected = selectedWounds.contains(text);
+
+    return SizedBox(
+      width: 150,
+      child: OutlinedButton(
+        onPressed: () {
+          setState(() {
+            if (isSelected) {
+              selectedWounds.remove(text); // 取消選擇
+            } else {
+              selectedWounds.add(text); // 加入選擇
+            }
+          });
+        },
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(
+            color: FrontUtil.textColor,
+          ),
+          backgroundColor: isSelected ? FrontUtil.textColor : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          padding: const EdgeInsets.symmetric(vertical: 5),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            color: isSelected ? Colors.white : FrontUtil.textColor,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCircleButton({required IconData icon, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(6.0),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x4D2E6D74),
+              blurRadius: 4,
+            ),
+          ],
+        ),
+        child: Icon(
+          icon,
+          color: FrontUtil.textColor,
+          size: 32,
+        ),
+      ),
+    );
+  }
+
+  void _showDatePicker() async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: FrontUtil.textColor,
+              onPrimary: Colors.white,
+              onSurface: Colors.black87,
+            ),
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    setState(() {
+      selectedDate = pickedDate; // 若為 null 表示取消選擇，也會一併清空篩選
+    });
   }
 }
