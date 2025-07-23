@@ -1,8 +1,7 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
-import 'package:drw/frontend/pages/tabs/camera_page.dart';
+import 'package:drw/frontend/pages/confirm_wound_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:drw/frontend/views/gallery_view.dart';
 import 'package:flutter/material.dart';
@@ -173,68 +172,73 @@ class _SelectImagePageState extends State<SelectImagePage> {
     final photoPath = report.photo;
     final imageUrl = Uri.parse(ApiBase.baseUrl).resolve(photoPath).toString();
     final woundList = _getWoundList(report);
-    return Container(
-      // color: FrontUtil.bkColor,
-      padding: const EdgeInsets.all(5),
-      width: double.infinity,
-      child: Row(
-        children: [
-          Container(
-              width: 82,
-              height: 82,
-              margin: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-                color: Colors.grey,
-              ),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(15)),
-                child: Image.network(
-                  imageUrl,
+    return InkWell(
+        onTap: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => ConfirmWoundPage(report: report)));
+        },
+        child: Container(
+          // color: FrontUtil.bkColor,
+          padding: const EdgeInsets.all(5),
+          width: double.infinity,
+          child: Row(
+            children: [
+              Container(
                   width: 82,
                   height: 82,
-                  fit: BoxFit.cover,
-                ),
-              )),
-          const SizedBox(width: 5),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '使用者取的傷口名稱',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: FrontUtil.textColor, // 深藍綠
+                  margin: const EdgeInsets.all(10),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    color: Colors.grey,
                   ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    child: Image.network(
+                      imageUrl,
+                      width: 82,
+                      height: 82,
+                      fit: BoxFit.cover,
+                    ),
+                  )),
+              const SizedBox(width: 5),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '使用者取的傷口名稱',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: FrontUtil.textColor, // 深藍綠
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    Text(
+                      report.date,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: FrontUtil.textColor,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 15),
-                Text(
-                  report.date,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: FrontUtil.textColor,
-                  ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(right: 5),
+                padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
+                decoration: BoxDecoration(
+                  color: woundList[1], // 綠色背景
+                  shape: BoxShape.circle,
                 ),
-              ],
-            ),
+                child: Text(
+                  woundList[0],
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+            ],
           ),
-          Container(
-            margin: const EdgeInsets.only(right: 5),
-            padding: const EdgeInsets.fromLTRB(12, 4, 12, 6),
-            decoration: BoxDecoration(
-              color: woundList[1], // 綠色背景
-              shape: BoxShape.circle,
-            ),
-            child: Text(
-              woundList[0],
-              style: const TextStyle(color: Colors.white, fontSize: 18),
-            ),
-          ),
-        ],
-      ),
-    );
+        ));
   }
 
   List<dynamic> _getWoundList(UserReport report) {

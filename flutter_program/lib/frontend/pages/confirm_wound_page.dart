@@ -1,16 +1,22 @@
+import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/services/apibase.dart';
+import 'package:drw/frontend/pages/tabs/camera_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 
-class TestPage extends StatefulWidget {
-  const TestPage({super.key});
+class ConfirmWoundPage extends StatefulWidget {
+  final UserReport report;
+  const ConfirmWoundPage({super.key, required this.report});
 
   @override
-  State<TestPage> createState() => _TestPageState();
+  State<ConfirmWoundPage> createState() => _ConfirmWoundPageState();
 }
 
-class _TestPageState extends State<TestPage> {
+class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
   @override
   Widget build(BuildContext context) {
+    final photoPath = widget.report.photo;
+    final imageUrl = Uri.parse(ApiBase.baseUrl).resolve(photoPath).toString();
     return Scaffold(
       backgroundColor: FrontUtil.bkColor, // 淡藍底色
       appBar: AppBar(
@@ -46,7 +52,7 @@ class _TestPageState extends State<TestPage> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Image.network(
-                      'https://i.imgur.com/xUuZK1C.jpeg', // 改成你自己的圖片網址或本地檔案
+                      imageUrl, // 改成你自己的圖片網址或本地檔案
                       width: 260,
                       height: 270,
                       fit: BoxFit.cover,
@@ -62,9 +68,9 @@ class _TestPageState extends State<TestPage> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    '2025/07/20',
-                    style: TextStyle(
+                  Text(
+                    widget.report.date,
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Colors.black54,
                     ),
@@ -81,8 +87,8 @@ class _TestPageState extends State<TestPage> {
                   icon: Icons.favorite,
                   color: const Color(0xFFFF6262),
                   onPressed: () {
-                    FrontUtil.showSelectWoundDialog(
-                        context, const Color(0xFFFF6262), '此傷口已經癒合了嗎?', null, '還沒', '是的', () {});
+                    FrontUtil.showSelectWoundDialog(context, const Color(0xFFFF6262), '此傷口已經癒合了嗎?',
+                        '※『是的』將會關閉傷口的後續追蹤', '還沒', '是的', () {});
                   },
                 ),
                 const SizedBox(width: 60),
@@ -91,7 +97,19 @@ class _TestPageState extends State<TestPage> {
                   color: FrontUtil.textColor,
                   onPressed: () {
                     FrontUtil.showSelectWoundDialog(
-                        context, FrontUtil.textColor, '確定追蹤該傷口嗎?', null, '取消', '確定', () {});
+                        context, FrontUtil.textColor, '確定追蹤該傷口嗎?', null, '取消', '確定', () {
+                      debugPrint(widget.report.type);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => CameraPage(
+                                    isExtra: true,
+                                    id: widget.report.id,
+                                    oktime: widget.report.oktime,
+                                    date: widget.report.date,
+                                    woundType: widget.report.type,
+                                  )));
+                    });
                   },
                 ),
               ],
