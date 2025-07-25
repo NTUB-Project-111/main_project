@@ -16,7 +16,8 @@ class _CarePartState extends State<CarePart> {
     final report = Provider.of<Report>(context, listen: false);
     return Container(
       decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: Color(0xFF589399), width: 2))),
+          border:
+              Border(bottom: BorderSide(color: Color(0xFF589399), width: 2))),
       child: Column(
         children: [
           Row(
@@ -35,7 +36,8 @@ class _CarePartState extends State<CarePart> {
                   return IconButton(
                     onPressed: () {
                       report.toggleNotify();
-                      if (report.notify) FrontUtil.showRemindDialog(context, report);
+                      if (report.notify)
+                        FrontUtil.showRemindDialog(context, report);
                     },
                     icon: report.notify
                         ? const Icon(
