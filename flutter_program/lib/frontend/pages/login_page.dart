@@ -107,44 +107,60 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Text("忘記密碼？",
                               style: TextStyle(color: Color(0xFF669FA5))),
                         ),
+                        // TextButton(
+                        //   onPressed: () {
+                        //     final userProvider = Provider.of<UserProvider>(
+                        //         context,
+                        //         listen: false);
+
+                        //     userProvider.setUserInfo(UserInfo(
+                        //       id: -1,
+                        //       name: '訪客',
+                        //       gender: '未知',
+                        //       birthday: '2000',
+                        //       picture: '',
+                        //       email: '',
+                        //       disease: '無',
+                        //       freq: '每天',
+                        //       reports: [],
+                        //     ));
+
+                        //     // ✅ 新增：清空診斷報告與提醒
+                        //     Provider.of<ReportProvider>(context, listen: false)
+                        //         .setReports([]);
+                        //     Provider.of<RemindProvider>(context, listen: false)
+                        //         .setReminds([]);
+
+                        //     Navigator.pushReplacement(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //           builder: (context) => const Tabs()),
+                        //     );
+                        //   },
+                        //   child: const Text(
+                        //     "訪客登入",
+                        //     style: TextStyle(
+                        //       color: Color(0xFF4C7488),
+                        //       fontWeight: FontWeight.bold,
+                        //     ),
+                        //   ),
+                        // )
+
                         TextButton(
-                          onPressed: () {
-                            final userProvider = Provider.of<UserProvider>(
-                                context,
-                                listen: false);
-
-                            userProvider.setUserInfo(UserInfo(
-                              id: -1,
-                              name: '訪客',
-                              gender: '未知',
-                              birthday: '',
-                              picture: '',
-                              email: '',
-                              disease: '',
-                              freq: '',
-                              reports: [],
-                            ));
-
-                            // ✅ 新增：清空診斷報告與提醒
-                            Provider.of<ReportProvider>(context, listen: false)
-                                .setReports([]);
-                            Provider.of<RemindProvider>(context, listen: false)
-                                .setReminds([]);
-
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Tabs()),
-                            );
-                          },
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DisclaimerPage()),
+                          ),
                           child: const Text(
-                            "訪客登入",
+                            "註冊新帳號",
                             style: TextStyle(
                               color: Color(0xFF4C7488),
                               fontWeight: FontWeight.bold,
+                              fontSize: 14,
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
 
@@ -237,22 +253,22 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       );
                     }),
-                    const SizedBox(height: 15),
-                    TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const DisclaimerPage()),
-                      ),
-                      child: const Text(
-                        "註冊新帳號",
-                        style: TextStyle(
-                          color: Color(0xFF4C7488),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
+                    // const SizedBox(height: 15),
+                    // TextButton(
+                    //   onPressed: () => Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => const DisclaimerPage()),
+                    //   ),
+                    //   child: const Text(
+                    //     "註冊新帳號",
+                    //     style: TextStyle(
+                    //       color: Color(0xFF4C7488),
+                    //       fontWeight: FontWeight.bold,
+                    //       fontSize: 14,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
