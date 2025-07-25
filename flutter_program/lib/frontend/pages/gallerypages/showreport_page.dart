@@ -172,34 +172,43 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                 ),
                               ),
                               SizedBox(
-                                width: 180,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      '預計',
-                                      style: TextStyle(
-                                        color: Color(0xFF589399),
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    Text(
-                                      widget.report.oktime,
-                                      style: const TextStyle(
-                                        color: Color(0xFF589399),
-                                        fontSize: 26,
-                                      ),
-                                    ),
-                                    const Text(
-                                      '癒合',
-                                      style: TextStyle(
-                                        color: Color(0xFF589399),
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                                  width: 180,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: widget.report.oktime != '已癒合'
+                                        ? [
+                                            const Text(
+                                              '預計',
+                                              style: TextStyle(
+                                                color: Color(0xFF589399),
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            Text(
+                                              widget.report.oktime,
+                                              style: const TextStyle(
+                                                color: Color(0xFF589399),
+                                                fontSize: 26,
+                                              ),
+                                            ),
+                                            const Text(
+                                              '癒合',
+                                              style: TextStyle(
+                                                color: Color(0xFF589399),
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ]
+                                        : [
+                                            const Text(
+                                              '已癒合',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 26,
+                                              ),
+                                            ),
+                                          ],
+                                  )),
                             ],
                           ),
                         ],

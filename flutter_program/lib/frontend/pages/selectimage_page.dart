@@ -34,6 +34,7 @@ class _SelectImagePageState extends State<SelectImagePage> {
               "${selectedDate!.year.toString().padLeft(4, '0')}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}";
       return matchWound && matchDate;
     }).toList();
+    final visibleReports = filteredReports.where((r) => r.first.oktime != '已癒合').toList();
 
     return Scaffold(
         backgroundColor: FrontUtil.bkColor,
@@ -45,9 +46,9 @@ class _SelectImagePageState extends State<SelectImagePage> {
         body: Stack(
           children: [
             ListView.builder(
-              itemCount: filteredReports.length,
+              itemCount: visibleReports.length,
               itemBuilder: (context, index) {
-                final report = filteredReports[index].first;
+                final report = visibleReports[index].first;
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: _buildWoundSection(report),
@@ -173,9 +174,20 @@ class _SelectImagePageState extends State<SelectImagePage> {
     final imageUrl = Uri.parse(ApiBase.baseUrl).resolve(photoPath).toString();
     final woundList = _getWoundList(report);
     return InkWell(
-        onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => ConfirmWoundPage(report: report)));
+        onTap: () async {
+          final updated = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConfirmWoundPage(report: report),
+            ),
+          );
+
+          if (updated == true) {
+            debugPrint('資料更新');
+            debugPrint(report.oktime);
+            // 有異動才重新拉資料
+            setState(() {}); // 重新 build 畫面
+          }
         },
         child: Container(
           // color: FrontUtil.bkColor,
@@ -206,11 +218,11 @@ class _SelectImagePageState extends State<SelectImagePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '使用者取的傷口名稱',
+                      report.type,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: FrontUtil.textColor, // 深藍綠
+                        color: FrontUtil.textColor,
                       ),
                     ),
                     const SizedBox(height: 15),
