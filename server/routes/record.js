@@ -181,6 +181,40 @@ router.get('/getGroupId', async (req, res) => {
   }
 });
 
+//更新癒合時間
+router.post('/updateOktime', async (req, res) => {
+  const { userId, recordId, groupId, oktime } = req.body;
+  if (!userId || !oktime) {
+    return res.status(400).json({ success: false, message: '缺少必要參數 (userId 或 oktime)' });
+  }
+  try {
+    let result;
+    if (groupId) {
+      // 若有傳 groupId：用 userId + groupId 為條件
+      [result] = await db.query(
+        'UPDATE record SET oktime = ? WHERE fk_userid = ? AND group_id = ?',
+        [oktime, userId, groupId]
+      );
+    } else {
+      // 未傳 groupId：必須傳 recordId
+      if (!recordId) {
+        return res.status(400).json({ success: false, message: '未傳入 groupId 時，recordId 為必要參數' });
+      }
+      [result] = await db.query(
+        'UPDATE record SET oktime = ? WHERE fk_userid = ? AND id_record = ?',
+        [oktime, userId, recordId]
+      );
+    }
+    if (result.affectedRows > 0) {
+      res.status(200).json({ success: true });
+    } else {
+      res.status(404).json({ success: false, message: '找不到符合條件的紀錄' });
+    }
+  } catch (error) {
+    console.error('更新 oktime 失敗：', error);
+    res.status(500).json({ success: false, message: '伺服器錯誤' });
+  }
+});
 
 
 module.exports = router;
