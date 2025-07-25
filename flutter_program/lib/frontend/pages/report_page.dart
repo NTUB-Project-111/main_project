@@ -17,8 +17,15 @@ class ReportPage extends StatefulWidget {
   final String? oktime;
   final String? date;
   final String? woundType;
-  const ReportPage(
-      {super.key, required this.isExtra, this.id, this.oktime, this.date, this.woundType});
+
+  const ReportPage({
+    super.key,
+    required this.isExtra,
+    this.id,
+    this.oktime,
+    this.date,
+    this.woundType,
+  });
 
   @override
   State<ReportPage> createState() => _ReportPageState();
@@ -44,15 +51,35 @@ class _ReportPageState extends State<ReportPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final report = Provider.of<Report>(context, listen: false);
       final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final isGuest = userProvider.isGuest;
       final user = userProvider.user;
-      report.isLoading = true; // <-- 這行很關鍵！每次都要先設為 loading
-      await report.loadData(user!.birthday, user.disease, user.freq, widget.isExtra, widget.oktime,
-          widget.date, widget.woundType); // 這樣 Consumer 才會觸發 CircularProgressIndicator
+
+      report.isLoading = true;
+
+      try {
+        await report.loadData(
+          isGuest ? "1900" : (user?.birthday ?? "1900"),
+          isGuest ? "無" : (user?.disease ?? "無"),
+          isGuest ? "每天" : (user?.freq ?? "每天"),
+          widget.isExtra,
+          widget.oktime,
+          widget.date,
+          widget.woundType,
+        );
+      } catch (e, stacktrace) {
+        debugPrint('loadData 發生錯誤: $e');
+        debugPrint('$stacktrace');
+      } finally {
+        // 無論成功與否，必須將 isLoading 設為 false
+        report.isLoading = false;
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final isGuest = Provider.of<UserProvider>(context).isGuest;
+
     return Consumer<Report>(
       builder: (context, report, _) {
         if (report.isLoading) {
@@ -60,10 +87,11 @@ class _ReportPageState extends State<ReportPage> {
             body: Center(child: FrontUtil.loading()),
           );
         }
+
         return Scaffold(
-            backgroundColor: const Color(0xFFEBFEFF),
-            body: SingleChildScrollView(
-                child: Padding(
+          backgroundColor: const Color(0xFFEBFEFF),
+          body: SingleChildScrollView(
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 children: [
@@ -72,11 +100,17 @@ class _ReportPageState extends State<ReportPage> {
                   const WoundPart(),
                   const CarePart(),
                   const HospitalPart(),
-                  const RecordPart(),
-                  ButtonPart(isExtra: widget.isExtra, id: widget.id)
+                  if (!isGuest) const RecordPart(),
+                  if (!isGuest)
+                    ButtonPart(
+                      isExtra: widget.isExtra,
+                      id: widget.id,
+                    ),
                 ],
               ),
-            )));
+            ),
+          ),
+        );
       },
     );
   }
