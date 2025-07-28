@@ -75,7 +75,7 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
                           child: ElevatedButton(
                             onPressed: () async {
                               if (!profiles.isFilled()) {
-                                FrontUtil.showError('請填寫新暱稱', Colors.red, Colors.white);
+                                FrontUtil.showFail('請填寫新暱稱');
                                 return;
                               }
                               final userProvider =
@@ -85,7 +85,7 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
                                   await profiles.updateUserName(user!.id.toString(), profiles.name);
                               if (success) {
                                 userProvider.updateUserName(profiles.name);
-                                FrontUtil.showError('名稱更新成功', Colors.green, Colors.white);
+                                FrontUtil.showSuccess('名稱更新成功');
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -93,7 +93,7 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
                                   ),
                                 );
                               } else {
-                                FrontUtil.showError('名稱更新失敗', Colors.red, Colors.white);
+                                FrontUtil.showFail('名稱更新失敗');
                               }
                             },
                             style: ElevatedButton.styleFrom(

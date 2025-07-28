@@ -90,9 +90,9 @@ class _AccountSetupState extends State<AccountSetup> {
                         final error = await register.sendCode();
                         if (error == null) {
                           register.showVerification = true;
-                          FrontUtil.showError('驗證碼已寄出，請於電子郵件查看', Colors.green, Colors.white);
+                          FrontUtil.showSuccess('驗證碼已寄出，請於電子郵件查看');
                         } else {
-                          FrontUtil.showError(error, Colors.red, Colors.white);
+                          FrontUtil.showFail(error);
                         }
                       },
                 style: ElevatedButton.styleFrom(
@@ -161,9 +161,9 @@ class _AccountSetupState extends State<AccountSetup> {
                         final error = await register.verifyCode();
                         if (error == null) {
                           register.showPassword = true;
-                          FrontUtil.showError('驗證碼成功!請設定密碼', Colors.green, Colors.white);
+                          FrontUtil.showSuccess('驗證碼成功!請設定密碼');
                         } else {
-                          FrontUtil.showError(error, Colors.red, Colors.white);
+                          FrontUtil.showFail(error);
                         }
                       }
                     : null,
@@ -284,17 +284,17 @@ class _AccountSetupState extends State<AccountSetup> {
                       ? null
                       : () async {
                           if (!register.isFilled()) {
-                            FrontUtil.showError('尚有欄位未填寫', Colors.red, Colors.white);
+                            FrontUtil.showFail('尚有欄位未填寫');
                             return;
                           }
                           // final error = await register.register();
                           // if (!context.mounted) return; //確認 widget 還在畫面上，才繼續操作 context
                           // if (error == null) {
-                          //   FrontUtil.showError('註冊成功!請登入帳號', Colors.green, Colors.white);
+                          //   FrontUtil.showFail('註冊成功!請登入帳號', Colors.green, Colors.white);
                           //   Navigator.pushReplacement(context,
                           //       MaterialPageRoute(builder: (context) => const LoginPage()));
                           // } else {
-                          //   FrontUtil.showError(error, Colors.red, Colors.white);
+                          //   FrontUtil.showFail(error, Colors.red, Colors.white);
                           // }
                           debugPrint(register.toString());
                         },
