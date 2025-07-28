@@ -1,6 +1,7 @@
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header3.dart';
+import 'package:drw/frontend/pages/develop.dart';
 import 'package:drw/frontend/pages/login_page.dart';
 import 'package:drw/frontend/pages/personalpages/changepwd_page.dart';
 import 'package:drw/frontend/pages/personalpages/profiles_page.dart';
@@ -118,7 +119,7 @@ class _PersonalPageState extends State<PersonalPage> {
                   const Icon(Icons.settings,
                       color: Color(0xFF669FA5), size: 30),
                   "更多設定",
-                  targetPage: const LoginPage(),
+                  targetPage: const DevelopPage(),
                 ),
                 _buildDetailItem(
                   const Icon(Icons.logout, color: Color(0xFF669FA5), size: 30),
