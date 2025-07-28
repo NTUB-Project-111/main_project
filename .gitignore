@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+model/wound_photo/*.zip
+model/wound_photo/Abrasions_1000.zip model/wound_photo/NEW_Abrasions.zip model/wound_photo/NEW_Bruise.zip model/wound_photo/NEW_Burn.zip model/wound_photo/NEW_Cut.zip model/wound_photo/NEW_Stab.zip model/wound_photo/NEW_Surgical.zip model/wound_photo/SERIOUS_ Wounds.zip model/wound_photo/新的假照片(生15張的.zip
+model/wound_photo/Abrasions_1000.zip model/wound_photo/NEW_Abrasions.zip model/wound_photo/NEW_Bruise.zip model/wound_photo/NEW_Burn.zip model/wound_photo/NEW_Cut.zip model/wound_photo/NEW_Stab.zip model/wound_photo/NEW_Surgical.zip model/wound_photo/SERIOUS_ Wounds.zip model/wound_photo/新的假照片(生15張的.zip
+model/wound_photo/*.zip

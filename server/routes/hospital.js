@@ -81,6 +81,32 @@ router.get('/getHospitals', async (req, res) => {
   }
 });
 
+router.get('/hospitals/nearby', async (req, res) => {
+  const { lat, lng } = req.query;
+
+  if (!lat || !lng) {
+    return res.status(400).json({ error: '缺少經緯度' });
+  }
+
+  try {
+    const [rows] = await db.execute(`
+      SELECT *,
+        ST_Distance_Sphere(
+          point(lng, lat),
+          point(?, ?)
+        ) AS distance
+      FROM hospital
+      WHERE lat IS NOT NULL AND lng IS NOT NULL
+      ORDER BY distance
+      LIMIT 10
+    `, [parseFloat(lng), parseFloat(lat)]);
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '伺服器錯誤' });
+  }
+});
 //其他API
 
 

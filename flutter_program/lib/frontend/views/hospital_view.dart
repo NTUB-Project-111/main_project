@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:drw/backend/models/hospital_model.dart';
+import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/backend/services/hospital_service.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter/foundation.dart'; 
 
 class HospitalView extends ChangeNotifier {
   bool showDropDownForm = false;
@@ -55,6 +61,15 @@ class HospitalView extends ChangeNotifier {
     notifyListeners();
   }
 
+Future<void> fetchHospitalsByDistance(LatLng userLocation) async {
+  try {
+    hospitals = await _hospitalService.fetchHospitalsByDistance(userLocation);
+    notifyListeners();
+  } catch (e) {
+    debugPrint('fetchHospitalsByDistance 發生錯誤: $e');
+  }
+}
+
   Future loadDistricts(String city) async {
     selectedDistrict = null; // 清除舊選擇
     selectedDepartment = null;
@@ -103,6 +118,8 @@ class HospitalView extends ChangeNotifier {
     _selectedDepartment = value;
     notifyListeners();
   }
+
+
 
   Future<void> fetchHospitals() async {
     if (_selectedCounty == null) return;

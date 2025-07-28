@@ -23,6 +23,8 @@ class _HospitalPageView extends StatefulWidget {
 
   @override
   State<_HospitalPageView> createState() => _HospitalPageViewState();
+
+
 }
 
 class _HospitalPageViewState extends State<_HospitalPageView> {
@@ -36,10 +38,25 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
     _initLocation();
   }
 
-  Future<void> _initLocation() async {
+ Future<void> _initLocation() async {
     final latLng = await _mapService.getCurrentLocation();
+    if (!mounted) return;
+
     if (latLng != null) {
       setState(() => _currentPosition = latLng);
+
+      final hospitalView = Provider.of<HospitalView>(context, listen: false);
+
+      // 自動搜尋使用者附近的醫院
+      await hospitalView.fetchHospitalsByDistance(latLng);
+
+      // 使用紅色圖釘標記（下面②你會新增 pinColor）
+      await _mapService.setMarkers(
+        hospitalView.hospitals,
+        (selectedHospital) => hospitalView.selectHospital(selectedHospital),
+        latLng,
+        pinColor: BitmapDescriptor.hueRed, // ✅ 紅色圖釘
+      );
     }
   }
 
@@ -158,10 +175,11 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                 await hospitalView.fetchHospitals();
                 _mapService.setMarkers(hospitalView.hospitals, (selectedHospital) {
                   hospitalView.selectHospital(selectedHospital); // 將選取的醫院存入 ViewModel
-                }, _currentPosition!);
+                }, _currentPosition!,pinColor: BitmapDescriptor.hueRed,);
                 // for (var hospital in hospitalView.hospitals) {
                 //   debugPrint(hospital.toString());
                 // }
+                
               },
               child: const Text('查詢', style: TextStyle(color: Colors.white)),
             ),
@@ -169,7 +187,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
           ],
         ),
       );
-
+// Top Bar UI
   Widget _buildTopBar(HospitalView hospital) => Container(
         padding: const EdgeInsets.only(left: 25, right: 12, top: 30),
         decoration: const BoxDecoration(
@@ -192,7 +210,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
           ],
         ),
       );
-
+ // 醫院卡片 UI
   Widget _buildHospitalCard() {
     return Consumer<HospitalView>(builder: (context, hospital, _) {
       final selected = hospital.selectedHospital;
@@ -313,7 +331,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
       );
     });
   }
-
+  // 資訊列 UI
   Widget _buildInfoRow(IconData icon, String text, {int maxLines = 1}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,7 +349,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
       ],
     );
   }
-
+  // 通用下拉元件
   Widget _buildDropdownRow(
     String label,
     String hint,

@@ -7,7 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class GoogleMapService extends ChangeNotifier {
   final Set<Marker> _markers = {};
   static const double walkingSpeedMetersPerSecond = 1.4;
@@ -54,10 +53,20 @@ class GoogleMapService extends ChangeNotifier {
   }
 
   Future<void> setMarkers(
-      List<Hospital> hospitals, Function(Hospital) onMarkerTap, LatLng from) async {
+      List<Hospital> hospitals, Function(Hospital) onMarkerTap, LatLng from,
+      {required double pinColor}) async {
     _markers.clear();
 
-    // 並行處理所有醫院的資訊與 marker 建立
+    // 載入灰色圖釘圖片
+    final BitmapDescriptor grayMarkerIcon =
+        await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(devicePixelRatio: 2.5),
+      'images/gray_maker.png',
+    );
+
+    final BitmapDescriptor redMarkerIcon =
+        BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+
     await Future.wait(hospitals.map((hospital) async {
       if (hospital.latitude != 0.0 && hospital.longitude != 0.0) {
         hospital.distance = await calculateDistanceText(
@@ -78,18 +87,24 @@ class GoogleMapService extends ChangeNotifier {
           lng: hospital.longitude,
         );
 
+        final isOpen = hospital.openStatus == '營業中';
+
         _markers.add(
           Marker(
             markerId: MarkerId(hospital.id.toString()),
             position: LatLng(hospital.latitude, hospital.longitude),
-            infoWindow: InfoWindow(title: hospital.name, snippet: hospital.address),
+            infoWindow: InfoWindow(
+              title: hospital.name,
+              snippet: hospital.address,
+            ),
+            icon: isOpen ? redMarkerIcon : grayMarkerIcon,
             onTap: () => onMarkerTap(hospital),
           ),
         );
       }
     }));
 
-    notifyListeners(); // 告知 UI 更新 markers
+    notifyListeners();
   }
 
   Set<Marker> get markers => _markers;
@@ -110,14 +125,18 @@ class GoogleMapService extends ChangeNotifier {
     );
   }
 
+  late GoogleMapController _mapController;
+
   /// 取得目前位置，若失敗則回傳 null
   Future<LatLng?> getCurrentLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
       permission = await Geolocator.requestPermission();
     }
 
-    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+    if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
       final position = await Geolocator.getCurrentPosition();
       return LatLng(position.latitude, position.longitude);
     }
