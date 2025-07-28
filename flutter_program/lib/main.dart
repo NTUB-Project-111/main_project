@@ -1,5 +1,6 @@
 import 'package:drw/backend/models/report_model.dart';
 import 'package:drw/backend/provider/remind_provider.dart'; //
+import 'package:drw/backend/provider/report_analyzer.dart';
 import 'package:drw/backend/provider/report_provider.dart'; //
 import 'package:drw/backend/provider/user_provider.dart'; //
 import 'package:drw/backend/viewmodels/register_view_model.dart';
@@ -22,6 +23,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ReportProvider()),
         ChangeNotifierProvider(create: (_) => RemindProvider()),
         ChangeNotifierProvider(create: (_) => Register()),
+        // ChangeNotifierProvider(create: (_) => ReportAnalyzer()),
       ],
       child: const MyApp(),
     ),
