@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HospitalSearch {
-  static var apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'];
+  static var apiKey = dotenv.env['GOOGLE_MAPS_API_KEY_search'];
   static Future<List<Map<String, dynamic>>> getNearbyHospitals() async {
     try {
       Location location = Location();
