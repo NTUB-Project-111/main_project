@@ -33,12 +33,14 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                 children: [
                   const Header4(title: "變更密碼", nextPage: PersonalPage()),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 25, vertical: 30),
                     child: Column(
                       children: [
                         // 原密碼欄位
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 2),
                           margin: const EdgeInsets.only(bottom: 15),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -78,7 +80,8 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                                     changePwd.hiddenPassword
                                         ? Icons.visibility_off
                                         : Icons.visibility,
-                                    color: const Color.fromRGBO(135, 135, 135, 0.5),
+                                    color: const Color.fromRGBO(
+                                        135, 135, 135, 0.5),
                                   ),
                                   onPressed: () {
                                     changePwd.togglePwdVisibility();
@@ -89,7 +92,8 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
 
                         // 新密碼欄位
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 2),
                           margin: const EdgeInsets.only(bottom: 15),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -115,7 +119,8 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                               Expanded(
                                 child: TextField(
                                   controller: _newPasswordController,
-                                  onChanged: (value) => changePwd.setNewPwd(value),
+                                  onChanged: (value) =>
+                                      changePwd.setNewPwd(value),
                                   obscureText: changePwd.hiddenNewPassword,
                                   decoration: const InputDecoration(
                                     hintText: '輸入8~16英文加數字',
@@ -129,7 +134,8 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                                   changePwd.hiddenNewPassword
                                       ? Icons.visibility_off
                                       : Icons.visibility,
-                                  color: const Color.fromRGBO(135, 135, 135, 0.5),
+                                  color:
+                                      const Color.fromRGBO(135, 135, 135, 0.5),
                                 ),
                                 onPressed: () {
                                   changePwd.toggleNewPwdVisibility();
@@ -141,7 +147,8 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
 
                         // 再次輸入密碼欄位
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 2),
                           margin: const EdgeInsets.only(bottom: 15),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -167,7 +174,8 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                               Expanded(
                                 child: TextField(
                                   controller: _rePasswordController,
-                                  onChanged: (value) => changePwd.setRePwd(value),
+                                  onChanged: (value) =>
+                                      changePwd.setRePwd(value),
                                   obscureText: changePwd.hiddenRePassword,
                                   decoration: const InputDecoration(
                                     hintText: '需與新密碼相同',
@@ -181,7 +189,8 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                                   changePwd.hiddenRePassword
                                       ? Icons.visibility_off
                                       : Icons.visibility,
-                                  color: const Color.fromRGBO(135, 135, 135, 0.5),
+                                  color:
+                                      const Color.fromRGBO(135, 135, 135, 0.5),
                                 ),
                                 onPressed: () {
                                   changePwd.toggleRePwdVisibility();
@@ -195,27 +204,30 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                           child: ElevatedButton(
                             onPressed: () async {
                               if (!changePwd.isFilled()) {
-                                FrontUtil.showError('請填寫完所有欄位', Colors.red, Colors.white);
+                                FrontUtil.showFail('請填寫完所有欄位');
                                 return;
                               }
-                              final userProvider =
-                                  Provider.of<UserProvider>(context, listen: false);
+                              final userProvider = Provider.of<UserProvider>(
+                                  context,
+                                  listen: false);
                               final user = userProvider.user;
                               String? error;
-                              error = await changePwd.verifyPassword(user!.id.toString());
+                              error = await changePwd
+                                  .verifyPassword(user!.id.toString());
                               if (error == null) {
                                 if (!Auth.validatePassword(changePwd.newPwd)) {
-                                  FrontUtil.showError(
-                                      '新密碼請設定長度為8-16的英文加數字組合', Colors.red, Colors.white);
+                                  FrontUtil.showFail('新密碼請設定長度為8-16的英文加數字組合');
                                   return;
                                 }
-                                if (!Auth.verifyPassword(changePwd.newPwd, changePwd.rePwd)) {
-                                  FrontUtil.showError('密碼不一致', Colors.red, Colors.white);
+                                if (!Auth.verifyPassword(
+                                    changePwd.newPwd, changePwd.rePwd)) {
+                                  FrontUtil.showFail('密碼不一致');
                                   return;
                                 }
-                                error = await changePwd.updatePassword(user.id.toString());
+                                error = await changePwd
+                                    .updatePassword(user.id.toString());
                                 if (error == null) {
-                                  FrontUtil.showError('密碼修改成功!', Colors.green, Colors.white);
+                                  FrontUtil.showSuccess('密碼修改成功!');
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
@@ -225,10 +237,10 @@ class _ChangePwdPageState extends State<ChangePwdPage> {
                                     ),
                                   );
                                 } else {
-                                  FrontUtil.showError(error, Colors.red, Colors.white);
+                                  FrontUtil.showFail(error);
                                 }
                               } else {
-                                FrontUtil.showError(error, Colors.red, Colors.white);
+                                FrontUtil.showFail(error);
                               }
                               debugPrint(changePwd.toString());
                             },
