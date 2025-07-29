@@ -57,7 +57,10 @@ class WoundAnalysis {
     };
     try {
       final apiKey = dotenv.env['YOLO_API_KEY'];
-      final String modelUrl = "https://detect.roboflow.com/wound-ebsdw/10?api_key=$apiKey";
+      final String modelUrl =
+          // "https://detect.roboflow.com/wound-ebsdw/10?api_key=$apiKey";
+          "https://detect.roboflow.com/wound-no-blister-2/1?api_key=$apiKey";
+
       final bytes = await imageFile.readAsBytes();
       final decoded = img.decodeImage(bytes);
       if (decoded == null) throw Exception("無法解析圖片");
@@ -66,15 +69,21 @@ class WoundAnalysis {
       final tempDir = Directory.systemTemp;
       final tempFilePath = path.join(tempDir.path, "resized_img.jpg");
       final tempFile = File(tempFilePath);
-      await tempFile.writeAsBytes(img.encodeJpg(resized));
+      // await tempFile.writeAsBytes(img.encodeJpg(resized));
+      await tempFile.writeAsBytes(img.encodeJpg(resized, quality: 100));
 
       var request = http.MultipartRequest('POST', Uri.parse(modelUrl));
       request.fields["confidence"] = "50";
       request.fields["overlap"] = "50";
-      request.files.add(await http.MultipartFile.fromPath("file", tempFilePath));
-
+      request.files
+          // .add(await http.MultipartFile.fromPath("image", tempFilePath));
+          .add(await http.MultipartFile.fromPath("file", tempFilePath));
       var response = await request.send();
-      if (response.statusCode != 200) throw Exception("API 請求失敗: ${response.statusCode}");
+      if (response.statusCode != 200) {
+        print("API 請求失敗: ${response.statusCode}");
+        print(await response.stream.bytesToString()); // ⭐ 印出錯誤內容
+        throw Exception("API 請求失敗: ${response.statusCode}");
+      }
 
       var responseData = await response.stream.bytesToString();
       var results = json.decode(responseData);
@@ -83,8 +92,11 @@ class WoundAnalysis {
       for (var obj in results["predictions"]) {
         if (obj["class"] != null) detectedWoundTypes.add(obj["class"]);
       }
+      print("Status Code: ${response.statusCode}");
+      print("Response Body: $responseData");
 
-      final String woundType = detectedWoundTypes.isNotEmpty ? detectedWoundTypes.first : "無異常";
+      final String woundType =
+          detectedWoundTypes.isNotEmpty ? detectedWoundTypes.first : "無異常";
 
       return woundMap[woundType] ?? '無異常';
     } catch (e) {
