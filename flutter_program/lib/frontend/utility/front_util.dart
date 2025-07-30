@@ -387,15 +387,29 @@ class FrontUtil {
                         ),
                         Theme(
                           data: Theme.of(context).copyWith(
+                            colorScheme: const ColorScheme.light(
+                              primary: Color.fromARGB(255, 176, 215, 219),
+                              onPrimary: Colors.white,
+                              onSurface: Color.fromARGB(255, 125, 173, 178),
+                            ),
                             timePickerTheme: TimePickerThemeData(
+                                //時間選擇器 顏色設定
                                 backgroundColor: const Color(0xFFF7FCFD),
                                 dialHandColor: const Color(0xFF589399),
-                                dialTextColor: const Color(0xFF2E6D74),
+                                dialTextColor: WidgetStateColor.resolveWith(
+                                    (Set<WidgetState> states) {
+                                  if (states.contains(WidgetState.selected)) {
+                                    return Color.fromARGB(
+                                        255, 255, 255, 255); // 選中狀態下的數字
+                                  }
+                                  return Color(0xFF2E6D74); // 未選中狀態下的數字
+                                }),
+                                // dialTextColor: const Color(0xFF2E6D74),
                                 dialBackgroundColor: Colors.white,
                                 // hourMinuteColor: const Color(0xFFBBD3D6),
                                 hourMinuteTextColor: const Color(0xFF164449),
                                 hourMinuteShape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(10),
                                   side: const BorderSide(
                                       color: Color(0xFF589399), width: 2),
                                 ),
@@ -420,6 +434,11 @@ class FrontUtil {
                                       WidgetStateProperty.all<Color>(
                                           Colors.black),
                                 )),
+                            textButtonTheme: TextButtonThemeData(
+                              style: TextButton.styleFrom(
+                                foregroundColor: FrontUtil.bkColor,
+                              ),
+                            ),
                           ),
                           child: Builder(
                             builder: (context) => OutlinedButton(
@@ -719,14 +738,8 @@ class FrontUtil {
   }
 
   //確認傷口照片
-  static void showConfirmDialog(
-      BuildContext context,
-      Color color,
-      String title,
-      String? subTitle,
-      String cancel,
-      String confirm,
-      VoidCallback onConfirm) {
+  static void showConfirmDialog(BuildContext context, Color color, String title,
+      String? subTitle, String cancel, String confirm, VoidCallback onConfirm) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
