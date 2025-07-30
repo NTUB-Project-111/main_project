@@ -92,7 +92,7 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                   icon: Icons.favorite,
                   color: const Color(0xFFFF6262),
                   onPressed: () {
-                    FrontUtil.showSelectWoundDialog(context, const Color(0xFFFF6262), '此傷口已經癒合了嗎?',
+                    FrontUtil.showConfirmDialog(context, const Color(0xFFFF6262), '此傷口已經癒合了嗎?',
                         '※『是的』將會關閉傷口的後續追蹤', '還沒', '是的', () async {
                       widget.report.groupId == 0
                           ? await recordService.updateOktime(
@@ -126,7 +126,7 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                   icon: Icons.check,
                   color: FrontUtil.textColor,
                   onPressed: () {
-                    FrontUtil.showSelectWoundDialog(
+                    FrontUtil.showConfirmDialog(
                         context, FrontUtil.textColor, '確定追蹤該傷口嗎?', null, '取消', '確定', () {
                       debugPrint(widget.report.type);
                       Navigator.push(
