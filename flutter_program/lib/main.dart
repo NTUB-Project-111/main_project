@@ -5,6 +5,7 @@ import 'package:drw/backend/provider/report_provider.dart'; //
 import 'package:drw/backend/provider/user_provider.dart'; //
 import 'package:drw/backend/viewmodels/register_view_model.dart';
 import 'package:drw/frontend/pages/test_page.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'frontend/pages/login_page.dart';
@@ -39,7 +40,52 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // brightness: Brightness.light,
+        useMaterial3: true,
+        colorScheme: const ColorScheme.light(
+          primary: Color.fromARGB(255, 176, 215, 219),
+          onPrimary: Colors.white,
+          onSurface: Color.fromARGB(255, 125, 173, 178),
+        ),
+        timePickerTheme: TimePickerThemeData(
+            //時間選擇器 顏色設定
+            backgroundColor: const Color(0xFFF7FCFD),
+            dialHandColor: const Color(0xFF589399),
+            dialTextColor:
+                WidgetStateColor.resolveWith((Set<WidgetState> states) {
+              if (states.contains(WidgetState.selected)) {
+                return Color.fromARGB(255, 255, 255, 255); // 選中狀態下的數字
+              }
+              return Color(0xFF2E6D74); // 未選中狀態下的數字
+            }),
+            // dialTextColor: const Color(0xFF2E6D74),
+            dialBackgroundColor: Colors.white,
+            // hourMinuteColor: const Color(0xFFBBD3D6),
+            hourMinuteTextColor: const Color(0xFF164449),
+            hourMinuteShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: const BorderSide(color: Color(0xFF589399), width: 2),
+            ),
+            dayPeriodColor: WidgetStateColor.resolveWith(
+              (states) => const Color(0xFF589399),
+            ),
+            dayPeriodTextColor: Colors.white,
+            // ... 其他可設定的屬性
+            confirmButtonStyle: ButtonStyle(
+              textStyle: WidgetStateProperty.all<TextStyle>(
+                const TextStyle(fontWeight: FontWeight.bold), // 設定字體寬度
+              ),
+              foregroundColor:
+                  WidgetStateProperty.all<Color>(const Color(0xFF589399)),
+            ),
+            helpTextStyle: const TextStyle(color: Color(0xFF589399)),
+            cancelButtonStyle: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+            )),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: FrontUtil.bkColor,
+          ),
+        ),
         fontFamily: 'NotoSansTC',
       ),
       home: const LoginPage(),

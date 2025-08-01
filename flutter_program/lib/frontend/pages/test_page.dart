@@ -81,7 +81,7 @@ class _TestPageState extends State<TestPage> {
                   icon: Icons.favorite,
                   color: const Color(0xFFFF6262),
                   onPressed: () {
-                    FrontUtil.showSelectWoundDialog(
+                    FrontUtil.showConfirmDialog(
                         context, const Color(0xFFFF6262), '此傷口已經癒合了嗎?', null, '還沒', '是的', () {});
                   },
                 ),
@@ -90,7 +90,7 @@ class _TestPageState extends State<TestPage> {
                   icon: Icons.check,
                   color: FrontUtil.textColor,
                   onPressed: () {
-                    FrontUtil.showSelectWoundDialog(
+                    FrontUtil.showConfirmDialog(
                         context, FrontUtil.textColor, '確定追蹤該傷口嗎?', null, '取消', '確定', () {});
                   },
                 ),
