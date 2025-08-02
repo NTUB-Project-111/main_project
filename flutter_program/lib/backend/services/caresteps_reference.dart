@@ -1,5 +1,5 @@
 class CareStepsReference {
-  String cut = '''
+  static String cut = '''
     止血:
       用繃帶或乾淨、摺疊過的布（例如茶巾）對傷口施加壓力，持續 10 分鐘;
     高舉受傷部位:
@@ -52,7 +52,7 @@ class CareStepsReference {
       如果傷口在不易弄髒或不會被衣物摩擦的部位，可以選擇不覆蓋，讓它保持乾燥，有助於加快癒合速度;
   ''';
 
-  String woundCare = '''
+  static String woundCare = '''
     洗淨雙手;
     拆除敷料:
       拆除傷口敷料，檢傷口有無異常現象;
@@ -86,7 +86,7 @@ class CareStepsReference {
       清理使用過的用品，將密封的垃圾袋丟入垃圾桶，並再次洗手;
     ''';
 
-  String abrasions = '''
+  static String abrasion = '''
     徹底洗手;
     清潔傷口:
       用肥皂和清水仔細清洗擦傷處，但不要用力刷洗傷口。
@@ -138,7 +138,7 @@ class CareStepsReference {
       每天更換敷料，若敷料弄髒或潮濕，則應立即更換;
     ''';
 
-  String bruises = '''
+  static String bruise = '''
     初期冷敷（受傷後 24 小時內）:
       使用冰敷包可減輕腫脹與不適。
       可用密封塑膠袋裝入冰塊，再用乾淨、薄毛巾包住後敷在患處。
@@ -168,7 +168,7 @@ class CareStepsReference {
       可使用彈性繃帶包紮，但不要綁得太緊，以免影響血液循環;    
     ''';
 
-    String burns = '''
+  static String burn = '''
       脫掉衣物飾品:
         移除靠近燒燙傷部位的衣物或飾品，但不要強行拉扯黏在皮膚上的物品;
       冷卻燒燙傷部位:
@@ -208,7 +208,7 @@ class CareStepsReference {
         用乾淨的床單布單或紗布覆蓋，不要任意塗上外;
     ''';
 
-  String burnCare = '''
+  static String burnCare = '''
     皮膚清潔:
       已經復原的部位每天至少用溫水或中性肥皂清洗一次，擦乾後以潤膚油滋潤皮膚，預防乾裂。
       未完全好的傷口儘量保持乾淨，如果不小心弄髒、弄濕傷口，依照醫師指導的方法處理或到醫院換藥，以免再度感染;
@@ -249,7 +249,7 @@ class CareStepsReference {
       要多補充鉀、高熱量、高蛋白及高維他命的食物;
     ''';
 
-  String stabbing = '''
+  static String stab = '''
     洗手:
       先用肥皂與清水徹底洗手，以預防感染;
     止血:
@@ -299,7 +299,7 @@ class CareStepsReference {
       塗上抗菌藥膏，並使用不會黏住傷口的乾淨繃帶包紮;
   ''';
 
-  String surgicals = '''
+  static String surgical = '''
     洗手;
     撕下紗布:
       動作輕柔並小心撕下傷口紗布及紙膠;

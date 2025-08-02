@@ -148,13 +148,13 @@ class Report extends ChangeNotifier {
 
         oktime = '${intOktimeList[0]}~${intOktimeList[1]}天';
         woundType = wound ?? '未知傷口';
-        response =
-            await CareInfo.getCareSteps(wound!, birthday, disease, freq, isExtra, healTime, date);
+        // response =
+        //     await CareInfo.getCareSteps(wound!, birthday, disease, freq, isExtra, healTime, date);
       } else {
         final result = await WoundAnalysis.analyzeWound(image!);
         woundType = result;
-        response =
-            await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, oktime, date);
+        // response =
+        //     await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, oktime, date);
         oktime = response != null ? (response['healTime'] ?? '0') : '0';
       }
       careSteps = response != null ? (response['steps']?.split('。') ?? []) : [];
