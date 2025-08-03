@@ -59,7 +59,7 @@ class CareInfo {
     }
   }
 
-  static Future<String> getCareSteps(
+  static Future<Map<String, dynamic>?> getCareSteps(
     String woundType,
     String birthday,
     String disease,
@@ -155,7 +155,7 @@ class CareInfo {
           請參考以下網站內容作為依據：
           $referenceText
           ''';
-      debugPrint(userMessageContent);
+
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: {
@@ -165,7 +165,37 @@ class CareInfo {
         body: jsonEncode({
           "model": "gpt-4",
           "messages": [
-            {"role": "system", "content": "（此處省略，與原本相同）"},
+            {
+              "role": "system",
+              "content": '''
+                你是一位專業的外科醫生，根據傷口類型與描述，提供簡單明瞭的傷口處理步驟，
+                並預測其大約的癒合時間，需參考我提供的網站內容作為依據，開頭不要寫任何引言、說明或前言，
+                例如「根據您的描述...」、「以下是護理建議」等等。
+                回答格式要求如下：
+                  1.每個步驟以「標題」開頭（例如：止血、清潔傷口）
+                  2.標題後加上冒號（:）
+                  3.內容為多行縮排說明句，每行開頭對齊，並以句號結尾
+                  4.每個步驟最後一句話以「分號」結尾作為整個步驟的結束標記
+                  5.癒合時間回答「N~M天」，不需要其他敘述
+                格式示範:
+                    止血:
+                      用繃帶或乾淨、摺疊過的布（例如茶巾）對傷口施加壓力，持續 10 分鐘;
+                    高舉受傷部位:
+                      若傷口在手或手臂，請將其舉過頭部。
+                      若在下肢，請躺下並將傷肢抬高至高於心臟的高度，有助於減少出血量;
+                    包紮傷口:
+                      當出血停止後，用新的繃帶牢牢地包覆原本使用的布或繃帶。
+                      如果傷口持續出血，不要移除原本的繃帶，在上面再加一層新的，並繼續施加壓力再等 10 分鐘;
+                    清潔傷口:
+                      徹底洗手並擦乾，可戴上拋棄式手套。
+                      用瓶裝水、自來水或無菌濕紙巾清洗傷口。
+                      使用肥皂和清水或消毒液清潔傷口周圍的皮膚，但避免讓消毒液進入傷口。
+                      用紗布或乾淨的茶巾輕拍傷口周圍，將其擦乾;
+                    貼上OK繃:
+                      貼上無菌敷料或 OK 繃; 
+                  癒合時間:
+                    7~14天'''
+            },
             {"role": "user", "content": userMessageContent}
           ],
           "temperature": 0.7,
@@ -175,12 +205,31 @@ class CareInfo {
       if (response.statusCode == 200) {
         final decodedBody = utf8.decode(response.bodyBytes);
         final Map<String, dynamic> data = jsonDecode(decodedBody);
-        return data["choices"][0]["message"]["content"];
+
+        String str = data["choices"][0]["message"]["content"];
+        List<String> result = str.split('癒合時間:');
+        List<String> steps = result[0].split(';');
+        Map<String, List<String>> careSteps = {};
+        for (var step in steps) {
+          if (step.trim().isEmpty) continue;
+          // 確保正確分割成「標題:內容」
+          List<String> parts = step.split(':');
+          if (parts.length < 2) continue;
+          String title = parts[0].trim();
+          String content = parts[1].trim();
+          // 用句號拆解多句內容，移除空白句子
+          List<String> lines = content.split('。').where((s) => s.trim().isNotEmpty).toList();
+          careSteps[title] = lines;
+        }
+
+        debugPrint(result[0]);
+        debugPrint(result[1]);
+        return {'careSteps': careSteps, 'healingTime': result[1]};
       } else {
-        return 'null';
+        return null;
       }
     } catch (e) {
-      return 'null';
+      return null;
     }
   }
 
