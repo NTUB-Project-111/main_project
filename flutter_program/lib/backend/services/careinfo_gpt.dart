@@ -126,12 +126,12 @@ class CareInfo {
       }
 
       // 建立訊息內容
-      // DateTime today = DateTime.now();
-      // int? days;
-      // if (date != null) {
-      //   DateTime injuryDate = DateTime.parse(date);
-      //   days = today.difference(injuryDate).inDays;
-      // }
+      DateTime today = DateTime.now();
+      int? days;
+      if (date != null) {
+        DateTime injuryDate = DateTime.parse(date);
+        days = today.difference(injuryDate).inDays;
+      }
 
       String userMessageContent = isExtra
           ? '''
@@ -140,7 +140,7 @@ class CareInfo {
             我的年齡為$age歲，
             我有$diseases，
             並且$smoke抽菸、$drink喝酒、$betel嚼檳榔，
-            距離上次受傷已經過${3 ?? '未知'}天，
+            距離上次受傷已經過${days ?? '未知'}天，
           請提供傷口的護理建議，不需要估算癒合時間。
           請參考以下網站內容作為依據：
             $referenceText
