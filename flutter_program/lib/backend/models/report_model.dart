@@ -12,7 +12,8 @@ class Report extends ChangeNotifier {
   String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
   File? image;
   String woundType = '';
-  List<String> careSteps = [];
+  // List<String> careSteps = [];
+  Map<String, List<String>> careSteps = {};
   String oktime = '';
   bool isLoading = true;
   bool notify = false;
@@ -120,7 +121,7 @@ class Report extends ChangeNotifier {
 
   Future<void> _analyzeWoundImage(String birthday, String disease, String freq, bool isExtra,
       String? healTime, String? date, String? wound) async {
-    Map<String, String>? response = {};
+    Map<String, dynamic>? response = {};
     try {
       if (isExtra) {
         if (healTime == null) throw Exception('oktime 不應為 null');
@@ -148,33 +149,36 @@ class Report extends ChangeNotifier {
 
         oktime = '${intOktimeList[0]}~${intOktimeList[1]}天';
         woundType = wound ?? '未知傷口';
-        // response =
-        //     await CareInfo.getCareSteps(wound!, birthday, disease, freq, isExtra, healTime, date);
+        response =
+            (await CareInfo.getCareSteps(wound!, birthday, disease, freq, isExtra, healTime, date));
       } else {
         final result = await WoundAnalysis.analyzeWound(image!);
         woundType = result;
-        // response =
-        //     await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, oktime, date);
+        response =
+            await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, oktime, date);
         oktime = response != null ? (response['healTime'] ?? '0') : '0';
       }
-      careSteps = response != null ? (response['steps']?.split('。') ?? []) : [];
-      debugPrint('============護理步驟=============');
-      debugPrint(careSteps.toString());
-      debugPrint(response!['steps']);
-      debugPrint(woundType);
-      careSteps = careSteps
-          .map((e) => e
-                  .replaceAll(RegExp(r'^\d+\.'), '') // 移除開頭的數字+點，例如 1.、2.
-                  .replaceAll(RegExp(r'\s+'), '') // 移除所有空白、換行、tab
-              )
-          .where((e) => e.isNotEmpty)
-          .toList();
-      for (int i = 0; i < careSteps.length; i++) {
-        careSteps[i] = careSteps[i].replaceAll(RegExp(r'^\d+\.\s*'), '');
-      }
+      careSteps = response?['careSteps'] ?? {};
+      // careSteps = response != null ? (response['steps']?.split('。') ?? []) : [];
+      // debugPrint('============護理步驟=============');
+      // debugPrint(careSteps.toString());
+      // debugPrint(response!['steps']);
+      // debugPrint(woundType);
+      // careSteps = careSteps
+      //     .map((e) => e
+      //             .replaceAll(RegExp(r'^\d+\.'), '') // 移除開頭的數字+點，例如 1.、2.
+      //             .replaceAll(RegExp(r'\s+'), '') // 移除所有空白、換行、tab
+      //         )
+      //     .where((e) => e.isNotEmpty)
+      //     .toList();
+      // for (int i = 0; i < careSteps.length; i++) {
+      //   careSteps[i] = careSteps[i].replaceAll(RegExp(r'^\d+\.\s*'), '');
+      // }
     } catch (e) {
       woundType = "分析失敗";
-      careSteps = ["錯誤: $e"];
+      careSteps = {
+        "錯誤": ["$e"]
+      };
     }
   }
 
@@ -284,7 +288,7 @@ class Report extends ChangeNotifier {
     }
     isSaving = false;
     woundType = '';
-    careSteps = [];
+    careSteps = {};
     oktime = '';
     hospitals = [];
     injuryParts = [];
