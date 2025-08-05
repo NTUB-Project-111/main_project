@@ -73,9 +73,9 @@ class CareInfo {
       int age = year - int.parse(birthday);
       String diseases = disease.replaceAll('[', '').replaceAll(']', '');
       final freqs = freq.split('、');
-      final smoke = freqs.isNotEmpty ? freqs[0] : '未知';
-      final drink = freqs.length > 1 ? freqs[1] : '未知';
-      final betel = freqs.length > 2 ? freqs[2] : '未知';
+      final smoke = freqs.isNotEmpty ? freqs[0] : '沒有';
+      final drink = freqs.length > 1 ? freqs[1] : '沒有';
+      final betel = freqs.length > 2 ? freqs[2] : '沒有';
 
       // 對應參考資料
       String referenceText = '';
@@ -83,18 +83,18 @@ class CareInfo {
         switch (woundType) {
           case '燒傷':
           case '燙傷':
-            referenceText = '燒燙傷:\n${CareStepsReference.burnCare}';
+            referenceText = CareStepsReference.burnCare;
             break;
           case '瘀青':
-            referenceText = '瘀青:\n${CareStepsReference.bruise}';
+            referenceText = CareStepsReference.bruise;
             break;
           case '手術傷口':
-            referenceText = '手術傷口:\n${CareStepsReference.surgical}';
+            referenceText = CareStepsReference.surgical;
             break;
           case '擦傷':
           case '割傷':
           case '刺傷':
-            referenceText = '$woundType:\n${CareStepsReference.woundCare}';
+            referenceText = CareStepsReference.woundCare;
             break;
           default:
             referenceText = '';
@@ -125,7 +125,6 @@ class CareInfo {
         }
       }
 
-      // 建立訊息內容
       DateTime today = DateTime.now();
       int? days;
       if (date != null) {
@@ -155,6 +154,8 @@ class CareInfo {
           請參考以下網站內容作為依據：
           $referenceText
           ''';
+
+      debugPrint(userMessageContent);
 
       final response = await http.post(
         Uri.parse(apiUrl),
@@ -193,8 +194,7 @@ class CareInfo {
                       用紗布或乾淨的茶巾輕拍傷口周圍，將其擦乾;
                     貼上OK繃:
                       貼上無菌敷料或 OK 繃; 
-                  癒合時間:
-                    7~14天'''
+                  癒合時間:7~14天'''
             },
             {"role": "user", "content": userMessageContent}
           ],
@@ -206,32 +206,217 @@ class CareInfo {
         final decodedBody = utf8.decode(response.bodyBytes);
         final Map<String, dynamic> data = jsonDecode(decodedBody);
 
-        String str = data["choices"][0]["message"]["content"];
+        debugPrint("✅ 回傳資料: $data");
+
+        final content = data["choices"][0]["message"]["content"];
+        if (content is! String) {
+          debugPrint("❌ content 不是 String，而是 ${content.runtimeType}");
+          return null;
+        }
+
+        String str = content;
         List<String> result = str.split('癒合時間:');
         List<String> steps = result[0].split(';');
         Map<String, List<String>> careSteps = {};
+
         for (var step in steps) {
           if (step.trim().isEmpty) continue;
-          // 確保正確分割成「標題:內容」
           List<String> parts = step.split(':');
           if (parts.length < 2) continue;
           String title = parts[0].trim();
-          String content = parts[1].trim();
-          // 用句號拆解多句內容，移除空白句子
-          List<String> lines = content.split('。').where((s) => s.trim().isNotEmpty).toList();
+          String contentText = parts[1].trim();
+          List<String> lines = contentText.split('。').where((s) => s.trim().isNotEmpty).toList();
           careSteps[title] = lines;
         }
 
-        debugPrint(result[0]);
-        debugPrint(result[1]);
-        return {'careSteps': careSteps, 'healingTime': result[1]};
+        return {
+          'careSteps': careSteps,
+          'healingTime': result.length > 1 ? result[1].trim() : '',
+          'gptResult': result[0].trim(),
+        };
       } else {
+        debugPrint("❌ API 回傳非 200：${response.statusCode}");
+        debugPrint(response.body);
         return null;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('❌ 發生例外: $e');
+      debugPrint(stackTrace.toString());
       return null;
     }
   }
+
+  // static Future<Map<String, dynamic>?> getCareSteps(
+  //   String woundType,
+  //   String birthday,
+  //   String disease,
+  //   String freq,
+  //   bool isExtra,
+  //   String? oktime,
+  //   String? date,
+  // ) async {
+  //   try {
+  //     int year = DateTime.now().year;
+  //     int age = year - int.parse(birthday);
+  //     String diseases = disease.replaceAll('[', '').replaceAll(']', '');
+  //     final freqs = freq.split('、');
+  //     final smoke = freqs.isNotEmpty ? freqs[0] : '沒有';
+  //     final drink = freqs.length > 1 ? freqs[1] : '沒有';
+  //     final betel = freqs.length > 2 ? freqs[2] : '沒有';
+
+  //     // 對應參考資料
+  //     String referenceText = '';
+  //     if (isExtra) {
+  //       switch (woundType) {
+  //         case '燒傷':
+  //         case '燙傷':
+  //           referenceText = CareStepsReference.burnCare;
+  //           break;
+  //         case '瘀青':
+  //           referenceText = CareStepsReference.bruise;
+  //           break;
+  //         case '手術傷口':
+  //           referenceText = CareStepsReference.surgical;
+  //           break;
+  //         case '擦傷':
+  //         case '割傷':
+  //         case '刺傷':
+  //           referenceText = CareStepsReference.woundCare;
+  //           break;
+  //         default:
+  //           referenceText = '';
+  //       }
+  //     } else {
+  //       switch (woundType) {
+  //         case '燒傷':
+  //         case '燙傷':
+  //           referenceText = '燒燙傷:\n${CareStepsReference.burn}';
+  //           break;
+  //         case '瘀青':
+  //           referenceText = '瘀青:\n${CareStepsReference.bruise}';
+  //           break;
+  //         case '手術傷口':
+  //           referenceText = '手術傷口:\n${CareStepsReference.surgical}';
+  //           break;
+  //         case '擦傷':
+  //           referenceText = '擦傷:\n${CareStepsReference.abrasion}';
+  //           break;
+  //         case '割傷':
+  //           referenceText = '割傷:\n${CareStepsReference.cut}';
+  //           break;
+  //         case '刺傷':
+  //           referenceText = '刺傷:\n${CareStepsReference.stab}';
+  //           break;
+  //         default:
+  //           referenceText = '';
+  //       }
+  //     }
+
+  //     // 建立訊息內容
+  //     DateTime today = DateTime.now();
+  //     int? days;
+  //     if (date != null) {
+  //       DateTime injuryDate = DateTime.parse(date);
+  //       days = today.difference(injuryDate).inDays;
+  //     }
+
+  //     String userMessageContent = isExtra
+  //         ? '''
+  //         傷口類型: $woundType，
+  //         描述:
+  //           我的年齡為$age歲，
+  //           我有$diseases，
+  //           並且$smoke抽菸、$drink喝酒、$betel嚼檳榔，
+  //           距離上次受傷已經過${days ?? '未知'}天，
+  //         請提供傷口的護理建議，不需要估算癒合時間。
+  //         請參考以下網站內容作為依據：
+  //           $referenceText
+  //         '''
+  //         : '''
+  //         傷口類型: $woundType，
+  //         描述:
+  //           我的年齡為$age歲，
+  //           我有$diseases，
+  //           並且$smoke抽菸、$drink喝酒、$betel嚼檳榔，
+  //         請提供傷口的護理建議及預估癒合時間。
+  //         請參考以下網站內容作為依據：
+  //         $referenceText
+  //         ''';
+  //     debugPrint(userMessageContent);
+  //     final response = await http.post(
+  //       Uri.parse(apiUrl),
+  //       headers: {
+  //         "Authorization": "Bearer $apiKey",
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: jsonEncode({
+  //         "model": "gpt-4",
+  //         "messages": [
+  //           {
+  //             "role": "system",
+  //             "content": '''
+  //               你是一位專業的外科醫生，根據傷口類型與描述，提供簡單明瞭的傷口處理步驟，
+  //               並預測其大約的癒合時間，需參考我提供的網站內容作為依據，開頭不要寫任何引言、說明或前言，
+  //               例如「根據您的描述...」、「以下是護理建議」等等。
+  //               回答格式要求如下：
+  //                 1.每個步驟以「標題」開頭（例如：止血、清潔傷口）
+  //                 2.標題後加上冒號（:）
+  //                 3.內容為多行縮排說明句，每行開頭對齊，並以句號結尾
+  //                 4.每個步驟最後一句話以「分號」結尾作為整個步驟的結束標記
+  //                 5.癒合時間回答「N~M天」，不需要其他敘述
+  //               格式示範:
+  //                   止血:
+  //                     用繃帶或乾淨、摺疊過的布（例如茶巾）對傷口施加壓力，持續 10 分鐘;
+  //                   高舉受傷部位:
+  //                     若傷口在手或手臂，請將其舉過頭部。
+  //                     若在下肢，請躺下並將傷肢抬高至高於心臟的高度，有助於減少出血量;
+  //                   包紮傷口:
+  //                     當出血停止後，用新的繃帶牢牢地包覆原本使用的布或繃帶。
+  //                     如果傷口持續出血，不要移除原本的繃帶，在上面再加一層新的，並繼續施加壓力再等 10 分鐘;
+  //                   清潔傷口:
+  //                     徹底洗手並擦乾，可戴上拋棄式手套。
+  //                     用瓶裝水、自來水或無菌濕紙巾清洗傷口。
+  //                     使用肥皂和清水或消毒液清潔傷口周圍的皮膚，但避免讓消毒液進入傷口。
+  //                     用紗布或乾淨的茶巾輕拍傷口周圍，將其擦乾;
+  //                   貼上OK繃:
+  //                     貼上無菌敷料或 OK 繃;
+  //                 癒合時間:7~14天'''
+  //           },
+  //           {"role": "user", "content": userMessageContent}
+  //         ],
+  //         "temperature": 0.7,
+  //       }),
+  //     );
+  //     if (response.statusCode == 200) {
+  //       final decodedBody = utf8.decode(response.bodyBytes);
+  //       final Map<String, dynamic> data = jsonDecode(decodedBody);
+
+  //       String str = data["choices"][0]["message"]["content"];
+  //       List<String> result = str.split('癒合時間:');
+  //       List<String> steps = result[0].split(';');
+  //       Map<String, List<String>> careSteps = {};
+  //       for (var step in steps) {
+  //         if (step.trim().isEmpty) continue;
+  //         // 確保正確分割成「標題:內容」
+  //         List<String> parts = step.split(':');
+  //         if (parts.length < 2) continue;
+  //         String title = parts[0].trim();
+  //         String content = parts[1].trim();
+  //         // 用句號拆解多句內容，移除空白句子
+  //         List<String> lines = content.split('。').where((s) => s.trim().isNotEmpty).toList();
+  //         careSteps[title] = lines;
+  //       }
+  //       // debugPrint('==================================測試');
+  //       debugPrint(result[0]);
+  //       debugPrint(result[1]);
+  //       return {'careSteps': careSteps, 'healingTime': result[1], 'gptResult': result[0]};
+  //     } else {
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // }
 
   //  static Future<Map<String, String>?> getCareSteps(String woundType, String birthday,
   //     String disease, String freq, bool isExtra, String? oktime, String? date) async {

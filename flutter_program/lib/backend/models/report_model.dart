@@ -14,6 +14,7 @@ class Report extends ChangeNotifier {
   String woundType = '';
   // List<String> careSteps = [];
   Map<String, List<String>> careSteps = {};
+  String gptResult = '';
   String oktime = '';
   bool isLoading = true;
   bool notify = false;
@@ -122,6 +123,7 @@ class Report extends ChangeNotifier {
   Future<void> _analyzeWoundImage(String birthday, String disease, String freq, bool isExtra,
       String? healTime, String? date, String? wound) async {
     Map<String, dynamic>? response = {};
+
     try {
       if (isExtra) {
         if (healTime == null) throw Exception('oktime 不應為 null');
@@ -152,13 +154,17 @@ class Report extends ChangeNotifier {
         response =
             (await CareInfo.getCareSteps(wound!, birthday, disease, freq, isExtra, healTime, date));
       } else {
-        final result = await WoundAnalysis.analyzeWound(image!);
-        woundType = result;
+        final wound = await WoundAnalysis.analyzeWound(image!);
+        // debugPrint(wound);
+        woundType = wound;
         response =
             await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, oktime, date);
-        oktime = response != null ? (response['healTime'] ?? '0') : '0';
+        debugPrint(response.toString());
+        oktime = response != null ? (response['healingTime'] ?? '0') : '0';
       }
       careSteps = response?['careSteps'] ?? {};
+      gptResult = response?['gptResult'] ?? {};
+
       // careSteps = response != null ? (response['steps']?.split('。') ?? []) : [];
       // debugPrint('============護理步驟=============');
       // debugPrint(careSteps.toString());
@@ -190,9 +196,10 @@ class Report extends ChangeNotifier {
   Future<void> loadData(String birthday, String disease, String freq, bool isExtra, String? oktime,
       String? date, String? woundType) async {
     debugPrint('$birthday\n$disease\n$freq');
+    debugPrint(woundType);
     try {
       await Future.wait([
-        _fetchHospitals(),
+        // _fetchHospitals(),
         _analyzeWoundImage(birthday, disease, freq, isExtra, oktime, date, woundType)
       ]);
     } finally {
@@ -228,8 +235,8 @@ class Report extends ChangeNotifier {
         .replaceAll(']', '')
         .trim()
         .replaceFirst(RegExp(r',$'), '');
-    int? id = await _record.addRecord(userId, date, woundType, oktime, careSteps.toString(),
-        notify ? 'Y' : 'N', tags, selfRecord, image!);
+    int? id = await _record.addRecord(
+        userId, date, woundType, oktime, gptResult, notify ? 'Y' : 'N', tags, selfRecord, image!);
     if (id != null) {
       recordId = id;
       return true;
@@ -298,6 +305,7 @@ class Report extends ChangeNotifier {
     newOktime = '';
     remindList = [];
     image = null;
+    gptResult = '';
     notifyListeners();
     return recordResult && remindResult && groupResult;
   }

@@ -53,60 +53,13 @@ class _CarePartState extends State<CarePart> {
               ),
             ],
           ),
-          ...List.generate(report.careSteps.length, (index) {
-            //前面的 ... 是 Dart 的展開運算子，將列表中的每個元素展開並直接插入到 Column 中。
-            return _buildCareStep('${index + 1}', report.careSteps[index]);
-          }),
+          // ...List.generate(report.careSteps.length, (index) {
+          //   //前面的 ... 是 Dart 的展開運算子，將列表中的每個元素展開並直接插入到 Column 中。
+          //   return _buildCareStep('${index + 1}', report.careSteps[index]);
+          // }),
+          ..._buildAllWoundSections(report.careSteps),
         ],
       ),
-    );
-  }
-
-  Widget _buildCareStep(String n, String text) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 13),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x4D000000),
-                  blurRadius: 1,
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  n,
-                  style: const TextStyle(
-                    color: Color(0xFF589399),
-                    fontSize: 14,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Flexible(
-                  // 確保文字可以換行
-                  child: Text(
-                    text,
-                    style: const TextStyle(
-                      color: Color(0xFF589399),
-                      fontSize: 14,
-                      height: 1.4,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -124,8 +77,8 @@ class _CarePartState extends State<CarePart> {
       builder: (context, setState) => Column(
         children: [
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-            padding: const EdgeInsets.fromLTRB(20, 5, 5, 3),
+            margin: const EdgeInsets.symmetric( vertical: 5),
+            padding: const EdgeInsets.fromLTRB(20, 0, 5, 0),
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -153,7 +106,7 @@ class _CarePartState extends State<CarePart> {
           if (show)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: contents

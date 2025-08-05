@@ -88,10 +88,10 @@ class MyApp extends StatelessWidget {
         ),
         fontFamily: 'NotoSansTC',
       ),
-      // home: const LoginPage(),
+      home: const LoginPage(),
 
       // home: HabitPage(),
-      home: const TestPage(),
+      // home: const TestPage(),
     );
   }
 }
