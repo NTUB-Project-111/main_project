@@ -1,5 +1,4 @@
 import 'package:drw/backend/models/report.dart';
-// import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header5.dart';
 import 'package:flutter/material.dart';
 
@@ -12,21 +11,21 @@ class ShowReportPage extends StatefulWidget {
 }
 
 class _ShowReportPageState extends State<ShowReportPage> {
-  late List<dynamic> careSteps;
-  late List<dynamic> tags;
+  late Map<String, List<String>> careSteps = {};
+  late List<dynamic> tags = [];
   @override
   void initState() {
     super.initState();
-    careSteps = widget.report.caremode
-        .replaceAll('[', '') // 移除左方括號
-        .replaceAll(']', '') // 移除右方括號
-        .split(',') // 用逗號切割字串
-        .map((e) => e.trim()) // 去除每個元素前後的空格
-        .toList();
-    tags = widget.report.choosekind
-        .split(',') // 用逗號切割字串
-        .map((e) => e.trim()) // 去除每個元素前後的空格
-        .toList();
+    List<String> steps = widget.report.caremode.split(';');
+    for (var step in steps) {
+      if (step.trim().isEmpty) continue;
+      List<String> parts = step.split(':');
+      if (parts.length < 2) continue;
+      String title = parts[0].trim();
+      String contentText = parts[1].trim();
+      List<String> lines = contentText.split('。').where((s) => s.trim().isNotEmpty).toList();
+      careSteps[title] = lines;
+    }
   }
 
   Widget _buildTagChip(List<dynamic> list) {
@@ -132,16 +131,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                   height: 180,
                                   width: 180,
                                   fit: BoxFit.cover,
-                                )
-                                // child: Image.network(
-                                //   Uri.parse(ApiBase.baseUrl)
-                                //       .resolve(widget.report.photo)
-                                //       .toString(),
-                                //   height: 180,
-                                //   width: 180,
-                                //   fit: BoxFit.cover,
-                                // )
-                                ),
+                                )),
                           ),
                           // const SizedBox(width: 16),
                           Column(
@@ -215,6 +205,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                       ),
                     ),
                     _buildCareSteps(careSteps),
+                    // ..._buildAllWoundSections(careSteps),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -262,7 +253,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
         ]));
   }
 
-  Widget _buildCareSteps(List<dynamic> careSteps) {
+  Widget _buildCareSteps(Map<String, List<String>> careSteps) {
     return Row(
       children: [
         Expanded(
@@ -274,27 +265,20 @@ class _ShowReportPageState extends State<ShowReportPage> {
               padding: const EdgeInsets.only(bottom: 14),
               child: Column(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '傷口護理建議',
-                          style: TextStyle(
-                            height: 3,
-                            color: Color(0xFF589399),
-                            fontSize: 20,
-                          ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '傷口護理建議',
+                        style: TextStyle(
+                          height: 3,
+                          color: Color(0xFF589399),
+                          fontSize: 20,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  ...List.generate(careSteps.length, (index) {
-                    //前面的 ... 是 Dart 的展開運算子，將列表中的每個元素展開並直接插入到 Column 中。
-                    return _buildSuggestionItem('${index + 1}', careSteps[index]);
-                  }),
-                  // _buildSuggestionItem('1', '用清水輕輕沖洗傷口，清除表面的灰塵或異物'),
+                  ..._buildAllWoundSections(careSteps),
                 ],
               ),
             ),
@@ -349,6 +333,62 @@ class _ShowReportPageState extends State<ShowReportPage> {
           ),
         ),
       ],
+    );
+  }
+
+  List<Widget> _buildAllWoundSections(Map<String, List<String>> steps) {
+    return steps.entries.map((entry) {
+      final title = entry.key;
+      final details = entry.value;
+      return _buildWoundSection(title, details);
+    }).toList();
+  }
+
+  Widget _buildWoundSection(String title, List<String> contents) {
+    bool show = false;
+    return StatefulBuilder(
+      builder: (context, setState) => Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.fromLTRB(20, 0, 5, 0),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x4D000000),
+                  blurRadius: 1,
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                IconButton(
+                  onPressed: () {
+                    setState(() => show = !show);
+                  },
+                  icon: Icon(show ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+                ),
+              ],
+            ),
+          ),
+          if (show)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: contents
+                    .map((line) => Text('• ${line.replaceAll(RegExp(r'\s+'), '')}'))
+                    .toList(),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
