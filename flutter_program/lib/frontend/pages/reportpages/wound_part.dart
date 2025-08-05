@@ -83,7 +83,7 @@ class _WoundPartState extends State<WoundPart> {
                                       ),
                                     )
                                   : Text(
-                                      report.oktime,
+                                      report.oktime.replaceAll(RegExp(r'\s+'), ''),
                                       style: const TextStyle(
                                         color: Colors.red,
                                         fontSize: 26,
