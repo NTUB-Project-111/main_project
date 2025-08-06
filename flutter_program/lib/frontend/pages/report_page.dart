@@ -112,12 +112,7 @@ class ReportPage extends StatefulWidget {
   final String? date;
   final String? woundType;
   const ReportPage(
-      {super.key,
-      required this.isExtra,
-      this.id,
-      this.oktime,
-      this.date,
-      this.woundType});
+      {super.key, required this.isExtra, this.id, this.oktime, this.date, this.woundType});
 
   @override
   State<ReportPage> createState() => _ReportPageState();
@@ -145,14 +140,8 @@ class _ReportPageState extends State<ReportPage> {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final user = userProvider.user;
       report.isLoading = true; // <-- 這行很關鍵！每次都要先設為 loading
-      await report.loadData(
-          user!.birthday,
-          user.disease,
-          user.freq,
-          widget.isExtra,
-          widget.oktime,
-          widget.date,
-          widget.woundType); // 這樣 Consumer 才會觸發 CircularProgressIndicator
+      await report.loadData(user!.birthday, user.disease, user.freq, widget.isExtra, widget.oktime,
+          widget.date, widget.woundType); // 這樣 Consumer 才會觸發 CircularProgressIndicator
     });
   }
 
@@ -175,7 +164,7 @@ class _ReportPageState extends State<ReportPage> {
                   const Header5(),
                   const TitlePart(),
                   const WoundPart(),
-                  const CarePart(),
+                  CarePart(isExtra: widget.isExtra),
                   const HospitalPart(),
                   const RecordPart(),
                   ButtonPart(isExtra: widget.isExtra, id: widget.id)

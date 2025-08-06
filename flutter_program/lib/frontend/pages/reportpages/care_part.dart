@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CarePart extends StatefulWidget {
-  const CarePart({super.key});
+  final bool isExtra;
+  const CarePart({super.key, required this.isExtra});
 
   @override
   State<CarePart> createState() => _CarePartState();
@@ -35,6 +36,15 @@ class _CarePartState extends State<CarePart> {
                   return Row(
                     children: [
                       IconButton(
+                          onPressed: () {
+                            final reference = report.getReference(widget.isExtra);
+                            FrontUtil.showReference(context, reference);
+                          },
+                          icon: const Icon(
+                            Icons.link,
+                            color: Color(0xFF589399),
+                          )),
+                      IconButton(
                         onPressed: () {
                           report.toggleNotify();
                           if (report.notify) {
@@ -51,18 +61,6 @@ class _CarePartState extends State<CarePart> {
                                 color: Color(0xFF589399),
                               ),
                       ),
-                      IconButton(
-                          onPressed: () {
-
-                            FrontUtil.showReference(context, [
-                              'https://www.nhs.uk/conditions/cuts-and-grazes/',
-                              'https://www.mayoclinic.org/zh-hans/first-aid/first-aid-cuts/basics/art-20056711',
-                              'https://www.stanfordchildrens.org/en/topic/default?id=taking-care-of-cuts-and-scrapes-1-2978',
-                              'https://www.stanfordchildrens.org/en/topic/default?id=taking-care-of-cuts-and-scrapes-1-2978',
-                              'https://www.stanfordchildrens.org/en/topic/default?id=taking-care-of-cuts-and-scrapes-1-2978'
-                            ]);
-                          },
-                          icon: const Icon(Icons.link))
                     ],
                   );
                 },

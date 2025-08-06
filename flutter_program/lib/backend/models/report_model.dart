@@ -120,39 +120,93 @@ class Report extends ChangeNotifier {
     debugPrint(remindList.toString());
   }
 
-  void getReference(bool isExtra) {
+  List<String> getReference(bool isExtra) {
+    List<String> reference = [];
     if (isExtra) {
       switch (woundType) {
         case '燒傷':
         case '燙傷':
-          [
-            'https://www.nhs.uk/conditions/burns-and-scalds/',
-            'https://www.mayoclinic.org/first-aid/first-aid-burns/basics/art-20056649',
-            'https://www.auh.org.tw/NewsInfo/HealthEducationInfo?docid=1241'
+          reference = [
+            'https://www.weigong.org.tw/HealthEdus/Detail?no=133',
+            'https://yl.cch.org.tw/upload/knowledge/251/2024%E5%B9%B412%E6%9C%8859560-P-C-050-03%E7%87%99%E7%87%92%E5%82%B7%E5%8F%A3%E8%AD%B7%E7%90%86%E9%A0%88%E7%9F%A5_6564428.pdf',
+            'https://ihealth.vghtpe.gov.tw/media/345'
+          ];
+          break;
+        case '擦傷':
+        case '割傷':
+        case '刺傷':
+          reference = [
+            'https://www.kentcht.nhs.uk/leaflet/changing-your-wound-dressing/',
+            'https://patient.uwhealth.org/healthfacts/6820'
           ];
           break;
         case '瘀青':
-          [
+          reference = [
             'https://www.stanfordchildrens.org/en/topic/default?id=bruises-90-P02795',
             'https://my.clevelandclinic.org/health/diseases/15235-bruises',
             'https://www.mayoclinic.org/first-aid/first-aid-bruise/basics/art-20056663'
           ];
           break;
         case '手術傷口':
-          [
+          reference = [
             'https://ihealth.vghtc.gov.tw/media/886',
-            'https://www.chimei.org.tw/main/cmh_department/59012/info/7510/A7510213.html'
+            'https://www.chimei.org.tw/main/cmh_department/59012/info/7510/A7510213.html',
+            'https://www1.cgmh.org.tw/intr/intr4/c8270/Sports%20Medicine%20Center_health/00383-20220806-140132.pdf'
+          ];
+          break;
+        default:
+          reference = [];
+      }
+    } else {
+      switch (woundType) {
+        case '燒傷':
+        case '燙傷':
+          reference = [
+            'https://www.nhs.uk/conditions/burns-and-scalds/',
+            'https://www.mayoclinic.org/first-aid/first-aid-burns/basics/art-20056649',
+            'https://www.auh.org.tw/NewsInfo/HealthEducationInfo?docid=1241'
           ];
           break;
         case '擦傷':
+          reference = [
+            'https://www.stanfordchildrens.org/en/topic/default?id=abrasions-90-P02789',
+            'https://newsnetwork.mayoclinic.org/discussion/treating-skin-abrasions-known-as-raspberries/',
+            'https://intermountainhealthcare.org/blogs/4-steps-to-treat-abrasions-at-home'
+          ];
+          break;
         case '割傷':
+          reference = [
+            'https://www.nhs.uk/conditions/cuts-and-grazes/',
+            'https://www.mayoclinic.org/zh-hans/first-aid/first-aid-cuts/basics/art-20056711',
+            'https://www.stanfordchildrens.org/en/topic/default?id=taking-care-of-cuts-and-scrapes-1-2978'
+          ];
+          break;
         case '刺傷':
-          [];
+          reference = [
+            'https://www.mayoclinic.org/first-aid/first-aid-puncture-wounds/basics/art-20056665',
+            'https://www.stanfordchildrens.org/en/topic/default?id=puncture-wounds-90-P02844',
+            'https://medlineplus.gov/ency/article/000043.htm'
+          ];
+          break;
+        case '瘀青':
+          reference = [
+            'https://www.stanfordchildrens.org/en/topic/default?id=bruises-90-P02795',
+            'https://my.clevelandclinic.org/health/diseases/15235-bruises',
+            'https://www.mayoclinic.org/first-aid/first-aid-bruise/basics/art-20056663'
+          ];
+          break;
+        case '手術傷口':
+          reference = [
+            'https://ihealth.vghtc.gov.tw/media/886',
+            'https://www.chimei.org.tw/main/cmh_department/59012/info/7510/A7510213.html',
+            'https://www1.cgmh.org.tw/intr/intr4/c8270/Sports%20Medicine%20Center_health/00383-20220806-140132.pdf'
+          ];
           break;
         default:
-          [];
+          reference = [];
       }
     }
+    return reference;
   }
 
   Future<void> _analyzeWoundImage(String birthday, String disease, String freq, bool isExtra,
