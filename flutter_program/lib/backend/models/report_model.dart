@@ -120,6 +120,41 @@ class Report extends ChangeNotifier {
     debugPrint(remindList.toString());
   }
 
+  void getReference(bool isExtra) {
+    if (isExtra) {
+      switch (woundType) {
+        case '燒傷':
+        case '燙傷':
+          [
+            'https://www.nhs.uk/conditions/burns-and-scalds/',
+            'https://www.mayoclinic.org/first-aid/first-aid-burns/basics/art-20056649',
+            'https://www.auh.org.tw/NewsInfo/HealthEducationInfo?docid=1241'
+          ];
+          break;
+        case '瘀青':
+          [
+            'https://www.stanfordchildrens.org/en/topic/default?id=bruises-90-P02795',
+            'https://my.clevelandclinic.org/health/diseases/15235-bruises',
+            'https://www.mayoclinic.org/first-aid/first-aid-bruise/basics/art-20056663'
+          ];
+          break;
+        case '手術傷口':
+          [
+            'https://ihealth.vghtc.gov.tw/media/886',
+            'https://www.chimei.org.tw/main/cmh_department/59012/info/7510/A7510213.html'
+          ];
+          break;
+        case '擦傷':
+        case '割傷':
+        case '刺傷':
+          [];
+          break;
+        default:
+          [];
+      }
+    }
+  }
+
   Future<void> _analyzeWoundImage(String birthday, String disease, String freq, bool isExtra,
       String? healTime, String? date, String? wound) async {
     Map<String, dynamic>? response = {};
@@ -164,22 +199,6 @@ class Report extends ChangeNotifier {
       }
       careSteps = response?['careSteps'] ?? {};
       gptResult = response?['gptResult'] ?? {};
-
-      // careSteps = response != null ? (response['steps']?.split('。') ?? []) : [];
-      // debugPrint('============護理步驟=============');
-      // debugPrint(careSteps.toString());
-      // debugPrint(response!['steps']);
-      // debugPrint(woundType);
-      // careSteps = careSteps
-      //     .map((e) => e
-      //             .replaceAll(RegExp(r'^\d+\.'), '') // 移除開頭的數字+點，例如 1.、2.
-      //             .replaceAll(RegExp(r'\s+'), '') // 移除所有空白、換行、tab
-      //         )
-      //     .where((e) => e.isNotEmpty)
-      //     .toList();
-      // for (int i = 0; i < careSteps.length; i++) {
-      //   careSteps[i] = careSteps[i].replaceAll(RegExp(r'^\d+\.\s*'), '');
-      // }
     } catch (e) {
       woundType = "分析失敗";
       careSteps = {
