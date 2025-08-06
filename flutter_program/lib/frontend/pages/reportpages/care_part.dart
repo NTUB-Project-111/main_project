@@ -32,22 +32,38 @@ class _CarePartState extends State<CarePart> {
               ),
               Consumer<Report>(
                 builder: (context, report, child) {
-                  return IconButton(
-                    onPressed: () {
-                      report.toggleNotify();
-                      if (report.notify) {
-                        FrontUtil.showRemindDialog(context, report);
-                      }
-                    },
-                    icon: report.notify
-                        ? const Icon(
-                            Icons.notifications_active,
-                            color: Colors.red,
-                          )
-                        : const Icon(
-                            Icons.notifications_off_sharp,
-                            color: Color(0xFF589399),
-                          ),
+                  return Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          report.toggleNotify();
+                          if (report.notify) {
+                            FrontUtil.showRemindDialog(context, report);
+                          }
+                        },
+                        icon: report.notify
+                            ? const Icon(
+                                Icons.notifications_active,
+                                color: Colors.red,
+                              )
+                            : const Icon(
+                                Icons.notifications_off_sharp,
+                                color: Color(0xFF589399),
+                              ),
+                      ),
+                      IconButton(
+                          onPressed: () {
+
+                            FrontUtil.showReference(context, [
+                              'https://www.nhs.uk/conditions/cuts-and-grazes/',
+                              'https://www.mayoclinic.org/zh-hans/first-aid/first-aid-cuts/basics/art-20056711',
+                              'https://www.stanfordchildrens.org/en/topic/default?id=taking-care-of-cuts-and-scrapes-1-2978',
+                              'https://www.stanfordchildrens.org/en/topic/default?id=taking-care-of-cuts-and-scrapes-1-2978',
+                              'https://www.stanfordchildrens.org/en/topic/default?id=taking-care-of-cuts-and-scrapes-1-2978'
+                            ]);
+                          },
+                          icon: const Icon(Icons.link))
+                    ],
                   );
                 },
               ),
@@ -77,7 +93,7 @@ class _CarePartState extends State<CarePart> {
       builder: (context, setState) => Column(
         children: [
           Container(
-            margin: const EdgeInsets.symmetric( vertical: 5),
+            margin: const EdgeInsets.symmetric(vertical: 5),
             padding: const EdgeInsets.fromLTRB(20, 0, 5, 0),
             width: double.infinity,
             decoration: BoxDecoration(
