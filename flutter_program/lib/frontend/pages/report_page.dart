@@ -161,7 +161,7 @@ class _ReportPageState extends State<ReportPage> {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 children: [
-                  const Header5(),
+                  // const Header5(),
                   const TitlePart(),
                   const WoundPart(),
                   CarePart(isExtra: widget.isExtra),

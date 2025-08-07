@@ -13,37 +13,48 @@ class CarePart extends StatefulWidget {
 
 class _CarePartState extends State<CarePart> {
   @override
+  @override
   Widget build(BuildContext context) {
-    final report = Provider.of<Report>(context, listen: false);
     return Container(
       decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: Color(0xFF589399), width: 2))),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        border: Border(bottom: BorderSide(color: Color(0xFF589399), width: 2)),
+      ),
+      child: Consumer<Report>(
+        builder: (context, report, child) {
+          return Column(
             children: [
-              const Text(
-                '傷口護理建議',
-                style: TextStyle(
-                  height: 3,
-                  color: Color(0xFF589399),
-                  fontSize: 20,
-                ),
-              ),
-              Consumer<Report>(
-                builder: (context, report, child) {
-                  return Row(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    '傷口護理建議',
+                    style: TextStyle(
+                      height: 3,
+                      color: Color(0xFF589399),
+                      fontSize: 20,
+                    ),
+                  ),
+                  Row(
                     children: [
                       IconButton(
-                          onPressed: () {
-                            final reference = report.getReference(widget.isExtra);
-                            FrontUtil.showReference(context, reference);
-                          },
-                          icon: const Icon(
-                            Icons.link,
-                            color: Color(0xFF589399),
-                          )),
+                        onPressed: () {
+                          report.toggleSwitch();
+                        },
+                        icon: const Icon(
+                          Icons.compare_arrows,
+                          color: Color(0xFF589399),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          final reference = report.getReference(widget.isExtra);
+                          FrontUtil.showReference(context, reference);
+                        },
+                        icon: const Icon(
+                          Icons.link,
+                          color: Color(0xFF589399),
+                        ),
+                      ),
                       IconButton(
                         onPressed: () {
                           report.toggleNotify();
@@ -62,17 +73,51 @@ class _CarePartState extends State<CarePart> {
                               ),
                       ),
                     ],
-                  );
-                },
+                  ),
+                ],
               ),
+              ...[
+                if (report.isSwitch)
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                color: FrontUtil.textColor,
+                              )),
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 10, bottom: 15, left: 5, right: 5),
+                              height: 280,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: FrontUtil.textColor,
+                              )),
+                        ],
+                      ),
+                      Text(
+                        '測試',
+                        style: TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      )
+                    ],
+                  )
+                else
+                  ..._buildAllWoundSections(report.careSteps),
+              ]
             ],
-          ),
-          // ...List.generate(report.careSteps.length, (index) {
-          //   //前面的 ... 是 Dart 的展開運算子，將列表中的每個元素展開並直接插入到 Column 中。
-          //   return _buildCareStep('${index + 1}', report.careSteps[index]);
-          // }),
-          ..._buildAllWoundSections(report.careSteps),
-        ],
+          );
+        },
       ),
     );
   }
