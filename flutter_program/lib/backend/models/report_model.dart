@@ -30,10 +30,16 @@ class Report extends ChangeNotifier {
   bool isUpdating = false;
   String newOktime = '';
   bool isSaving = false;
+  bool isSwitch = false;
+  String name = '';
   List<Map<String, dynamic>> remindList = [];
 
   final RecordService _record = RecordService();
   final RemindService _remind = RemindService();
+  void setName(String value) {
+    name = value;
+    notifyListeners();
+  }
 
   void setImage(File img) {
     image = img;
@@ -47,6 +53,11 @@ class Report extends ChangeNotifier {
 
   void toggleOpen() {
     open = !open;
+    notifyListeners();
+  }
+
+  void toggleSwitch() {
+    isSwitch = !isSwitch;
     notifyListeners();
   }
 
@@ -240,12 +251,13 @@ class Report extends ChangeNotifier {
 
         oktime = '${intOktimeList[0]}~${intOktimeList[1]}天';
         woundType = wound ?? '未知傷口';
+
         response =
             (await CareInfo.getCareSteps(wound!, birthday, disease, freq, isExtra, healTime, date));
       } else {
         final wound = await WoundAnalysis.analyzeWound(image!);
-        // debugPrint(wound);
         woundType = wound;
+        name = '$woundType診斷報告';
         response =
             await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, oktime, date);
         debugPrint(response.toString());
@@ -269,7 +281,6 @@ class Report extends ChangeNotifier {
   Future<void> loadData(String birthday, String disease, String freq, bool isExtra, String? oktime,
       String? date, String? woundType) async {
     debugPrint('$birthday\n$disease\n$freq');
-    debugPrint(woundType);
     try {
       await Future.wait([
         // _fetchHospitals(),
