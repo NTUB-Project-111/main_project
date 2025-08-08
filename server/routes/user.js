@@ -140,6 +140,7 @@ router.get('/getUserDetail', async (req, res) => {
             r.recording,
             r.photo,
             r.group_id,
+            r.name,
             c.fk_user_id,
             c.id_calls AS remindId,
             c.fk_record_id,
@@ -168,6 +169,7 @@ router.get('/getUserDetail', async (req, res) => {
                     choosekind: row.choosekind,
                     recording: row.recording,
                     photo: row.photo,
+                    name: row.name,
                     group_id:row.group_id,
                     reminds: [],
                 };
