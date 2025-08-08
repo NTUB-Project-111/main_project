@@ -6,26 +6,27 @@ const db = require('../config/db');
 // === 新增診斷紀錄 ===
 router.post('/addRecord', upload.single('photo'), async (req, res) => {
   try {
-    const { fk_userid, date, type, oktime, caremode, ifcall, choosekind, recording } = req.body;
+    const { fk_userid, date, type, oktime, caremode, ifcall, choosekind, recording, name } = req.body;
     if (!req.file) {
       return res.status(400).json({ error: '請提供圖片' });
     }
-    const photoPath = `/uploads/${req.file.filename}`;
+    // 上傳至 Cloudinary
+    const cloudResult = await uploadToCloudinary(req.file.buffer, Date.now().toString());
+    const photoUrl = cloudResult.secure_url;
     const [result] = await db.query(
       `
       INSERT INTO record 
-      (fk_userid, date, photo, type, oktime, caremode, ifcall, choosekind, recording)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (fk_userid, date, photo, type, oktime, caremode, ifcall, choosekind, recording, name)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
-      [fk_userid, date, photoPath, type, oktime, caremode, ifcall, choosekind, recording]
+      [fk_userid, date, photoUrl, type, oktime, caremode, ifcall, choosekind, recording, name]
     );
     const insertedId = result.insertId;
     return res.json({
       message: 'Record added successfully',
       id_record: insertedId,
-      photoPath,
+      photoPath: photoUrl, // Cloudinary 圖片網址
     });
-
   } catch (err) {
     console.error('新增錯誤:', err);
     res.status(500).json({ error: 'Internal server error' });
