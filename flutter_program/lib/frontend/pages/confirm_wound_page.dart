@@ -97,12 +97,12 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                       widget.report.groupId == 0
                           ? await recordService.updateOktime(
                               userId: widget.report.userId.toString(),
-                              oktime: '已癒合',
+                              oktime: '傷口已痊癒',
                               recordId: widget.report.id.toString(),
                             )
                           : await recordService.updateOktime(
                               userId: widget.report.userId.toString(),
-                              oktime: '已癒合',
+                              oktime: '傷口已痊癒',
                               recordId: widget.report.id.toString(),
                               groupId: widget.report.groupId.toString());
                       final userReport = await RecordService.fetchReports(widget.report.userId);

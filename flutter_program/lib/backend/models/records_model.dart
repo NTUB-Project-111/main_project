@@ -10,6 +10,7 @@ class UserRecord {
   String ifcall;
   String tags;
   String selfRecord;
+  String name;
   int groupId;
 
   UserRecord({
@@ -22,6 +23,7 @@ class UserRecord {
     required this.ifcall,
     required this.tags,
     required this.selfRecord,
+    required this.name,
     required this.groupId,
   });
 
@@ -36,6 +38,7 @@ class UserRecord {
       ifcall: json['ifcall'] ?? '',
       tags: json['choosekind'] ?? '',
       selfRecord: json['recording'] ?? '',
+      name: json['name'] ?? '',
       groupId: json['group_id'] ?? 0,
     );
   }

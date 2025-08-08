@@ -11,6 +11,7 @@ class UserReport {
   final String choosekind;
   final String recording;
   final String photo;
+  final String name;
   final int groupId;
   List<UserRemind> reminds;
 
@@ -25,6 +26,7 @@ class UserReport {
     required this.choosekind,
     required this.recording,
     required this.photo,
+    required this.name,
     required this.groupId,
     required this.reminds,
   });
@@ -41,6 +43,7 @@ class UserReport {
       choosekind: json['choosekind'],
       recording: json['recording'],
       photo: json['photo'],
+      name: json['name'] ?? '',
       groupId: json['group_id'] ?? 0,
       reminds: (json['reminds'] as List).map((r) => UserRemind.fromJson(r)).toList(),
     );

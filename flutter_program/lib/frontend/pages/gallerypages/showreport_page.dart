@@ -1,6 +1,11 @@
 import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/provider/report_provider.dart';
+import 'package:drw/backend/provider/user_provider.dart';
+import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/frontend/headers/header5.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ShowReportPage extends StatefulWidget {
   final UserReport report;
@@ -13,6 +18,7 @@ class ShowReportPage extends StatefulWidget {
 class _ShowReportPageState extends State<ShowReportPage> {
   late Map<String, List<String>> careSteps = {};
   late List<dynamic> tags = [];
+
   @override
   void initState() {
     super.initState();
@@ -28,29 +34,9 @@ class _ShowReportPageState extends State<ShowReportPage> {
     }
   }
 
-  Widget _buildTagChip(List<dynamic> list) {
-    return Wrap(
-      children: list.map((text) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          margin: const EdgeInsets.only(right: 5), // 可以加上 margin 讓每個 Container 之間有間距
-          decoration: BoxDecoration(
-            color: const Color(0xFF589399),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(text, style: const TextStyle(color: Colors.white)),
-            ],
-          ),
-        );
-      }).toList(), // 轉換為 List
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    RecordService recordService = RecordService();
     return Scaffold(
         backgroundColor: const Color(0xFFEBFEFF),
         body: Column(children: [
@@ -88,11 +74,11 @@ class _ShowReportPageState extends State<ShowReportPage> {
                             padding: EdgeInsets.zero, // 移除 padding
                             constraints: const BoxConstraints(), // 移除預設大小
                           ),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 23),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 23),
                             child: Text(
-                              '診斷報告',
-                              style: TextStyle(
+                              widget.report.name,
+                              style: const TextStyle(
                                 color: Color(0xFF589399),
                                 fontSize: 24,
                                 fontWeight: FontWeight.w600,
@@ -165,7 +151,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                   width: 180,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    children: widget.report.oktime != '已癒合'
+                                    children: widget.report.oktime != '傷口已痊癒'
                                         ? [
                                             const Text(
                                               '預計',
@@ -191,7 +177,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                           ]
                                         : [
                                             const Text(
-                                              '已癒合',
+                                              '傷口已痊癒',
                                               style: TextStyle(
                                                 color: Colors.red,
                                                 fontSize: 26,
@@ -208,42 +194,115 @@ class _ShowReportPageState extends State<ShowReportPage> {
                     // ..._buildAllWoundSections(careSteps),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           '自我紀錄',
-                          style: TextStyle(color: Color(0xFF589399), fontSize: 20, height: 3),
+                          style: TextStyle(color: FrontUtil.textColor, fontSize: 20, height: 3),
                         ),
-                        Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.fromLTRB(15, 8, 10, 8),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: const [
-                                  BoxShadow(color: Color(0x4D000000), blurRadius: 1)
-                                ]),
-                            child: tags.toString() != '[]'
-                                ? _buildTagChip(tags)
-                                : const SizedBox(
+                        (widget.report.choosekind != '' || widget.report.recording != '')
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (widget.report.choosekind != '')
+                                    Row(
+                                      children: [
+                                        const SizedBox(width: 20),
+                                        Text(
+                                          '標籤：${widget.report.choosekind}',
+                                          style: TextStyle(
+                                            color: FrontUtil.textColor,
+                                            fontSize: 16,
+                                            height: 2,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  if (widget.report.recording != '')
+                                    Row(
+                                      children: [
+                                        const SizedBox(width: 20),
+                                        Text(
+                                          '描述：${widget.report.recording}',
+                                          style: TextStyle(
+                                            color: FrontUtil.textColor,
+                                            fontSize: 16,
+                                            height: 2,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  const SizedBox(
                                     height: 30,
-                                  )),
-                        Container(
-                            width: double.infinity,
-                            height: 250,
-                            margin: const EdgeInsets.only(top: 15),
-                            padding: const EdgeInsets.fromLTRB(15, 8, 10, 8),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: const [
-                                  BoxShadow(color: Color(0x4D000000), blurRadius: 1)
-                                ]),
-                            child: Text(widget.report.recording,
-                                style: const TextStyle(color: Color(0xFF589399)))),
-                        const SizedBox(
-                          height: 15,
-                        ),
+                                  )
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      '未填寫',
+                                      style: TextStyle(
+                                        color: FrontUtil.textColor,
+                                        fontSize: 30,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 30,
+                                  )
+                                ],
+                              )
                       ],
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          FrontUtil.showConfirmDialog(context, const Color(0xFFFF6262),
+                              '此傷口已經癒合了嗎?', '※『是的』將會關閉傷口的後續追蹤', '還沒', '是的', () async {
+                            widget.report.groupId == 0
+                                ? await recordService.updateOktime(
+                                    userId: widget.report.userId.toString(),
+                                    oktime: '傷口已痊癒',
+                                    recordId: widget.report.id.toString(),
+                                  )
+                                : await recordService.updateOktime(
+                                    userId: widget.report.userId.toString(),
+                                    oktime: '傷口已痊癒',
+                                    recordId: widget.report.id.toString(),
+                                    groupId: widget.report.groupId.toString());
+                            final userReport =
+                                await RecordService.fetchReports(widget.report.userId);
+                            final userProvider = Provider.of<UserProvider>(context, listen: false);
+                            final user = userProvider.user;
+                            if (user != null) {
+                              user.reports = userReport;
+
+                              userProvider.setUserInfo(user);
+                            }
+                            if (mounted) {
+                              Provider.of<ReportProvider>(context, listen: false)
+                                  .setReports(userReport);
+                              debugPrint(userReport.reversed.first.oktime);
+                            }
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: const Color(0xFF589399),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          '傷口已痊癒?',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
                     )
                   ],
                 ),
@@ -265,10 +324,10 @@ class _ShowReportPageState extends State<ShowReportPage> {
               padding: const EdgeInsets.only(bottom: 14),
               child: Column(
                 children: [
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         '傷口護理建議',
                         style: TextStyle(
                           height: 3,
@@ -276,59 +335,55 @@ class _ShowReportPageState extends State<ShowReportPage> {
                           fontSize: 20,
                         ),
                       ),
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              // report.toggleSwitch();
+                            },
+                            icon: const Icon(
+                              Icons.compare_arrows,
+                              color: Color(0xFF589399),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              // final reference = report.getReference(widget.isExtra);
+                              // FrontUtil.showReference(context, reference);
+                            },
+                            icon: const Icon(
+                              Icons.link,
+                              color: Color(0xFF589399),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              // report.toggleNotify();
+                              // if (report.notify) {
+                              //   FrontUtil.showRemindDialog(context, report);
+                              // }
+                            },
+                            icon: const Icon(
+                              Icons.notifications_off_sharp,
+                              color: Color(0xFF589399),
+                            ),
+                            // icon: report.notify
+                            //     ? const Icon(
+                            //         Icons.notifications_active,
+                            //         color: Colors.red,
+                            //       )
+                            //     : const Icon(
+                            //         Icons.notifications_off_sharp,
+                            //         color: Color(0xFF589399),
+                            //       ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                   ..._buildAllWoundSections(careSteps),
                 ],
               ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSuggestionItem(String n, String text) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 13),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x4D000000),
-                  blurRadius: 1,
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  n,
-                  style: const TextStyle(
-                    color: Color(0xFF589399),
-                    fontSize: 14,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Flexible(
-                  // 確保文字可以換行
-                  child: Text(
-                    text,
-                    style: const TextStyle(
-                      color: Color(0xFF589399),
-                      fontSize: 14,
-                      height: 1.4,
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
         ),

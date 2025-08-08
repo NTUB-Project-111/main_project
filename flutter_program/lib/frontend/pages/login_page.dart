@@ -1,4 +1,3 @@
-import 'package:drw/backend/models/user.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
