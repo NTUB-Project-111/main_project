@@ -257,7 +257,7 @@ class Report extends ChangeNotifier {
       } else {
         final wound = await WoundAnalysis.analyzeWound(image!);
         woundType = wound;
-        name = '$woundType診斷報告';
+        name = '$woundType診斷報告'.replaceAll(RegExp(r'\s+'), '');
         response =
             await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, oktime, date);
         debugPrint(response.toString());
@@ -319,8 +319,9 @@ class Report extends ChangeNotifier {
         .replaceAll(']', '')
         .trim()
         .replaceFirst(RegExp(r',$'), '');
-    int? id = await _record.addRecord(
-        userId, date, woundType, oktime, gptResult, notify ? 'Y' : 'N', tags, selfRecord, image!);
+    name == '' ? '$woundType診斷報告':name;
+    int? id = await _record.addRecord(userId, date, woundType, oktime, gptResult,
+        notify ? 'Y' : 'N', tags, selfRecord, name, image!);
     if (id != null) {
       recordId = id;
       return true;
@@ -390,6 +391,7 @@ class Report extends ChangeNotifier {
     remindList = [];
     image = null;
     gptResult = '';
+    name = '';
     notifyListeners();
     return recordResult && remindResult && groupResult;
   }
