@@ -21,6 +21,7 @@ class RecordService {
     String ifcall,
     String choosekind,
     String recording,
+    String name,
     File photoFile,
   ) async {
     final uri = Uri.parse("${ApiBase.baseUrl}/addRecord");
@@ -34,6 +35,7 @@ class RecordService {
     request.fields['ifcall'] = ifcall;
     request.fields['choosekind'] = choosekind;
     request.fields['recording'] = recording;
+    request.fields['name'] = name;
     // 添加圖片檔案
     var mimeType = lookupMimeType(photoFile.path) ?? "image/jpeg"; // 確保有 MIME 類型
     var multipartFile = await http.MultipartFile.fromPath(
