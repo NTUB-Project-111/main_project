@@ -95,8 +95,9 @@ class _RemindPageState extends State<RemindPage> {
         itemCount: reminders.length,
         itemBuilder: (context, index) {
           final reminder = reminders[index];
-          if (reminder.isDelete)
+          if (reminder.isDelete) {
             return const SizedBox(); // 或 return Container()
+          }
           return buildReminderCard(index);
         },
       ),

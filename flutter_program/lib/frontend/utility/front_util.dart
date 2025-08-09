@@ -489,9 +489,9 @@ class FrontUtil {
                                 dialTextColor:
                                     WidgetStateColor.resolveWith((Set<WidgetState> states) {
                                   if (states.contains(WidgetState.selected)) {
-                                    return Color.fromARGB(255, 255, 255, 255); // 選中狀態下的數字
+                                    return const Color.fromARGB(255, 255, 255, 255); // 選中狀態下的數字
                                   }
-                                  return Color(0xFF2E6D74); // 未選中狀態下的數字
+                                  return const Color(0xFF2E6D74); // 未選中狀態下的數字
                                 }),
                                 // dialTextColor: const Color(0xFF2E6D74),
                                 dialBackgroundColor: Colors.white,
