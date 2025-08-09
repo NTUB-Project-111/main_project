@@ -1,3 +1,5 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:drw/backend/models/remind.dart';
 import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
@@ -18,7 +20,9 @@ class ShowReportPage extends StatefulWidget {
 class _ShowReportPageState extends State<ShowReportPage> {
   late Map<String, List<String>> careSteps = {};
   late List<dynamic> tags = [];
-
+  bool isNotify = false;
+  bool isSwitch = false;
+  late UserRemind remind;
   @override
   void initState() {
     super.initState();
@@ -31,6 +35,12 @@ class _ShowReportPageState extends State<ShowReportPage> {
       String contentText = parts[1].trim();
       List<String> lines = contentText.split('。').where((s) => s.trim().isNotEmpty).toList();
       careSteps[title] = lines;
+    }
+    for (var r in widget.report.reminds) {
+      if (r.recordId == widget.report.id) {
+        remind = r;
+        break;
+      }
     }
   }
 
@@ -180,7 +190,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                               '傷口已痊癒',
                                               style: TextStyle(
                                                 color: Colors.red,
-                                                fontSize: 26,
+                                                fontSize: 20,
                                               ),
                                             ),
                                           ],
@@ -248,9 +258,6 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 30,
-                                  )
                                 ],
                               )
                       ],
@@ -303,6 +310,9 @@ class _ShowReportPageState extends State<ShowReportPage> {
                           ),
                         ),
                       ),
+                    ),
+                    const SizedBox(
+                      height: 30,
                     )
                   ],
                 ),
@@ -310,6 +320,314 @@ class _ShowReportPageState extends State<ShowReportPage> {
             ),
           ),
         ]));
+  }
+
+  void showRemindDialog(BuildContext context, UserReport report, UserRemind remind) {
+    String freq = remind.freq;
+    String time = remind.time;
+    // 將選擇的時間初始值設定在對話框外層，讓其狀態能夠在對話框內更新
+    showDialog(
+      barrierDismissible: false, // 禁止點擊外部區域關閉對話框
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter dialogSetState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: const BorderSide(
+                  color: Color(0xFF589399),
+                  width: 2,
+                ),
+              ),
+              backgroundColor: Colors.white,
+              title: const Text(
+                '換藥提醒',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Color(0xFF589399),
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "提醒頻率",
+                          style: TextStyle(
+                            height: 3,
+                            fontSize: 16,
+                            color: Color(0xFF589399),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        DropdownButtonHideUnderline(
+                          child: DropdownButton2<String>(
+                            alignment: Alignment.center,
+                            isExpanded: true,
+                            hint: const Text(
+                              '----- 請選擇 -----',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w100,
+                                fontSize: 12,
+                                color: Color(0xFFAEAEAE),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            items: ["每天", "兩天一次", "三天一次", "每週"]
+                                .map((String item) => DropdownMenuItem<String>(
+                                      value: item,
+                                      child: Text(
+                                        item,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w100,
+                                          fontSize: 14,
+                                          color: Color.fromRGBO(88, 147, 153, 1),
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ))
+                                .toList(),
+                            value: freq,
+                            onChanged: (String? value) {
+                              // 用 dialogSetState 更新對話框內 UI
+                              dialogSetState(() {
+                                freq = value!;
+                              });
+                            },
+                            buttonStyleData: ButtonStyleData(
+                              padding: const EdgeInsets.symmetric(horizontal: 14),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                border: Border.all(
+                                  color: const Color.fromRGBO(154, 201, 205, 1),
+                                ),
+                                color: Colors.white,
+                              ),
+                              elevation: 0,
+                            ),
+                            iconStyleData: const IconStyleData(
+                              icon: Icon(
+                                Icons.arrow_drop_down_rounded,
+                              ),
+                              iconSize: 30,
+                              iconEnabledColor: Color.fromRGBO(88, 147, 153, 1),
+                            ),
+                            dropdownStyleData: DropdownStyleData(
+                              elevation: 0,
+                              maxHeight: 200,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: const Color.fromRGBO(154, 201, 205, 1),
+                                ),
+                                borderRadius: BorderRadius.circular(14),
+                                color: Colors.white,
+                              ),
+                              scrollbarTheme: ScrollbarThemeData(
+                                radius: const Radius.circular(40),
+                                thickness: WidgetStateProperty.all(6),
+                                thumbVisibility: WidgetStateProperty.all(true),
+                              ),
+                            ),
+                            menuItemStyleData: const MenuItemStyleData(
+                              height: 33,
+                              padding: EdgeInsets.only(left: 25, right: 14),
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "提醒時間",
+                              style: TextStyle(
+                                height: 3,
+                                fontSize: 16,
+                                color: Color(0xFF589399),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              time,
+                              style: const TextStyle(
+                                height: 3,
+                                fontSize: 16,
+                                color: Color(0xFF589399),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: const ColorScheme.light(
+                              primary: Color.fromARGB(255, 176, 215, 219),
+                              onPrimary: Colors.white,
+                              onSurface: Color.fromARGB(255, 125, 173, 178),
+                            ),
+                            timePickerTheme: TimePickerThemeData(
+                                //時間選擇器 顏色設定
+                                backgroundColor: const Color(0xFFF7FCFD),
+                                dialHandColor: const Color(0xFF589399),
+                                dialTextColor:
+                                    WidgetStateColor.resolveWith((Set<WidgetState> states) {
+                                  if (states.contains(WidgetState.selected)) {
+                                    return const Color.fromARGB(255, 255, 255, 255); // 選中狀態下的數字
+                                  }
+                                  return const Color(0xFF2E6D74); // 未選中狀態下的數字
+                                }),
+                                // dialTextColor: const Color(0xFF2E6D74),
+                                dialBackgroundColor: Colors.white,
+                                // hourMinuteColor: const Color(0xFFBBD3D6),
+                                hourMinuteTextColor: const Color(0xFF164449),
+                                hourMinuteShape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  side: const BorderSide(color: Color(0xFF589399), width: 2),
+                                ),
+                                dayPeriodColor: WidgetStateColor.resolveWith(
+                                  (states) => const Color(0xFF589399),
+                                ),
+                                dayPeriodTextColor: Colors.white,
+                                // ... 其他可設定的屬性
+                                confirmButtonStyle: ButtonStyle(
+                                  textStyle: WidgetStateProperty.all<TextStyle>(
+                                    const TextStyle(fontWeight: FontWeight.bold), // 設定字體寬度
+                                  ),
+                                  foregroundColor:
+                                      WidgetStateProperty.all<Color>(const Color(0xFF589399)),
+                                ),
+                                helpTextStyle: const TextStyle(color: Color(0xFF589399)),
+                                cancelButtonStyle: ButtonStyle(
+                                  foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+                                )),
+                            textButtonTheme: TextButtonThemeData(
+                              style: TextButton.styleFrom(
+                                foregroundColor: FrontUtil.bkColor,
+                              ),
+                            ),
+                          ),
+                          child: Builder(
+                            builder: (context) => OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0), // 調整圓角半徑
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 70),
+                                side: const BorderSide(
+                                  width: 1,
+                                  color: Color.fromRGBO(154, 201, 205, 1),
+                                ),
+                              ),
+                              onPressed: () async {
+                                final result = await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.now(),
+                                    initialEntryMode: TimePickerEntryMode.dial, // dial 或 input
+                                    helpText: "選擇時間",
+                                    confirmText: "確定",
+                                    cancelText: "取消");
+                                if (result != null) {
+                                  dialogSetState(() {
+                                    final selectedTime =
+                                        "${result.hour.toString().padLeft(2, '0')}:${result.minute.toString().padLeft(2, '0')}";
+                                    time = selectedTime;
+                                  });
+                                }
+                                // ...
+                              },
+                              child: const Text(
+                                '選擇時間',
+                                style: TextStyle(
+                                  color: Color.fromRGBO(88, 147, 153, 1),
+                                  // fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0), // 調整圓角半徑
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
+                          side: const BorderSide(
+                            width: 2,
+                            color: Color(0xFF589399),
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isNotify = !isNotify;
+                          });
+                          Navigator.pop(context); // 關閉對話框
+                        },
+                        child: const Text(
+                          '取消',
+                          style: TextStyle(
+                            color: Color(0xFF589399),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0), // 調整圓角半徑
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
+                          backgroundColor: const Color(0xFF589399),
+                          side: BorderSide.none,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context); // 關閉對話框
+                        },
+                        child: const Text(
+                          '確定',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Text(
+                    "※提醒頻率及時間皆可至小鈴鐺處進行修改※",
+                    style: TextStyle(
+                      height: 3,
+                      fontSize: 12,
+                      color: Color(0xFF589399),
+                      // fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Widget _buildCareSteps(Map<String, List<String>> careSteps) {
@@ -339,7 +657,9 @@ class _ShowReportPageState extends State<ShowReportPage> {
                         children: [
                           IconButton(
                             onPressed: () {
-                              // report.toggleSwitch();
+                              setState(() {
+                                isSwitch = !isSwitch;
+                              });
                             },
                             icon: const Icon(
                               Icons.compare_arrows,
@@ -359,29 +679,66 @@ class _ShowReportPageState extends State<ShowReportPage> {
                           IconButton(
                             onPressed: () {
                               // report.toggleNotify();
-                              // if (report.notify) {
-                              //   FrontUtil.showRemindDialog(context, report);
-                              // }
+                              setState(() {
+                                isNotify = !isNotify;
+                              });
+                              if (isNotify) {}
                             },
-                            icon: const Icon(
-                              Icons.notifications_off_sharp,
-                              color: Color(0xFF589399),
-                            ),
-                            // icon: report.notify
-                            //     ? const Icon(
-                            //         Icons.notifications_active,
-                            //         color: Colors.red,
-                            //       )
-                            //     : const Icon(
-                            //         Icons.notifications_off_sharp,
-                            //         color: Color(0xFF589399),
-                            //       ),
+                            icon: isNotify
+                                ? const Icon(
+                                    Icons.notifications_active,
+                                    color: Colors.red,
+                                  )
+                                : const Icon(
+                                    Icons.notifications_off_sharp,
+                                    color: Color(0xFF589399),
+                                  ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  ..._buildAllWoundSections(careSteps),
+                  ...[
+                    if (isSwitch)
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.arrow_back_ios_new_rounded,
+                                    color: FrontUtil.textColor,
+                                  )),
+                              Expanded(
+                                child: Container(
+                                  margin:
+                                      const EdgeInsets.only(top: 10, bottom: 15, left: 5, right: 5),
+                                  height: 280,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    color: FrontUtil.textColor,
+                                  )),
+                            ],
+                          ),
+                          Text(
+                            '測試',
+                            style:
+                                TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          )
+                        ],
+                      )
+                    else
+                      ..._buildAllWoundSections(careSteps),
+                  ]
                 ],
               ),
             ),
@@ -445,5 +802,94 @@ class _ShowReportPageState extends State<ShowReportPage> {
         ],
       ),
     );
+  }
+
+  List<String> getReference(bool isExtra, String woundType) {
+    List<String> reference = [];
+    if (isExtra) {
+      switch (woundType) {
+        case '燒傷':
+        case '燙傷':
+          reference = [
+            'https://www.weigong.org.tw/HealthEdus/Detail?no=133',
+            'https://yl.cch.org.tw/upload/knowledge/251/2024%E5%B9%B412%E6%9C%8859560-P-C-050-03%E7%87%99%E7%87%92%E5%82%B7%E5%8F%A3%E8%AD%B7%E7%90%86%E9%A0%88%E7%9F%A5_6564428.pdf',
+            'https://ihealth.vghtpe.gov.tw/media/345'
+          ];
+          break;
+        case '擦傷':
+        case '割傷':
+        case '刺傷':
+          reference = [
+            'https://www.kentcht.nhs.uk/leaflet/changing-your-wound-dressing/',
+            'https://patient.uwhealth.org/healthfacts/6820'
+          ];
+          break;
+        case '瘀青':
+          reference = [
+            'https://www.stanfordchildrens.org/en/topic/default?id=bruises-90-P02795',
+            'https://my.clevelandclinic.org/health/diseases/15235-bruises',
+            'https://www.mayoclinic.org/first-aid/first-aid-bruise/basics/art-20056663'
+          ];
+          break;
+        case '手術傷口':
+          reference = [
+            'https://ihealth.vghtc.gov.tw/media/886',
+            'https://www.chimei.org.tw/main/cmh_department/59012/info/7510/A7510213.html',
+            'https://www1.cgmh.org.tw/intr/intr4/c8270/Sports%20Medicine%20Center_health/00383-20220806-140132.pdf'
+          ];
+          break;
+        default:
+          reference = [];
+      }
+    } else {
+      switch (woundType) {
+        case '燒傷':
+        case '燙傷':
+          reference = [
+            'https://www.nhs.uk/conditions/burns-and-scalds/',
+            'https://www.mayoclinic.org/first-aid/first-aid-burns/basics/art-20056649',
+            'https://www.auh.org.tw/NewsInfo/HealthEducationInfo?docid=1241'
+          ];
+          break;
+        case '擦傷':
+          reference = [
+            'https://www.stanfordchildrens.org/en/topic/default?id=abrasions-90-P02789',
+            'https://newsnetwork.mayoclinic.org/discussion/treating-skin-abrasions-known-as-raspberries/',
+            'https://intermountainhealthcare.org/blogs/4-steps-to-treat-abrasions-at-home'
+          ];
+          break;
+        case '割傷':
+          reference = [
+            'https://www.nhs.uk/conditions/cuts-and-grazes/',
+            'https://www.mayoclinic.org/zh-hans/first-aid/first-aid-cuts/basics/art-20056711',
+            'https://www.stanfordchildrens.org/en/topic/default?id=taking-care-of-cuts-and-scrapes-1-2978'
+          ];
+          break;
+        case '刺傷':
+          reference = [
+            'https://www.mayoclinic.org/first-aid/first-aid-puncture-wounds/basics/art-20056665',
+            'https://www.stanfordchildrens.org/en/topic/default?id=puncture-wounds-90-P02844',
+            'https://medlineplus.gov/ency/article/000043.htm'
+          ];
+          break;
+        case '瘀青':
+          reference = [
+            'https://www.stanfordchildrens.org/en/topic/default?id=bruises-90-P02795',
+            'https://my.clevelandclinic.org/health/diseases/15235-bruises',
+            'https://www.mayoclinic.org/first-aid/first-aid-bruise/basics/art-20056663'
+          ];
+          break;
+        case '手術傷口':
+          reference = [
+            'https://ihealth.vghtc.gov.tw/media/886',
+            'https://www.chimei.org.tw/main/cmh_department/59012/info/7510/A7510213.html',
+            'https://www1.cgmh.org.tw/intr/intr4/c8270/Sports%20Medicine%20Center_health/00383-20220806-140132.pdf'
+          ];
+          break;
+        default:
+          reference = [];
+      }
+    }
+    return reference;
   }
 }

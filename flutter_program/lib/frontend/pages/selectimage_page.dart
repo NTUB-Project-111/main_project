@@ -218,7 +218,7 @@ class _SelectImagePageState extends State<SelectImagePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      report.type,
+                      report.name,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
