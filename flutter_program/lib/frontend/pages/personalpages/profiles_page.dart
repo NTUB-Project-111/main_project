@@ -43,9 +43,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
                   child: ClipOval(
                       child: user!.picture.isNotEmpty
                           ? Image.network(
-                              Uri.parse(ApiBase.baseUrl)
-                                  .resolve(user.picture)
-                                  .toString(),
+                              Uri.parse(ApiBase.baseUrl).resolve(user.picture).toString(),
                               width: 100,
                               height: 100,
                               fit: BoxFit.cover,
@@ -84,8 +82,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
               // 使用者資訊表（靜態假資料）
               Container(
                 width: double.infinity,
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 26, vertical: 22),
+                margin: const EdgeInsets.symmetric(horizontal: 26, vertical: 22),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -101,20 +98,17 @@ class _ProfilesPageState extends State<ProfilesPage> {
                     Container(
                       height: 60,
                       decoration: const BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  color: Color.fromRGBO(242, 254, 255, 1)))),
+                          border:
+                              Border(bottom: BorderSide(color: Color.fromRGBO(242, 254, 255, 1)))),
                       padding: const EdgeInsets.fromLTRB(28, 0, 10, 0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('我的暱稱',
-                              style: TextStyle(
-                                  fontSize: 15, color: Color(0xFF669FA5))),
+                              style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
                           Row(
                             children: [
-                              Consumer<UserProvider>(
-                                  builder: (context, userProvider, _) {
+                              Consumer<UserProvider>(builder: (context, userProvider, _) {
                                 final user = userProvider.user;
                                 return Text(
                                   user!.name,
@@ -132,8 +126,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ChangeNamePage(),
+                                      builder: (context) => const ChangeNamePage(),
                                     ),
                                   );
                                 },
@@ -155,10 +148,8 @@ class _ProfilesPageState extends State<ProfilesPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('生日',
-                              style: TextStyle(
-                                  fontSize: 15, color: Color(0xFF669FA5))),
-                          Consumer<UserProvider>(
-                              builder: (context, userProvider, _) {
+                              style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                          Consumer<UserProvider>(builder: (context, userProvider, _) {
                             final user = userProvider.user;
                             return Text(
                               user!.birthday,
@@ -174,18 +165,14 @@ class _ProfilesPageState extends State<ProfilesPage> {
                     Container(
                       height: 60,
                       decoration: const BoxDecoration(
-                          border: Border(
-                              top: BorderSide(
-                                  color: Color.fromRGBO(242, 254, 255, 1)))),
+                          border: Border(top: BorderSide(color: Color.fromRGBO(242, 254, 255, 1)))),
                       padding: const EdgeInsets.symmetric(horizontal: 28),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('電子信箱',
-                              style: TextStyle(
-                                  fontSize: 15, color: Color(0xFF669FA5))),
-                          Consumer<UserProvider>(
-                              builder: (context, userProvider, _) {
+                              style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                          Consumer<UserProvider>(builder: (context, userProvider, _) {
                             final user = userProvider.user;
                             return Text(
                               user!.email,
@@ -195,6 +182,62 @@ class _ProfilesPageState extends State<ProfilesPage> {
                               ),
                             );
                           }),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 60,
+                      decoration: const BoxDecoration(
+                          border: Border(top: BorderSide(color: Color.fromRGBO(242, 254, 255, 1)))),
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('個人習慣',
+                              style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ChangeNamePage(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 15,
+                              color: Color(0xFF669FA5),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 60,
+                      decoration: const BoxDecoration(
+                          border: Border(top: BorderSide(color: Color.fromRGBO(242, 254, 255, 1)))),
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('特殊疾病',
+                              style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ChangeNamePage(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 15,
+                              color: Color(0xFF669FA5),
+                            ),
+                          )
                         ],
                       ),
                     ),
