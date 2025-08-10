@@ -1,6 +1,7 @@
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header4.dart';
+import 'package:drw/frontend/pages/personalpages/changedisease_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../tabs/tabs.dart';
@@ -196,6 +197,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
                           const Text('個人習慣',
                               style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
                           IconButton(
+                            padding: const EdgeInsets.only(left: 35),
                             onPressed: () {
                               Navigator.pushReplacement(
                                 context,
@@ -224,11 +226,12 @@ class _ProfilesPageState extends State<ProfilesPage> {
                           const Text('特殊疾病',
                               style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
                           IconButton(
+                            padding: const EdgeInsets.only(left: 35),
                             onPressed: () {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const ChangeNamePage(),
+                                  builder: (context) => const ChangeDiseasePage(),
                                 ),
                               );
                             },
