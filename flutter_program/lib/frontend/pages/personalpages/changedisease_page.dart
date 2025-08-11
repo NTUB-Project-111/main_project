@@ -17,6 +17,7 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
   int selectedHabitIndex = 0; // 0: 抽菸, 1: 喝酒, 2: 嚼檳榔
   List<int> selectedFrequencyIndex = [0, 0, 0]; // 0: 無, 1: 偶爾, 2: 經常
   String habit = '抽菸';
+  bool showButton = false;
 
   Widget buildOption(String title, String subtitle, int index) {
     bool selected = selectedHabitIndex == index;
@@ -29,7 +30,7 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
           } else if (selectedHabitIndex == 1) {
             habit = '喝酒';
           } else {
-            habit = '經常';
+            habit = '嚼檳榔';
           }
         });
       },
@@ -70,8 +71,8 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
         });
       },
       child: Container(
-        width: 70,
-        height: 70,
+        width: 80,
+        height: 80,
         decoration: BoxDecoration(
           color: selected ? selectedColor : cardColor,
           borderRadius: BorderRadius.circular(12),
@@ -116,7 +117,7 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             // 三個習慣選項
             Row(
@@ -124,9 +125,9 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
               children: [
                 buildOption("抽菸", "無", 0),
                 const SizedBox(width: 12),
-                buildOption("喝酒", "經常", 1),
+                buildOption("喝酒", "偶爾", 1),
                 const SizedBox(width: 12),
-                buildOption("嚼檳榔", "偶爾", 2),
+                buildOption("嚼檳榔", "經常", 2),
               ],
             ),
 
@@ -136,7 +137,7 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
             Text("變更『$habit』頻率",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 25),
 
             // 頻率選項
             Row(
@@ -150,20 +151,40 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
               ],
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 20),
 
             // 備註
-            Text("＊偶爾：每月 1~3 次", style: TextStyle(fontSize: 14, color: textColor)),
+            Text("＊偶爾：每天 1~10 支", style: TextStyle(fontSize: 14, color: textColor)),
 
+            const SizedBox(height: 50),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.cancel,
+                      color: Color(0xFF83B6BB),
+                      size: 40,
+                    )),
+                const SizedBox(width: 30),
+                IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.check_circle,
+                      color: Color(0xFF2E6D74),
+                      size: 40,
+                    ))
+              ],
+            ),
             const Spacer(),
-
             // 小熊護士圖片
             Image.asset(
               "images/nursebear.png",
               height: 150,
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 60),
           ],
         ),
       ),
