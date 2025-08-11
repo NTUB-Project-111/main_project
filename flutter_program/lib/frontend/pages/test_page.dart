@@ -1,4 +1,3 @@
-import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 
 class TestPage extends StatefulWidget {
@@ -9,117 +8,105 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: FrontUtil.bkColor, // 淡藍底色
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: FrontUtil.textColor),
-          onPressed: () => Navigator.pop(context),
+  void _showButtonDialog(
+    String text1,
+    String text2,
+    VoidCallback onTap1,
+    VoidCallback onTap2,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: const BorderSide(
+            color: Color(0xFF589399),
+            width: 2,
+          ),
         ),
-      ),
-      body: Center(
-        child: Column(
+        backgroundColor: const Color(0xFFF5FEFF),
+        contentPadding: EdgeInsets.zero,
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // 卡片區塊
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      'https://i.imgur.com/xUuZK1C.jpeg', // 改成你自己的圖片網址或本地檔案
-                      width: 260,
-                      height: 270,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '使用者取的傷口名稱',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: FrontUtil.textColor,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    '2025/07/20',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ],
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pop(); // 點完關閉 dialog
+                onTap1(); // 執行傳入的第一個方法
+              },
+              splashColor: const Color(0xFFDFF6F7),
+              highlightColor: const Color(0xFFDFF6F7),
+              borderRadius: BorderRadius.circular(15),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Color(0xFF669FA5))),
+                ),
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    const Icon(Icons.camera_alt, color: Color(0xFF589399)),
+                    const SizedBox(width: 15),
+                    Text(text1, style: const TextStyle(color: Color(0xFF589399), fontSize: 14)),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 30),
-            // 下方兩顆按鈕
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildCircleButton(
-                  icon: Icons.favorite,
-                  color: const Color(0xFFFF6262),
-                  onPressed: () {
-                    FrontUtil.showSelectWoundDialog(
-                        context, const Color(0xFFFF6262), '此傷口已經癒合了嗎?', null, '還沒', '是的', () {});
-                  },
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pop(); // 點完關閉 dialog
+                onTap2(); // 執行傳入的第二個方法
+              },
+              splashColor: const Color(0xFFDFF6F7),
+              highlightColor: const Color(0xFFDFF6F7),
+              borderRadius: BorderRadius.circular(15),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    const Icon(Icons.photo, color: Color(0xFF589399)),
+                    const SizedBox(width: 15),
+                    Text(text2, style: const TextStyle(color: Color(0xFF589399), fontSize: 14)),
+                  ],
                 ),
-                const SizedBox(width: 60),
-                _buildCircleButton(
-                  icon: Icons.check,
-                  color: FrontUtil.textColor,
-                  onPressed: () {
-                    FrontUtil.showSelectWoundDialog(
-                        context, FrontUtil.textColor, '確定追蹤該傷口嗎?', null, '取消', '確定', () {});
-                  },
-                ),
-              ],
+              ),
             ),
-            const SizedBox(height: 30),
           ],
         ),
       ),
     );
   }
-}
 
-Widget _buildCircleButton({
-  required IconData icon,
-  required Color color,
-  required VoidCallback onPressed,
-}) {
-  return InkWell(
-    onTap: onPressed,
-    borderRadius: BorderRadius.circular(30),
-    child: Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.9),
-        shape: BoxShape.circle,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("測試 Care Steps")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                _showButtonDialog(
+                  '拍攝新照片',
+                  '舊照片續拍',
+                  () {
+                    // 開啟相機的邏輯
+                    debugPrint('Camera clicked');
+                  },
+                  () {
+                    // 開啟相簿的邏輯
+                    debugPrint('Gallery clicked');
+                  },
+                );
+              },
+              child: const Text("測試"),
+            ),
+          ],
+        ),
       ),
-      child: Icon(icon, color: Colors.white, size: 25),
-    ),
-  );
+    );
+  }
 }

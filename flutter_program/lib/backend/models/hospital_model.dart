@@ -10,6 +10,7 @@ class Hospital {
   String? distance;
   int? walkTime;
   String? openStatus;
+  final String? photoReference;
 
   Hospital({
     required this.id,
@@ -20,6 +21,7 @@ class Hospital {
     required this.latitude,
     required this.longitude,
     required this.phone,
+    this.photoReference,
   });
 
   factory Hospital.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class Hospital {
       latitude: (json['lat'] ?? 0).toDouble(),
       longitude: (json['lng'] ?? 0).toDouble(),
       phone: json['phone'] ?? '',
+      photoReference: json['photoReference'] as String?,
     );
   }
 

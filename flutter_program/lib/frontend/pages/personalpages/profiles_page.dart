@@ -30,62 +30,61 @@ class _ProfilesPageState extends State<ProfilesPage> {
                   margin: const EdgeInsets.only(top: 30, bottom: 22),
                   width: 110,
                   height: 110,
-                  decoration: const BoxDecoration(
-                    // color: Colors.white,
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: Colors.black.withOpacity(0.35),
-                    //     blurRadius: 1,
-                    //   ),
-                    // ],
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.35),
+                        blurRadius: 1,
+                      ),
+                    ],
                     shape: BoxShape.circle,
                   ),
                   child: ClipOval(
-                      child: user!.picture.isNotEmpty
-                          ? Image.network(
-                              Uri.parse(ApiBase.baseUrl)
-                                  .resolve(user.picture)
-                                  .toString(),
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Center(child: Text("圖片載入失敗"));
-                              },
-                            )
-                          : Image.asset(
-                              "images/register_icon.png",
-                              fit: BoxFit.contain,
-                            )),
+                    child: user!.picture.isNotEmpty
+                        ? Image.network(
+                            Uri.parse(ApiBase.baseUrl).resolve(user.picture).toString(),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Center(child: Text("圖片載入失敗"));
+                            },
+                          )
+                        : const Icon(
+                            Icons.person,
+                            color: Color(0xFF669FA5),
+                            size: 80,
+                          ),
+                  ),
                 );
               }),
 
-              // // 更換頭像按鈕（無動作）
-              // ElevatedButton(
-              //   onPressed: () async {
-              //     // final userProvider = context.read<UserProvider>();
-              //     // final user = userProvider.user;
-              //     // final message = await UserService.updateImage(userId: user!.id, imageFile: imageFile);
-              //   },
-              //   style: ElevatedButton.styleFrom(
-              //     elevation: 0,
-              //     backgroundColor: const Color.fromRGBO(102, 159, 165, 1),
-              //   ),
-              //   child: const Text(
-              //     "更換頭像",
-              //     style: TextStyle(
-              //       fontSize: 15,
-              //       color: Colors.white,
-              //       letterSpacing: 1.5,
-              //     ),
-              //   ),
-              // ),
+              // 更換頭像按鈕（無動作）
+              ElevatedButton(
+                onPressed: () async {
+                  // final userProvider = context.read<UserProvider>();
+                  // final user = userProvider.user;
+                  // final message = await UserService.updateImage(userId: user!.id, imageFile: imageFile);
+                },
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: const Color.fromRGBO(102, 159, 165, 1),
+                ),
+                child: const Text(
+                  "更換頭像",
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
 
               // 使用者資訊表（靜態假資料）
               Container(
                 width: double.infinity,
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 26, vertical: 22),
+                margin: const EdgeInsets.symmetric(horizontal: 26, vertical: 22),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -101,20 +100,17 @@ class _ProfilesPageState extends State<ProfilesPage> {
                     Container(
                       height: 60,
                       decoration: const BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  color: Color.fromRGBO(242, 254, 255, 1)))),
+                          border:
+                              Border(bottom: BorderSide(color: Color.fromRGBO(242, 254, 255, 1)))),
                       padding: const EdgeInsets.fromLTRB(28, 0, 10, 0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('我的暱稱',
-                              style: TextStyle(
-                                  fontSize: 15, color: Color(0xFF669FA5))),
+                              style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
                           Row(
                             children: [
-                              Consumer<UserProvider>(
-                                  builder: (context, userProvider, _) {
+                              Consumer<UserProvider>(builder: (context, userProvider, _) {
                                 final user = userProvider.user;
                                 return Text(
                                   user!.name,
@@ -132,8 +128,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ChangeNamePage(),
+                                      builder: (context) => const ChangeNamePage(),
                                     ),
                                   );
                                 },
@@ -155,10 +150,8 @@ class _ProfilesPageState extends State<ProfilesPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('生日',
-                              style: TextStyle(
-                                  fontSize: 15, color: Color(0xFF669FA5))),
-                          Consumer<UserProvider>(
-                              builder: (context, userProvider, _) {
+                              style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                          Consumer<UserProvider>(builder: (context, userProvider, _) {
                             final user = userProvider.user;
                             return Text(
                               user!.birthday,
@@ -174,18 +167,14 @@ class _ProfilesPageState extends State<ProfilesPage> {
                     Container(
                       height: 60,
                       decoration: const BoxDecoration(
-                          border: Border(
-                              top: BorderSide(
-                                  color: Color.fromRGBO(242, 254, 255, 1)))),
+                          border: Border(top: BorderSide(color: Color.fromRGBO(242, 254, 255, 1)))),
                       padding: const EdgeInsets.symmetric(horizontal: 28),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('電子信箱',
-                              style: TextStyle(
-                                  fontSize: 15, color: Color(0xFF669FA5))),
-                          Consumer<UserProvider>(
-                              builder: (context, userProvider, _) {
+                              style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                          Consumer<UserProvider>(builder: (context, userProvider, _) {
                             final user = userProvider.user;
                             return Text(
                               user!.email,

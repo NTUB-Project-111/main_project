@@ -7,13 +7,6 @@ class UserProvider extends ChangeNotifier {
 
   UserInfo? get user => _user;
 
-  // 加入兩個安全存取器
-  int? get userID => _user?.id;
-  // String? get role => _user?.role;
-
-  // 判斷是否為訪客
-  bool get isGuest => userID == -1;
-
   void setUserInfo(UserInfo user) {
     _user = user;
     notifyListeners();

@@ -5,6 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:drw/frontend/views/hospital_view.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+String getPhotoUrl(String? reference) {
+  final key = dotenv.env['GOOGLE_MAPS_API_KEY'];
+  if (reference == null || reference.isEmpty || key == null) return '';
+  return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$reference&key=$key';
+}
 
 class HospitalPage extends StatelessWidget {
   const HospitalPage({super.key});
@@ -23,14 +32,51 @@ class _HospitalPageView extends StatefulWidget {
 
   @override
   State<_HospitalPageView> createState() => _HospitalPageViewState();
-
-
 }
 
 class _HospitalPageViewState extends State<_HospitalPageView> {
   final GoogleMapService _mapService = GoogleMapService();
   GoogleMapController? _mapController;
   LatLng? _currentPosition;
+  String? _selectedHospitalPhotoUrl;
+
+  Future<void> _fetchPhotoFor(String placeName) async {
+    final key = dotenv.env['GOOGLE_MAPS_API_KEY'];
+    if (key == null) return;
+
+    try {
+      // 文字搜尋拿 place_id
+      final textUrl = Uri.parse(
+          'https://maps.googleapis.com/maps/api/place/textsearch/json?'
+          'query=${Uri.encodeComponent(placeName)}&key=$key');
+      final tRes = await http.get(textUrl);
+      final tJson = json.decode(tRes.body);
+      if (tJson['status'] == 'OK' && (tJson['results'] as List).isNotEmpty) {
+        final placeId = tJson['results'][0]['place_id'];
+        // 用 details 拿照片
+        final detUrl =
+            Uri.parse('https://maps.googleapis.com/maps/api/place/details/json?'
+                'place_id=$placeId&fields=photo&key=$key');
+        final dRes = await http.get(detUrl);
+        final dJson = json.decode(dRes.body);
+        final photos = dJson['result']?['photos'] as List?;
+        if (photos != null && photos.isNotEmpty) {
+          final ref = photos[0]['photo_reference'];
+          final photoUrl =
+              'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400'
+              '&photoreference=$ref&key=$key';
+          setState(() {
+            _selectedHospitalPhotoUrl = photoUrl;
+          });
+          return;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+    // 若失敗或沒照片
+    setState(() => _selectedHospitalPhotoUrl = null);
+  }
 
   @override
   void initState() {
@@ -38,7 +84,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
     _initLocation();
   }
 
- Future<void> _initLocation() async {
+  Future<void> _initLocation() async {
     final latLng = await _mapService.getCurrentLocation();
     if (!mounted) return;
 
@@ -53,9 +99,12 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
       // 使用紅色圖釘標記（下面②你會新增 pinColor）
       await _mapService.setMarkers(
         hospitalView.hospitals,
-        (selectedHospital) => hospitalView.selectHospital(selectedHospital),
+        (selectedHospital) {
+          hospitalView.selectHospital(selectedHospital);
+          _fetchPhotoFor(selectedHospital.name);
+        },
         latLng,
-        pinColor: BitmapDescriptor.hueRed, // ✅ 紅色圖釘
+        pinColor: BitmapDescriptor.hueRed,
       );
     }
   }
@@ -81,7 +130,8 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                               builder: (context, mapService, _) {
                                 return mapService.buildGoogleMap(
                                   currentPosition: _currentPosition!,
-                                  onMapCreated: (controller) => _mapController = controller,
+                                  onMapCreated: (controller) =>
+                                      _mapController = controller,
                                 );
                               },
                             ),
@@ -108,7 +158,8 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
         decoration: const BoxDecoration(
           color: Colors.white,
           border: Border(
-            bottom: BorderSide(color: Color.fromARGB(255, 90, 141, 147), width: 2),
+            bottom:
+                BorderSide(color: Color.fromARGB(255, 90, 141, 147), width: 2),
           ),
         ),
         child: Column(
@@ -128,11 +179,14 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                         color: Color(0xFF669FA5)),
                   ),
                 ),
-                IconButton(icon: const Icon(Icons.close_outlined), onPressed: hospital.toggleMode),
+                IconButton(
+                    icon: const Icon(Icons.close_outlined),
+                    onPressed: hospital.toggleMode),
               ],
             ),
             const SizedBox(height: 12),
-            _buildDropdownRow('縣市', '請選擇縣市', hospital.counties, hospital.selectedCounty,
+            _buildDropdownRow(
+                '縣市', '請選擇縣市', hospital.counties, hospital.selectedCounty,
                 (value) async {
               hospital.selectedCounty = value;
               hospital.selectedDistrict = null;
@@ -149,7 +203,8 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                     ? (value) async {
                         hospital.selectedDistrict = value;
                         hospital.selectedDepartment = null;
-                        await hospital.loadDepartments(hospital.selectedCounty!, value!);
+                        await hospital.loadDepartments(
+                            hospital.selectedCounty!, value!);
                       }
                     : null),
             const SizedBox(height: 12),
@@ -171,15 +226,21 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
               onPressed: () async {
                 hospital.toggleMode();
                 hospital.toggleShowMode();
-                final hospitalView = Provider.of<HospitalView>(context, listen: false);
+                final hospitalView =
+                    Provider.of<HospitalView>(context, listen: false);
                 await hospitalView.fetchHospitals();
-                _mapService.setMarkers(hospitalView.hospitals, (selectedHospital) {
-                  hospitalView.selectHospital(selectedHospital); // 將選取的醫院存入 ViewModel
-                }, _currentPosition!,pinColor: BitmapDescriptor.hueRed,);
+                _mapService.setMarkers(
+                  hospitalView.hospitals,
+                  (selectedHospital) {
+                    hospitalView.selectHospital(selectedHospital);
+                    _fetchPhotoFor(selectedHospital.name);
+                  },
+                  _currentPosition!,
+                  pinColor: BitmapDescriptor.hueRed,
+                );
                 // for (var hospital in hospitalView.hospitals) {
                 //   debugPrint(hospital.toString());
                 // }
-                
               },
               child: const Text('查詢', style: TextStyle(color: Colors.white)),
             ),
@@ -192,7 +253,8 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
         padding: const EdgeInsets.only(left: 25, right: 12, top: 30),
         decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(bottom: BorderSide(color: Color(0xFF589399), width: 2)),
+          border:
+              Border(bottom: BorderSide(color: Color(0xFF589399), width: 2)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -206,11 +268,12 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                 color: Color(0xFF669FA5),
               ),
             ),
-            IconButton(icon: const Icon(Icons.search), onPressed: hospital.toggleMode),
+            IconButton(
+                icon: const Icon(Icons.search), onPressed: hospital.toggleMode),
           ],
         ),
       );
- // 醫院卡片 UI
+  // 醫院卡片 UI
   Widget _buildHospitalCard() {
     return Consumer<HospitalView>(builder: (context, hospital, _) {
       final selected = hospital.selectedHospital;
@@ -254,13 +317,26 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.asset(
-                        'images/hospital.png',
-                        width: MediaQuery.of(context).size.width * 0.3,
-                        height: 120,
-                        fit: BoxFit.cover,
-                      ),
+                      borderRadius: BorderRadius.circular(8),
+                      child: _selectedHospitalPhotoUrl != null
+                          ? Image.network(
+                              _selectedHospitalPhotoUrl!,
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              height: 120,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Image.asset(
+                                'images/hospital.png',
+                                width: MediaQuery.of(context).size.width * 0.3,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : Image.asset(
+                              'images/hospital.png',
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              height: 120,
+                              fit: BoxFit.cover,
+                            ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -294,13 +370,18 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                             overflow: TextOverflow.visible,
                           ),
                           const SizedBox(height: 8),
-                          _buildInfoRow(Icons.location_on_outlined, selected.address, maxLines: 2),
+                          _buildInfoRow(
+                              Icons.location_on_outlined, selected.address,
+                              maxLines: 2),
                           const SizedBox(height: 4),
-                          _buildInfoRow(Icons.phone_outlined, '電話：${selected.phone}'),
+                          _buildInfoRow(
+                              Icons.phone_outlined, '電話：${selected.phone}'),
                           const SizedBox(height: 4),
-                          _buildInfoRow(Icons.directions_walk_outlined, '距離：${selected.distance}'),
+                          _buildInfoRow(Icons.directions_walk_outlined,
+                              '距離：${selected.distance}'),
                           const SizedBox(height: 4),
-                          _buildInfoRow(Icons.access_time_outlined, '行走時間：${selected.walkTime} 分鐘'),
+                          _buildInfoRow(Icons.access_time_outlined,
+                              '行走時間：${selected.walkTime} 分鐘'),
                         ],
                       ),
                     ),
@@ -316,11 +397,14 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                     ),
                     label: const Text(
                       '開始導航',
-                      style: TextStyle(fontSize: 13, color: Color.fromRGBO(88, 147, 153, 1)),
+                      style: TextStyle(
+                          fontSize: 13, color: Color.fromRGBO(88, 147, 153, 1)),
                     ),
                     onPressed: () {
-                      final mapService = Provider.of<GoogleMapService>(context, listen: false);
-                      mapService.navigateToHospital(selected.latitude, selected.longitude);
+                      final mapService =
+                          Provider.of<GoogleMapService>(context, listen: false);
+                      mapService.navigateToHospital(
+                          selected.latitude, selected.longitude);
                     },
                   ),
                 ),
@@ -331,6 +415,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
       );
     });
   }
+
   // 資訊列 UI
   Widget _buildInfoRow(IconData icon, String text, {int maxLines = 1}) {
     return Row(
@@ -349,6 +434,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
       ],
     );
   }
+
   // 通用下拉元件
   Widget _buildDropdownRow(
     String label,
@@ -384,7 +470,8 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
             decoration: BoxDecoration(
               border: Border.all(color: const Color(0xFF669FA5)),
               borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
+                  topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(20)),
               color: isDisabled ? Colors.grey.shade200 : Colors.white,
             ),
             padding: const EdgeInsets.only(right: 10),
@@ -401,7 +488,8 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                       .map((item) => DropdownMenuItem<String>(
                             alignment: Alignment.center,
                             value: item,
-                            child: Text(item, style: const TextStyle(fontSize: 14)),
+                            child: Text(item,
+                                style: const TextStyle(fontSize: 14)),
                           ))
                       .toList(),
                   onChanged: onChanged,

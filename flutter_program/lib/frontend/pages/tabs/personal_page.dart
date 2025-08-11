@@ -25,16 +25,14 @@ class _PersonalPageState extends State<PersonalPage> {
         children: [
           const Header3(
               title: "我的",
-              icon:
-                  Icon(Icons.notifications, size: 23, color: Color(0xFF589399)),
+              icon: Icon(Icons.notifications, size: 23, color: Color(0xFF589399)),
               targetPage: RemindPage()),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 26),
             child: Column(
               children: [
                 Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 46, vertical: 23),
+                    padding: const EdgeInsets.symmetric(horizontal: 46, vertical: 23),
                     margin: const EdgeInsets.fromLTRB(0, 40, 0, 30),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -46,8 +44,7 @@ class _PersonalPageState extends State<PersonalPage> {
                         ),
                       ],
                     ),
-                    child: Consumer<UserProvider>(
-                        builder: (context, userProvider, _) {
+                    child: Consumer<UserProvider>(builder: (context, userProvider, _) {
                       final user = userProvider.user;
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -56,33 +53,27 @@ class _PersonalPageState extends State<PersonalPage> {
                             margin: const EdgeInsets.only(right: 10),
                             width: 100,
                             height: 100,
-                            decoration: const BoxDecoration(
-                              color: Color.fromARGB(255, 255, 255, 255),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF669FA5).withOpacity(0.2),
                               shape: BoxShape.circle,
-                              // border: Border.all(
-                              //   color: const Color(0xFF669FA5),
-                              //   width: 2,
-                              // )
                             ),
                             child: ClipOval(
-                                child: user!.picture.isNotEmpty
-                                    ? Image.network(
-                                        Uri.parse(ApiBase.baseUrl)
-                                            .resolve(user.picture)
-                                            .toString(),
-                                        width: 80,
-                                        height: 80,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          return const Center(
-                                              child: Text("圖片載入失敗"));
-                                        },
-                                      )
-                                    : Image.asset(
-                                        "images/register_icon.png",
-                                        fit: BoxFit.contain,
-                                      )),
+                              child: user!.picture.isNotEmpty
+                                  ? Image.network(
+                                      Uri.parse(ApiBase.baseUrl).resolve(user.picture).toString(),
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return const Center(child: Text("圖片載入失敗"));
+                                      },
+                                    )
+                                  : const Icon(
+                                      Icons.person,
+                                      color: Color(0xFF669FA5),
+                                      size: 80,
+                                    ),
+                            ),
                           ),
                           Expanded(
                             child: Text(
@@ -115,8 +106,7 @@ class _PersonalPageState extends State<PersonalPage> {
                   targetPage: const ChangePwdPage(),
                 ),
                 _buildDetailItem(
-                  const Icon(Icons.settings,
-                      color: Color(0xFF669FA5), size: 30),
+                  const Icon(Icons.settings, color: Color(0xFF669FA5), size: 30),
                   "更多設定",
                   targetPage: const LoginPage(),
                 ),
@@ -135,8 +125,7 @@ class _PersonalPageState extends State<PersonalPage> {
                         context.read<UserProvider>().clearUser();
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginPage()),
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
                         );
                       },
                     );
@@ -150,8 +139,7 @@ class _PersonalPageState extends State<PersonalPage> {
     );
   }
 
-  Widget _buildDetailItem(Icon icon, String title,
-      {Widget? targetPage, VoidCallback? onPressed}) {
+  Widget _buildDetailItem(Icon icon, String title, {Widget? targetPage, VoidCallback? onPressed}) {
     return Container(
       margin: const EdgeInsets.only(top: 20),
       decoration: BoxDecoration(

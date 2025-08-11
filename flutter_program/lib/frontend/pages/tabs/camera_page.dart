@@ -11,11 +11,7 @@ import 'package:file_picker/file_picker.dart';
 class CameraPage extends StatefulWidget {
   final bool isExtra;
   final int? id;
-  final String? oktime;
-  final String? date;
-  final String? woundType;
-  const CameraPage(
-      {super.key, required this.isExtra, this.id, this.oktime, this.date, this.woundType});
+  const CameraPage({super.key,required this.isExtra, this.id});
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -59,13 +55,7 @@ class _CameraPageState extends State<CameraPage> {
           '確認傷口照片',
           '送出診斷',
           '重新拍攝',
-          ReportPage(
-            isExtra: widget.isExtra,
-            id: widget.id,
-            oktime: widget.oktime,
-            date: widget.date,
-            woundType: widget.woundType,
-          ),
+          ReportPage(isExtra: widget.isExtra, id: widget.id),
         );
       } else {
         debugPrint("使用者取消選圖或路徑為空");
@@ -133,13 +123,7 @@ class _CameraPageState extends State<CameraPage> {
         '確認傷口照片',
         '送出診斷',
         '重新拍攝',
-        ReportPage(
-            isExtra: widget.isExtra,
-            id: widget.id,
-            oktime: widget.oktime,
-            date: widget.date,
-            woundType: widget.woundType,
-          ),
+         ReportPage(isExtra: widget.isExtra,id: widget.id,),
       );
     } catch (e) {
       debugPrint("拍照失敗：$e");

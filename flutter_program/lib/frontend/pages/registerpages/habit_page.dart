@@ -1,7 +1,6 @@
 import 'package:drw/backend/viewmodels/register_view_model.dart';
-// import 'package:drw/frontend/headers/header6.dart';
+import 'package:drw/frontend/headers/header6.dart';
 import 'package:drw/frontend/pages/registerpages/information2_page.dart';
-import 'package:drw/frontend/utility/bear_message.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -66,13 +65,13 @@ class _HabitPageState extends State<HabitPage> {
       backgroundColor: FrontUtil.bkColor2,
       body: Column(
         children: [
-          // Header6(
-          //   title: '註冊帳號',
-          //   icon: Icon(
-          //     Icons.arrow_back,
-          //     color: FrontUtil.textColor,
-          //   ),
-          // ),
+          Header6(
+            title: '註冊帳號',
+            icon: Icon(
+              Icons.arrow_back,
+              color: FrontUtil.textColor,
+            ),
+          ),
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -88,7 +87,46 @@ class _HabitPageState extends State<HabitPage> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const BearWithTextBox(text: '請問您有以下習慣嗎?'),
+                                  const SizedBox(height: 30),
+                                  Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            bottom: 45), // 微調圖片下緣位置
+                                        child: Image.asset(
+                                          'images/nurse_bear.png',
+                                          width: 110,
+                                          height: 110,
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(
+                                            top: 60), // 增加與圖片的間距（必要時微調）
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 15,
+                                          horizontal: 20,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: FrontUtil.textColor,
+                                              width: 1.5),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          color: Colors.white,
+                                        ),
+                                        child: Text(
+                                          '請問您有以下習慣嗎?',
+                                          style: TextStyle(
+                                            color: FrontUtil.textColor,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.5,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                   const SizedBox(height: 40),
                                   Container(
                                     width: MediaQuery.of(context).size.width *

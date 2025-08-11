@@ -1,4 +1,3 @@
-import 'package:drw/backend/models/user.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
@@ -98,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         TextButton(
                           onPressed: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const ForgetPage()),
@@ -107,60 +106,16 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Text("忘記密碼？",
                               style: TextStyle(color: Color(0xFF669FA5))),
                         ),
-                        // TextButton(
-                        //   onPressed: () {
-                        //     final userProvider = Provider.of<UserProvider>(
-                        //         context,
-                        //         listen: false);
-
-                        //     userProvider.setUserInfo(UserInfo(
-                        //       id: -1,
-                        //       name: '訪客',
-                        //       gender: '未知',
-                        //       birthday: '2000',
-                        //       picture: '',
-                        //       email: '',
-                        //       disease: '無',
-                        //       freq: '每天',
-                        //       reports: [],
-                        //     ));
-
-                        //     // ✅ 新增：清空診斷報告與提醒
-                        //     Provider.of<ReportProvider>(context, listen: false)
-                        //         .setReports([]);
-                        //     Provider.of<RemindProvider>(context, listen: false)
-                        //         .setReminds([]);
-
-                        //     Navigator.pushReplacement(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //           builder: (context) => const Tabs()),
-                        //     );
-                        //   },
-                        //   child: const Text(
-                        //     "訪客登入",
-                        //     style: TextStyle(
-                        //       color: Color(0xFF4C7488),
-                        //       fontWeight: FontWeight.bold,
-                        //     ),
-                        //   ),
-                        // )
-
                         TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const DisclaimerPage()),
-                          ),
+                          onPressed: () {},
                           child: const Text(
-                            "註冊新帳號",
+                            "訪客登入",
                             style: TextStyle(
                               color: Color(0xFF4C7488),
                               fontWeight: FontWeight.bold,
-                              fontSize: 14,
                             ),
                           ),
-                        ),
+                        )
                       ],
                     ),
 
@@ -173,7 +128,8 @@ class _LoginPageState extends State<LoginPage> {
                               ? null
                               : () async {
                                   if (!login.isFilled()) {
-                                    FrontUtil.showFail('請填寫帳號及密碼');
+                                    FrontUtil.showError(
+                                        '請填寫帳號及密碼', Colors.red, Colors.white);
                                     return;
                                   }
                                   final error = await login.login(
@@ -222,7 +178,8 @@ class _LoginPageState extends State<LoginPage> {
                                       }
                                     }
 
-                                    FrontUtil.showSuccess('登入成功!');
+                                    FrontUtil.showError(
+                                        '登入成功!', Colors.green, Colors.white);
                                     if (!mounted) return;
                                     Navigator.pushReplacement(
                                       myContext,
@@ -232,9 +189,8 @@ class _LoginPageState extends State<LoginPage> {
                                   } else {
                                     debugPrint(
                                         'email:${login.email} psd:${login.password}');
-                                    FrontUtil.showFail(
-                                      '登入失敗，帳號或密碼輸入錯誤',
-                                    );
+                                    FrontUtil.showError('登入失敗，帳號或密碼輸入錯誤',
+                                        Colors.red, Colors.white);
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
@@ -253,22 +209,22 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       );
                     }),
-                    // const SizedBox(height: 15),
-                    // TextButton(
-                    //   onPressed: () => Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => const DisclaimerPage()),
-                    //   ),
-                    //   child: const Text(
-                    //     "註冊新帳號",
-                    //     style: TextStyle(
-                    //       color: Color(0xFF4C7488),
-                    //       fontWeight: FontWeight.bold,
-                    //       fontSize: 14,
-                    //     ),
-                    //   ),
-                    // ),
+                    const SizedBox(height: 15),
+                    TextButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const DisclaimerPage()),
+                      ),
+                      child: const Text(
+                        "註冊新帳號",
+                        style: TextStyle(
+                          color: Color(0xFF4C7488),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

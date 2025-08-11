@@ -1,5 +1,6 @@
+
 import 'package:drw/backend/models/report.dart';
-// import 'package:drw/backend/services/apibase.dart';
+import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header5.dart';
 import 'package:flutter/material.dart';
 
@@ -128,20 +129,13 @@ class _ShowReportPageState extends State<ShowReportPage> {
                             child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: Image.network(
-                                  widget.report.photo.toString(),
+                                  Uri.parse(ApiBase.baseUrl)
+                                      .resolve(widget.report.photo)
+                                      .toString(),
                                   height: 180,
                                   width: 180,
                                   fit: BoxFit.cover,
-                                )
-                                // child: Image.network(
-                                //   Uri.parse(ApiBase.baseUrl)
-                                //       .resolve(widget.report.photo)
-                                //       .toString(),
-                                //   height: 180,
-                                //   width: 180,
-                                //   fit: BoxFit.cover,
-                                // )
-                                ),
+                                )),
                           ),
                           // const SizedBox(width: 16),
                           Column(
@@ -172,43 +166,34 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                 ),
                               ),
                               SizedBox(
-                                  width: 180,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: widget.report.oktime != '已癒合'
-                                        ? [
-                                            const Text(
-                                              '預計',
-                                              style: TextStyle(
-                                                color: Color(0xFF589399),
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                            Text(
-                                              widget.report.oktime,
-                                              style: const TextStyle(
-                                                color: Color(0xFF589399),
-                                                fontSize: 26,
-                                              ),
-                                            ),
-                                            const Text(
-                                              '癒合',
-                                              style: TextStyle(
-                                                color: Color(0xFF589399),
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ]
-                                        : [
-                                            const Text(
-                                              '已癒合',
-                                              style: TextStyle(
-                                                color: Colors.red,
-                                                fontSize: 26,
-                                              ),
-                                            ),
-                                          ],
-                                  )),
+                                width: 180,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      '預計',
+                                      style: TextStyle(
+                                        color: Color(0xFF589399),
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.report.oktime,
+                                      style: const TextStyle(
+                                        color: Color(0xFF589399),
+                                        fontSize: 26,
+                                      ),
+                                    ),
+                                    const Text(
+                                      '癒合',
+                                      style: TextStyle(
+                                        color: Color(0xFF589399),
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ],

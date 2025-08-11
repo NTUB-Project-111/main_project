@@ -60,10 +60,11 @@ class GoogleMapService extends ChangeNotifier {
     // 載入灰色圖釘圖片
     final BitmapDescriptor grayMarkerIcon =
         await BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(devicePixelRatio: 2.5),
+      const ImageConfiguration(devicePixelRatio: 1.5),
       'images/gray_maker.png',
     );
 
+    
     final BitmapDescriptor redMarkerIcon =
         BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
 

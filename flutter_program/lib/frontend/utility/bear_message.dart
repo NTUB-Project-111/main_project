@@ -22,8 +22,8 @@ class BearWithTextBox extends StatelessWidget {
           offset: const Offset(0, 10), // ✅ 將圖片往下壓貼近文字框
           child: Image.asset(
             'images/nurse_bear.png',
-            width: 118,
-            height: 118,
+            width: 110,
+            height: 110,
           ),
         ),
         // SizedBox(height: spacing),
@@ -37,10 +37,9 @@ class BearWithTextBox extends StatelessWidget {
           child: Text(
             text,
             style: TextStyle(
-              fontSize: 16,
               color: FrontUtil.textColor,
               fontWeight: FontWeight.bold,
-              letterSpacing: 1,
+              letterSpacing: 1.5,
             ),
             textAlign: TextAlign.center,
           ),

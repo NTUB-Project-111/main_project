@@ -1,5 +1,5 @@
 import 'package:drw/backend/models/report.dart';
-// import 'package:drw/backend/services/apibase.dart';
+import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header3.dart';
 import 'package:drw/frontend/pages/gallerypages/showreport_page.dart';
 import 'package:drw/frontend/pages/remind_page.dart';
@@ -35,6 +35,8 @@ class _TotalPageState extends State<TotalPage> {
     }
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +70,9 @@ class _TotalPageState extends State<TotalPage> {
                 const Text(
                   "2025年",
                   style: TextStyle(
-                      color: Color(0xFF04555D), fontWeight: FontWeight.bold, fontSize: 14),
+                      color: Color(0xFF04555D),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
                 ),
                 const SizedBox(),
               ],
@@ -108,7 +112,9 @@ class _TotalPageState extends State<TotalPage> {
           ),
         ),
         Wrap(
-          children: records.map((record) => _buildImage(record.photo, record)).toList(),
+          children: records
+              .map((record) => _buildImage(record.photo, record))
+              .toList(),
         ),
       ],
     );
@@ -127,17 +133,11 @@ class _TotalPageState extends State<TotalPage> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Image.network(
-            imageUrl.toString(),
+            Uri.parse(ApiBase.baseUrl).resolve(imageUrl).toString(),
             width: 82,
             height: 82,
             fit: BoxFit.cover,
           ),
-          // child: Image.network(
-          //   Uri.parse(ApiBase.baseUrl).resolve(imageUrl).toString(),
-          //   width: 82,
-          //   height: 82,
-          //   fit: BoxFit.cover,
-          // ),
         ),
       ),
       onTap: () {

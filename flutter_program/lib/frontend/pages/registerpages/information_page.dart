@@ -1,5 +1,6 @@
 
 import 'package:drw/backend/viewmodels/register_view_model.dart';
+import 'package:drw/frontend/headers/header6.dart';
 import 'package:drw/frontend/pages/registerpages/birthday_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +20,13 @@ class _InformationPageState extends State<InformationPage> {
       backgroundColor: FrontUtil.bkColor2,
       body: Column(
         children: [
-          // Header6(
-          //   title: '註冊帳號',
-          //   icon: Icon(
-          //     Icons.arrow_back,
-          //     color: FrontUtil.textColor,
-          //   ),
-          // ),
+          Header6(
+            title: '註冊帳號',
+            icon: Icon(
+              Icons.arrow_back,
+              color: FrontUtil.textColor,
+            ),
+          ),
           Expanded(
             child: Center(
               child: Column(
