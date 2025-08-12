@@ -1,7 +1,7 @@
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header4.dart';
-import 'package:drw/frontend/pages/personalpages/changedisease_page.dart';
+import 'package:drw/frontend/pages/personalpages/changehabit_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../tabs/tabs.dart';
@@ -202,7 +202,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const ChangeNamePage(),
+                                  builder: (context) => const ChangeHabitPage(),
                                 ),
                               );
                             },
@@ -231,7 +231,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const ChangeDiseasePage(),
+                                  builder: (context) => const ChangeHabitPage(),
                                 ),
                               );
                             },

@@ -122,12 +122,12 @@ class _HabitPageState extends State<HabitPage> {
                                             if (value != null) {
                                               register.setSmokingFreq([
                                                 '無',
-                                                '偶爾 (每週1~6根)',
+                                                '偶爾',
                                                 '經常'
                                               ][value.index]);
                                             }
                                           }),
-                                          ['無', '偶爾 (每週1~6根)', '經常'],
+                                          ['無', '偶爾', '經常'],
                                         ),
                                         buildOptionRow(
                                           '喝酒',
@@ -137,12 +137,12 @@ class _HabitPageState extends State<HabitPage> {
                                             if (value != null) {
                                               register.setDrinkingFreq([
                                                 '無',
-                                                '偶爾 (每月1~3次)',
+                                                '偶爾',
                                                 '經常'
                                               ][value.index]);
                                             }
                                           }),
-                                          ['無', '偶爾 (每月1~3次)', '經常'],
+                                          ['無', '偶爾', '經常'],
                                         ),
                                         buildOptionRow(
                                           '嚼檳榔',
@@ -152,12 +152,12 @@ class _HabitPageState extends State<HabitPage> {
                                             if (value != null) {
                                               register.setBetelNutFreq([
                                                 '無',
-                                                '偶爾 (每月1~5次)',
+                                                '偶爾',
                                                 '經常'
                                               ][value.index]);
                                             }
                                           }),
-                                          ['無', '偶爾 (每月1~5次)', '經常'],
+                                          ['無', '偶爾', '經常'],
                                         ),
                                       ],
                                     ),
