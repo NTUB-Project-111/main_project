@@ -1,13 +1,16 @@
+import 'package:drw/backend/models/user.dart';
+import 'package:drw/backend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class ChangeDiseasePage extends StatefulWidget {
-  const ChangeDiseasePage({super.key});
+class ChangeHabitPage extends StatefulWidget {
+  const ChangeHabitPage({super.key});
 
   @override
-  State<ChangeDiseasePage> createState() => _ChangeDiseasePageState();
+  State<ChangeHabitPage> createState() => _ChangeHabitPageState();
 }
 
-class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
+class _ChangeHabitPageState extends State<ChangeHabitPage> {
   final Color backgroundColor = const Color(0xFFE5F7F9);
   final Color selectedColor = const Color(0xFFD0EAE9);
   final Color cardColor = Colors.white;
@@ -16,6 +19,7 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
   // 記錄目前選擇狀態
   int selectedHabitIndex = 0; // 0: 抽菸, 1: 喝酒, 2: 嚼檳榔
   List<int> selectedFrequencyIndex = [0, 0, 0]; // 0: 無, 1: 偶爾, 2: 經常
+  List<int> compareIndex = [0, 0, 0];
   String habit = '抽菸';
   bool showButton = false;
 
@@ -68,6 +72,7 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
       onTap: () {
         setState(() {
           selectedFrequencyIndex[selectIndex] = index;
+          showButton = compare(selectedFrequencyIndex, compareIndex);
         });
       },
       child: Container(
@@ -92,6 +97,39 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
         ),
       ),
     );
+  }
+
+  bool compare(List<int> list1, List<int> list2) {
+    for (int index = 0; index < 3; index++) {
+      if (list1[index] != list2[index]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userProvider = context.read<UserProvider>();
+      final user = userProvider.user;
+      List<String> freq = user!.freq.split('、');
+      // debugPrint(freq.toString());
+      for (int index = 0; index < freq.length; index++) {
+        if (freq[index].contains('無')) {
+          selectedFrequencyIndex[index] = 0;
+          compareIndex[index] = 0;
+        } else if (freq[index].contains('偶爾')) {
+          selectedFrequencyIndex[index] = 1;
+          compareIndex[index] = 1;
+        } else {
+          selectedFrequencyIndex[index] = 2;
+          compareIndex[index] = 2;
+        }
+      }
+      setState(() {}); // 更新 UI
+    });
   }
 
   @override
@@ -145,9 +183,9 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
               children: [
                 buildFrequencyOption("無", 0, selectedHabitIndex),
                 const SizedBox(width: 12),
-                buildFrequencyOption("經常", 1, selectedHabitIndex),
+                buildFrequencyOption("偶爾", 1, selectedHabitIndex),
                 const SizedBox(width: 12),
-                buildFrequencyOption("偶爾", 2, selectedHabitIndex),
+                buildFrequencyOption("經常", 2, selectedHabitIndex),
               ],
             ),
 
@@ -157,26 +195,28 @@ class _ChangeDiseasePageState extends State<ChangeDiseasePage> {
             Text("＊偶爾：每天 1~10 支", style: TextStyle(fontSize: 14, color: textColor)),
 
             const SizedBox(height: 50),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.cancel,
-                      color: Color(0xFF83B6BB),
-                      size: 40,
-                    )),
-                const SizedBox(width: 30),
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.check_circle,
-                      color: Color(0xFF2E6D74),
-                      size: 40,
-                    ))
-              ],
-            ),
+            showButton
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.cancel,
+                            color: Color(0xFF83B6BB),
+                            size: 40,
+                          )),
+                      const SizedBox(width: 30),
+                      IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.check_circle,
+                            color: Color(0xFF2E6D74),
+                            size: 40,
+                          ))
+                    ],
+                  )
+                : const SizedBox(),
             const Spacer(),
             // 小熊護士圖片
             Image.asset(
