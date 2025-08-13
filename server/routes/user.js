@@ -196,4 +196,19 @@ router.get('/getUserDetail', async (req, res) => {
     }
 });
 
+// === 修改習慣頻率 ===
+router.post('/updateFreq', async (req, res) => {
+    const { id, freq } = req.body;
+    console.log('接收到請求', req.body);
+
+    try {
+        const [result] = await db.query('UPDATE user SET freq = ? WHERE id = ?', [freq, id]);
+        console.log('更新成功', result);
+        return res.json({ message: '更新成功' });
+    } catch (err) {
+        console.error('資料庫錯誤:', err);
+        return res.status(500).json({ error: '資料庫錯誤' });
+    }
+});
+
 module.exports = router;
