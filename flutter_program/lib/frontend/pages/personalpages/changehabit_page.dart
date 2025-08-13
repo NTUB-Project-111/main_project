@@ -1,5 +1,6 @@
-import 'package:drw/backend/models/user.dart';
 import 'package:drw/backend/provider/user_provider.dart';
+import 'package:drw/backend/services/user_service.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +23,8 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
   List<int> compareIndex = [0, 0, 0];
   String habit = '抽菸';
   bool showButton = false;
+  List<String> freq = ['無', '無', '無'];
+  UserService userService = UserService();
 
   Widget buildOption(String title, String subtitle, int index) {
     bool selected = selectedHabitIndex == index;
@@ -134,6 +137,8 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.read<UserProvider>();
+    final user = userProvider.user;
     return Scaffold(
       backgroundColor: backgroundColor,
       body: SafeArea(
@@ -144,7 +149,38 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
               child: Row(
                 children: [
-                  Icon(Icons.arrow_back, color: textColor),
+                  IconButton(
+                    onPressed: () async {
+                      if (showButton) {
+                        FrontUtil.showTextDialog(context, '要儲存修改嗎?', '確定', '取消',
+                            onConfirm: () async {
+                          for (int i = 0; i < 3; i++) {
+                            if (selectedFrequencyIndex[i] == 0) {
+                              freq[i] = '無';
+                            } else if (selectedFrequencyIndex[i] == 1) {
+                              freq[i] = '偶爾';
+                            } else {
+                              freq[i] = '經常';
+                            }
+                          }
+                          final freqString = freq.join('、');
+                          final success =
+                              await userService.updateFreq(id: user!.id, freq: freqString);
+                          if (success) {
+                            final updatedUser = user.copyWith(freq: freqString);
+                            context.read<UserProvider>().setUserInfo(updatedUser);
+                            FrontUtil.showSuccess('修改成功');
+                            Navigator.pop(context);
+                          } else {
+                            FrontUtil.showFail('修改失敗');
+                          }
+                        });
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    },
+                    icon: Icon(Icons.arrow_back, color: textColor),
+                  ),
                   const SizedBox(width: 8),
                   Text("個人習慣",
                       style: TextStyle(
@@ -200,7 +236,11 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            FrontUtil.showTextDialog(context, '要取消修改嗎?', '確定', '取消', onConfirm: () {
+                              Navigator.pop(context);
+                            });
+                          },
                           icon: const Icon(
                             Icons.cancel,
                             color: Color(0xFF83B6BB),
@@ -208,7 +248,31 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                           )),
                       const SizedBox(width: 30),
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            FrontUtil.showTextDialog(context, '要儲存修改嗎?', '確定', '取消',
+                                onConfirm: () async {
+                              for (int i = 0; i < 3; i++) {
+                                if (selectedFrequencyIndex[i] == 0) {
+                                  freq[i] = '無';
+                                } else if (selectedFrequencyIndex[i] == 1) {
+                                  freq[i] = '偶爾';
+                                } else {
+                                  freq[i] = '經常';
+                                }
+                              }
+                              final freqString = freq.join('、');
+                              final success =
+                                  await userService.updateFreq(id: user!.id, freq: freqString);
+                              if (success) {
+                                final updatedUser = user.copyWith(freq: freqString);
+                                context.read<UserProvider>().setUserInfo(updatedUser);
+                                FrontUtil.showSuccess('修改成功');
+                                Navigator.pop(context);
+                              } else {
+                                FrontUtil.showFail('修改失敗');
+                              }
+                            });
+                          },
                           icon: const Icon(
                             Icons.check_circle,
                             color: Color(0xFF2E6D74),

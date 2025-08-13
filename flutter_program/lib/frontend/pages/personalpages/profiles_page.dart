@@ -199,7 +199,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
                           IconButton(
                             padding: const EdgeInsets.only(left: 35),
                             onPressed: () {
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => const ChangeHabitPage(),
