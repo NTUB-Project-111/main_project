@@ -1,108 +1,148 @@
-import 'package:drw/backend/models/hospital_model.dart';
-import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
+
+import 'package:drw/backend/models/hospital_model.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
+/// ---------- 1) 把 enum 放在檔案頂層（不要放在 class 裡） ----------
+enum OpenMarkerStyle { red, gray, star }
+
 class GoogleMapService extends ChangeNotifier {
+  /// ---------- 2) 原本就有的欄位/常數 ----------
   final Set<Marker> _markers = {};
   static const double walkingSpeedMetersPerSecond = 1.4;
 
-  /// 向 Google Places API 查詢營業狀態
+  /// 目前「營業中」的圖釘樣式（預設紅色）
+  OpenMarkerStyle openMarkerStyle = OpenMarkerStyle.red;
+
+  /// 提供 UI 切換的方法
+  void setOpenMarkerStyle(OpenMarkerStyle style) {
+    if (openMarkerStyle != style) {
+      openMarkerStyle = style;
+      notifyListeners();
+    }
+  }
+
+  /// ---------- 3) 取得 Google 萬用 key ----------
+  String? get _apiKey => dotenv.env['GOOGLE_MAPS_API_KEY'];
+
+  /// ---------- 4) 取得店家營業狀態 ----------
   Future<String?> getBusinessStatus({
     required String placeName,
     required double lat,
     required double lng,
   }) async {
-    final apiKey = dotenv.env['GOOGLE_MAPS_API_KEY'];
-    if (apiKey == null) return null;
+    final key = _apiKey;
+    if (key == null) return null;
 
     final url = Uri.parse(
       'https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
       'keyword=${Uri.encodeComponent(placeName)}'
       '&location=$lat,$lng'
       '&radius=100'
-      '&key=$apiKey',
+      '&key=$key',
     );
 
     final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      if (data['results'] != null && data['results'].isNotEmpty) {
-        final result = data['results'][0];
+    if (response.statusCode != 200) return null;
 
-        // 先確認是否仍在營運（沒有永久或暫時歇業）
-        final status = result['business_status'];
-        if (status == 'CLOSED_PERMANENTLY') return '永久停業';
-        if (status == 'CLOSED_TEMPORARILY') return '暫時停業';
-
-        // 再判斷是否當下有開門
-        if (result['opening_hours']?['open_now'] != null) {
-          bool isOpenNow = result['opening_hours']['open_now'];
-          return isOpenNow ? '營業中' : '已打烊';
-        }
-
-        return '狀態未知';
-      }
+    final data = json.decode(response.body);
+    if (data['results'] == null || (data['results'] as List).isEmpty) {
+      return null;
     }
 
-    return null;
+    final result = data['results'][0];
+    final status = result['business_status'];
+    if (status == 'CLOSED_PERMANENTLY') return '永久停業';
+    if (status == 'CLOSED_TEMPORARILY') return '暫時停業';
+
+    if (result['opening_hours']?['open_now'] != null) {
+      final isOpenNow = result['opening_hours']['open_now'] as bool;
+      return isOpenNow ? '營業中' : '已打烊';
+    }
+    return '狀態未知';
   }
 
+  /// ---------- 5) 畫 Marker ----------
   Future<void> setMarkers(
-      List<Hospital> hospitals, Function(Hospital) onMarkerTap, LatLng from,
-      {required double pinColor}) async {
+    List<Hospital> hospitals,
+    Function(Hospital) onMarkerTap,
+    LatLng from, {
+    required double pinColor,
+  }) async {
     _markers.clear();
 
-    // 載入灰色圖釘圖片
+    // 你的自訂圖檔（灰/紅都用自己的）
     final BitmapDescriptor grayMarkerIcon =
         await BitmapDescriptor.fromAssetImage(
       const ImageConfiguration(devicePixelRatio: 1.5),
       'images/gray_maker.png',
     );
 
-    
     final BitmapDescriptor redMarkerIcon =
-        BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
+        await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(devicePixelRatio: 1.5),
+      'images/red_maker.png',
+    );
+
+    // ⭐ 新增星星圖檔
+    final BitmapDescriptor starMarkerIcon =
+        await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(devicePixelRatio: 1.5),
+      'images/star_marker.png',
+    );
 
     await Future.wait(hospitals.map((hospital) async {
-      if (hospital.latitude != 0.0 && hospital.longitude != 0.0) {
-        hospital.distance = await calculateDistanceText(
-          currentPosition: from,
-          hospitalLat: hospital.latitude,
-          hospitalLng: hospital.longitude,
-        );
+      if (hospital.latitude == 0.0 || hospital.longitude == 0.0) return;
 
-        hospital.walkTime = await calculateWalkingTime(
-          currentPosition: from,
-          hospitalLat: hospital.latitude,
-          hospitalLng: hospital.longitude,
-        );
+      // 距離與步行時間
+      hospital.distance = await calculateDistanceText(
+        currentPosition: from,
+        hospitalLat: hospital.latitude,
+        hospitalLng: hospital.longitude,
+      );
+      hospital.walkTime = await calculateWalkingTime(
+        currentPosition: from,
+        hospitalLat: hospital.latitude,
+        hospitalLng: hospital.longitude,
+      );
 
-        hospital.openStatus = await getBusinessStatus(
-          placeName: hospital.name,
-          lat: hospital.latitude,
-          lng: hospital.longitude,
-        );
+      // 營業狀態（決定顏色/星星）
+      hospital.openStatus = await getBusinessStatus(
+        placeName: hospital.name,
+        lat: hospital.latitude,
+        lng: hospital.longitude,
+      );
+      final isOpen = hospital.openStatus == '營業中';
 
-        final isOpen = hospital.openStatus == '營業中';
-
-        _markers.add(
-          Marker(
-            markerId: MarkerId(hospital.id.toString()),
-            position: LatLng(hospital.latitude, hospital.longitude),
-            infoWindow: InfoWindow(
-              title: hospital.name,
-              snippet: hospital.address,
-            ),
-            icon: isOpen ? redMarkerIcon : grayMarkerIcon,
-            onTap: () => onMarkerTap(hospital),
-          ),
-        );
+      // 依照 style 選 icon
+      BitmapDescriptor openIcon = redMarkerIcon;
+      switch (openMarkerStyle) {
+        case OpenMarkerStyle.red:
+          openIcon = redMarkerIcon;
+          break;
+        case OpenMarkerStyle.star:
+          openIcon = starMarkerIcon;
+          break;
+        case OpenMarkerStyle.gray: // 很少用到：若你想「不論營業都灰」
+          openIcon = grayMarkerIcon;
+          break;
       }
+
+      _markers.add(
+        Marker(
+          markerId: MarkerId(hospital.id.toString()),
+          position: LatLng(hospital.latitude, hospital.longitude),
+          infoWindow: InfoWindow(title: hospital.name, snippet: hospital.address),
+          icon: isOpen ? openIcon : grayMarkerIcon,
+          onTap: () => onMarkerTap(hospital),
+        ),
+      );
     }));
 
     notifyListeners();
@@ -110,6 +150,7 @@ class GoogleMapService extends ChangeNotifier {
 
   Set<Marker> get markers => _markers;
 
+  /// ---------- 6) 建立地圖 ----------
   Widget buildGoogleMap({
     required LatLng currentPosition,
     required Function(GoogleMapController) onMapCreated,
@@ -126,26 +167,22 @@ class GoogleMapService extends ChangeNotifier {
     );
   }
 
-  late GoogleMapController _mapController;
-
-  /// 取得目前位置，若失敗則回傳 null
+  /// ---------- 7) 取得目前位置 ----------
   Future<LatLng?> getCurrentLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
       permission = await Geolocator.requestPermission();
     }
-
     if (permission == LocationPermission.whileInUse ||
         permission == LocationPermission.always) {
       final position = await Geolocator.getCurrentPosition();
       return LatLng(position.latitude, position.longitude);
     }
-
     return null;
   }
 
-  /// 回傳目前位置到醫院的距離（單位：公尺）
+  /// ---------- 8) 距離、時間 ----------
   Future<double> calculateDistance({
     required LatLng currentPosition,
     required double hospitalLat,
@@ -164,46 +201,33 @@ class GoogleMapService extends ChangeNotifier {
     required double hospitalLat,
     required double hospitalLng,
   }) async {
-    final double distance = Geolocator.distanceBetween(
-      currentPosition.latitude,
-      currentPosition.longitude,
-      hospitalLat,
-      hospitalLng,
+    final d = await calculateDistance(
+      currentPosition: currentPosition,
+      hospitalLat: hospitalLat,
+      hospitalLng: hospitalLng,
     );
-
-    if (distance >= 1000) {
-      return '${(distance / 1000).toStringAsFixed(1)} 公里';
-    } else {
-      return '${distance.toStringAsFixed(0)} 公尺';
+    return d >= 1000 ? '${(d / 1000).toStringAsFixed(1)} 公里' : '${d.toStringAsFixed(0)} 公尺';
     }
-  }
 
-  /// 計算步行時間（分鐘）
   Future<int> calculateWalkingTime({
     required LatLng currentPosition,
     required double hospitalLat,
     required double hospitalLng,
   }) async {
-    // 先計算距離（公尺）
-    double distanceMeters = await calculateDistance(
+    final distanceMeters = await calculateDistance(
       currentPosition: currentPosition,
       hospitalLat: hospitalLat,
       hospitalLng: hospitalLng,
     );
-
-    // 計算時間（秒）
-    double timeSeconds = distanceMeters / walkingSpeedMetersPerSecond;
-
-    // 轉換成分鐘，四捨五入取整數
+    final timeSeconds = distanceMeters / walkingSpeedMetersPerSecond;
     return (timeSeconds / 60).round();
   }
 
-  /// 開啟 Google 地圖並導航至指定經緯度
+  /// ---------- 9) 導航 ----------
   Future<void> navigateToHospital(double latitude, double longitude) async {
     final googleMapsUrl = Uri.parse(
       'https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude&travelmode=walking',
     );
-
     if (await canLaunchUrl(googleMapsUrl)) {
       await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
     } else {

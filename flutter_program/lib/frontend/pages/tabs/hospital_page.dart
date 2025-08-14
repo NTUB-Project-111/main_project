@@ -273,6 +273,12 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
           ],
         ),
       );
+  
+  
+  
+  
+  
+  
   // 醫院卡片 UI
   Widget _buildHospitalCard() {
     return Consumer<HospitalView>(builder: (context, hospital, _) {
