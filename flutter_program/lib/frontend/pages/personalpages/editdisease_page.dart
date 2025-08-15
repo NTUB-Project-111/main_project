@@ -1,4 +1,7 @@
+import 'package:drw/backend/models/user_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
+import 'package:drw/backend/services/user_service.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +16,7 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
   List<String> mainConditions = [];
   List<String> compareList = [];
   bool showButton = false;
+  UserService userService = UserService();
   final List<String> otherConditions = [
     "貧血",
     "高血壓",
@@ -66,7 +70,7 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
       final user = userProvider.user;
       final disease = user!.disease.replaceAll("[", "").replaceAll("]", "");
       mainConditions = disease.split(',').map((e) => e.trim()).toList();
-      compareList = List.from(mainConditions); 
+      compareList = List.from(mainConditions);
       for (int i = 0; i < mainConditions.length; i++) {
         otherConditions.remove(mainConditions[i]);
       }
@@ -76,6 +80,8 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.read<UserProvider>();
+    final user = userProvider.user;
     return Scaffold(
       backgroundColor: const Color(0xFFE6FAFA),
       appBar: AppBar(
@@ -83,10 +89,24 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF5C9EA0)),
-          onPressed: () {},
+          onPressed: () async {
+            if (showButton) {
+              FrontUtil.showTextDialog(
+                context,
+                '要取消修改嗎?',
+                '確定',
+                '取消',
+                onConfirm: () async {
+                  Navigator.pop(context);
+                },
+              );
+            } else {
+              Navigator.pop(context);
+            }
+          },
         ),
         title: const Text(
-          "特殊症狀",
+          "特殊病症",
           style: TextStyle(color: Color(0xFF5C9EA0), fontWeight: FontWeight.bold, fontSize: 20),
         ),
         actions: [
@@ -163,7 +183,34 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            if (showButton) {
+                              FrontUtil.showTextDialog(
+                                context,
+                                '要儲存修改嗎?',
+                                '確定',
+                                '取消',
+                                onConfirm: () async {
+                                  final success = await userService.updateDisease(
+                                      id: user!.id, disease: mainConditions.toString());
+                                  if (success) {
+                                    final updatedUser =
+                                        user.copyWith(disease: mainConditions.toString());
+                                    context.read<UserProvider>().setUserInfo(updatedUser);
+                                    FrontUtil.showSuccess('修改成功');
+                                    Navigator.pop(context);
+                                  } else {
+                                    FrontUtil.showFail('修改失敗');
+                                  }
+                                },
+                                onCancel: () {
+                                  Navigator.pop(context);
+                                },
+                              );
+                            } else {
+                              Navigator.pop(context);
+                            }
+                          },
                           icon: const Icon(
                             Icons.check_circle,
                             color: Color(0xFF2E6D74),
