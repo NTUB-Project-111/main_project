@@ -162,7 +162,7 @@ class FrontUtil {
   }
 
   static void showTextDialog(BuildContext context, String title, String confirm, String cancel,
-      {VoidCallback? onConfirm}) {
+      {VoidCallback? onConfirm, VoidCallback? onCancel}) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -221,6 +221,9 @@ class FrontUtil {
               ),
               onPressed: () {
                 Navigator.pop(context);
+                if (onCancel != null) {
+                  onCancel(); // ✅ 執行傳入的動作
+                }
               },
               child: Text(
                 cancel,

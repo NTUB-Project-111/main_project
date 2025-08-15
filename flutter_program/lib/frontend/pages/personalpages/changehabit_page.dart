@@ -152,29 +152,37 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                   IconButton(
                     onPressed: () async {
                       if (showButton) {
-                        FrontUtil.showTextDialog(context, '要儲存修改嗎?', '確定', '取消',
-                            onConfirm: () async {
-                          for (int i = 0; i < 3; i++) {
-                            if (selectedFrequencyIndex[i] == 0) {
-                              freq[i] = '無';
-                            } else if (selectedFrequencyIndex[i] == 1) {
-                              freq[i] = '偶爾';
-                            } else {
-                              freq[i] = '經常';
+                        FrontUtil.showTextDialog(
+                          context,
+                          '要儲存修改嗎?',
+                          '確定',
+                          '取消',
+                          onConfirm: () async {
+                            for (int i = 0; i < 3; i++) {
+                              if (selectedFrequencyIndex[i] == 0) {
+                                freq[i] = '無';
+                              } else if (selectedFrequencyIndex[i] == 1) {
+                                freq[i] = '偶爾';
+                              } else {
+                                freq[i] = '經常';
+                              }
                             }
-                          }
-                          final freqString = freq.join('、');
-                          final success =
-                              await userService.updateFreq(id: user!.id, freq: freqString);
-                          if (success) {
-                            final updatedUser = user.copyWith(freq: freqString);
-                            context.read<UserProvider>().setUserInfo(updatedUser);
-                            FrontUtil.showSuccess('修改成功');
+                            final freqString = freq.join('、');
+                            final success =
+                                await userService.updateFreq(id: user!.id, freq: freqString);
+                            if (success) {
+                              final updatedUser = user.copyWith(freq: freqString);
+                              context.read<UserProvider>().setUserInfo(updatedUser);
+                              FrontUtil.showSuccess('修改成功');
+                              Navigator.pop(context);
+                            } else {
+                              FrontUtil.showFail('修改失敗');
+                            }
+                          },
+                          onCancel: () {
                             Navigator.pop(context);
-                          } else {
-                            FrontUtil.showFail('修改失敗');
-                          }
-                        });
+                          },
+                        );
                       } else {
                         Navigator.pop(context);
                       }
@@ -237,9 +245,15 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                     children: [
                       IconButton(
                           onPressed: () {
-                            FrontUtil.showTextDialog(context, '要取消修改嗎?', '確定', '取消', onConfirm: () {
-                              Navigator.pop(context);
-                            });
+                            FrontUtil.showTextDialog(
+                              context,
+                              '要取消修改嗎?',
+                              '確定',
+                              '取消',
+                              onConfirm: () {
+                                Navigator.pop(context);
+                              },
+                            );
                           },
                           icon: const Icon(
                             Icons.cancel,
