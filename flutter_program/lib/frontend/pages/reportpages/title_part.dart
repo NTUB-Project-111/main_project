@@ -68,6 +68,8 @@ class _TitlePartState extends State<TitlePart> {
               SizedBox(
                 width: 170,
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline, // 用基線對齊
+                  textBaseline: TextBaseline.alphabetic, // 指定基線類型
                   children: [
                     Expanded(
                       child: TextField(
@@ -100,6 +102,7 @@ class _TitlePartState extends State<TitlePart> {
                     ),
                     Icon(
                       Icons.edit,
+                      size: 18,
                       color: FrontUtil.textColor,
                     ),
                   ],
