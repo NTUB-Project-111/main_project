@@ -211,4 +211,19 @@ router.post('/updateFreq', async (req, res) => {
     }
 });
 
+// === 修改特殊病症 ===
+router.post('/updateDisease', async (req, res) => {
+    const { id, disease } = req.body;
+    console.log('接收到請求', req.body);
+
+    try {
+        const [result] = await db.query('UPDATE user SET disease = ? WHERE id = ?', [disease, id]);
+        console.log('更新成功', result);
+        return res.json({ message: '更新成功' });
+    } catch (err) {
+        console.error('資料庫錯誤:', err);
+        return res.status(500).json({ error: '資料庫錯誤' });
+    }
+});
+
 module.exports = router;
