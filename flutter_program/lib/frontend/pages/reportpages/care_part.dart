@@ -1,5 +1,6 @@
 import 'package:drw/backend/models/report_model.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,9 +41,20 @@ class _CarePartState extends State<CarePart> {
                         onPressed: () {
                           report.toggleSwitch();
                         },
-                        icon: const Icon(
-                          Icons.compare_arrows,
-                          color: Color(0xFF589399),
+                        icon: const Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Icon(
+                              FluentIcons.cube_24_regular,
+                              color: Color(0xFF589399),
+                              size: 16,
+                            ),
+                            Icon(
+                              FluentIcons.arrow_sync_circle_24_regular,
+                              color: Color(0xFF589399),
+                              size: 28,
+                            ),
+                          ],
                         ),
                       ),
                       IconButton(
@@ -90,7 +102,8 @@ class _CarePartState extends State<CarePart> {
                               )),
                           Expanded(
                             child: Container(
-                              margin: const EdgeInsets.only(top: 10, bottom: 15, left: 5, right: 5),
+                              margin: const EdgeInsets.only(
+                                  top: 10, bottom: 15, left: 5, right: 5),
                               height: 280,
                               color: Colors.grey,
                             ),
@@ -105,7 +118,9 @@ class _CarePartState extends State<CarePart> {
                       ),
                       Text(
                         '測試',
-                        style: TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: FrontUtil.textColor,
+                            fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(
                         height: 30,
@@ -152,12 +167,14 @@ class _CarePartState extends State<CarePart> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(title,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 IconButton(
                   onPressed: () {
                     setState(() => show = !show);
                   },
-                  icon: Icon(show ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+                  icon:
+                      Icon(show ? Icons.arrow_drop_up : Icons.arrow_drop_down),
                 ),
               ],
             ),
@@ -169,7 +186,8 @@ class _CarePartState extends State<CarePart> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: contents
-                    .map((line) => Text('• ${line.replaceAll(RegExp(r'\s+'), '')}'))
+                    .map((line) =>
+                        Text('• ${line.replaceAll(RegExp(r'\s+'), '')}'))
                     .toList(),
               ),
             ),
