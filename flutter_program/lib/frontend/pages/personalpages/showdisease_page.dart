@@ -35,7 +35,7 @@ class _ShowdiseasePageState extends State<ShowdiseasePage> {
                   ),
                   const SizedBox(width: 8),
                   const Text(
-                    "特殊症狀",
+                    "特殊病症",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

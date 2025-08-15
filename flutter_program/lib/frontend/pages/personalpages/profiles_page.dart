@@ -224,7 +224,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('特殊疾病',
+                          const Text('特殊病症',
                               style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
                           IconButton(
                             padding: const EdgeInsets.only(left: 35),

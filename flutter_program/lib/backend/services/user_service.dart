@@ -146,7 +146,7 @@ class UserService {
     }
   }
 
-    Future<bool> updateFreq({
+  Future<bool> updateFreq({
     required int id,
     required String freq,
   }) async {
@@ -157,6 +157,30 @@ class UserService {
         body: jsonEncode({'id': id, 'freq': freq}),
       );
 
+      if (response.statusCode == 200) {
+        // final data = jsonDecode(response.body);
+        // print('伺服器回應: $data');
+        return true; // 更新成功
+      } else {
+        // print('更新失敗: ${response.statusCode}, ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      // print('發送請求時發生錯誤: $e');
+      return false;
+    }
+  }
+
+  Future<bool> updateDisease({
+    required int id,
+    required String disease,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiBase.baseUrl}/updateDisease'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'id': id, 'disease': disease}),
+      );
       if (response.statusCode == 200) {
         // final data = jsonDecode(response.body);
         // print('伺服器回應: $data');
