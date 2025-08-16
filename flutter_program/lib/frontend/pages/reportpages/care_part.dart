@@ -89,6 +89,7 @@ class _CarePartState extends State<CarePart> {
                 ],
               ),
               ...[
+                //護理步驟動畫
                 if (report.isSwitch)
                   Column(
                     children: [
@@ -120,6 +121,7 @@ class _CarePartState extends State<CarePart> {
                         '測試',
                         style: TextStyle(
                             color: FrontUtil.textColor,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(
@@ -138,11 +140,19 @@ class _CarePartState extends State<CarePart> {
   }
 
   List<Widget> _buildAllWoundSections(Map<String, List<String>> steps) {
-    return steps.entries.map((entry) {
-      final title = entry.key;
-      final details = entry.value;
-      return _buildWoundSection(title, details);
+    // return steps.entries.map((entry) {
+    //   final title = entry.key;
+    //   final details = entry.value;
+    //   return _buildWoundSection(title, details);
+    // }).toList();
+    final widgets = steps.entries.map((entry) {
+      return _buildWoundSection(entry.key, entry.value);
     }).toList();
+
+    // 在最後一個卡片下方加空間
+    widgets.add(const SizedBox(height: 16)); // 想要多高就改這裡
+
+    return widgets;
   }
 
   Widget _buildWoundSection(String title, List<String> contents) {
@@ -182,12 +192,38 @@ class _CarePartState extends State<CarePart> {
           if (show)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: contents
-                    .map((line) =>
-                        Text('• ${line.replaceAll(RegExp(r'\s+'), '')}'))
+                    .map(
+                      (line) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '•',
+                              style: TextStyle(
+                                color: Color(0xFF589399),
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 6), // bullet 與文字間距
+                            Expanded(
+                              child: Text(
+                                line.replaceAll(RegExp(r'\s+'), ''),
+                                style: const TextStyle(
+                                  color: Color(0xFF589399),
+                                  fontSize: 14,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
             ),
