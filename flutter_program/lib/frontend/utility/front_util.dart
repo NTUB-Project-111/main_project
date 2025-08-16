@@ -74,12 +74,16 @@ class FrontUtil {
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Container(
           padding: const EdgeInsets.all(20),
-          width: 250,
-          height: 400,
+          constraints: const BoxConstraints(
+            minWidth: 200,
+            maxWidth: 310,
+            minHeight: 100,
+            maxHeight: 380,
+          ),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
@@ -116,7 +120,8 @@ class FrontUtil {
                           onTap: () async {
                             final uri = Uri.tryParse(s);
                             if (uri != null && await canLaunchUrl(uri)) {
-                              await launchUrl(uri, mode: LaunchMode.externalApplication);
+                              await launchUrl(uri,
+                                  mode: LaunchMode.externalApplication);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('無法開啟連結')),
@@ -132,7 +137,7 @@ class FrontUtil {
                                   '• ',
                                   style: TextStyle(
                                     color: Color(0xFF589399),
-                                    fontSize: 16,
+                                    fontSize: 15,
                                   ),
                                 ),
                                 Expanded(
@@ -140,8 +145,9 @@ class FrontUtil {
                                     s,
                                     style: const TextStyle(
                                       color: Color(0xFF589399),
-                                      fontSize: 16,
-                                      decoration: TextDecoration.underline, // 顯示超連結風格
+                                      fontSize: 15,
+                                      decoration:
+                                          TextDecoration.underline, // 顯示超連結風格
                                     ),
                                   ),
                                 ),
@@ -161,7 +167,8 @@ class FrontUtil {
     );
   }
 
-  static void showTextDialog(BuildContext context, String title, String confirm, String cancel,
+  static void showTextDialog(
+      BuildContext context, String title, String confirm, String cancel,
       {VoidCallback? onConfirm, VoidCallback? onCancel}) {
     showDialog(
       barrierDismissible: false,
@@ -241,8 +248,8 @@ class FrontUtil {
   }
 
   // 顯示確認對話框
-  static void showImageDialog(BuildContext context, File image, String title, String confirm,
-      String cancle, Widget nextPage) {
+  static void showImageDialog(BuildContext context, File image, String title,
+      String confirm, String cancle, Widget nextPage) {
     showDialog(
       barrierDismissible: false, // 禁止點擊外部區域關閉對話框
       context: context,
@@ -402,7 +409,8 @@ class FrontUtil {
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w100,
                                           fontSize: 14,
-                                          color: Color.fromRGBO(88, 147, 153, 1),
+                                          color:
+                                              Color.fromRGBO(88, 147, 153, 1),
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -416,7 +424,8 @@ class FrontUtil {
                               });
                             },
                             buttonStyleData: ButtonStyleData(
-                              padding: const EdgeInsets.symmetric(horizontal: 14),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 14),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
@@ -489,10 +498,11 @@ class FrontUtil {
                                 //時間選擇器 顏色設定
                                 backgroundColor: const Color(0xFFF7FCFD),
                                 dialHandColor: const Color(0xFF589399),
-                                dialTextColor:
-                                    WidgetStateColor.resolveWith((Set<WidgetState> states) {
+                                dialTextColor: WidgetStateColor.resolveWith(
+                                    (Set<WidgetState> states) {
                                   if (states.contains(WidgetState.selected)) {
-                                    return const Color.fromARGB(255, 255, 255, 255); // 選中狀態下的數字
+                                    return const Color.fromARGB(
+                                        255, 255, 255, 255); // 選中狀態下的數字
                                   }
                                   return const Color(0xFF2E6D74); // 未選中狀態下的數字
                                 }),
@@ -502,7 +512,8 @@ class FrontUtil {
                                 hourMinuteTextColor: const Color(0xFF164449),
                                 hourMinuteShape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  side: const BorderSide(color: Color(0xFF589399), width: 2),
+                                  side: const BorderSide(
+                                      color: Color(0xFF589399), width: 2),
                                 ),
                                 dayPeriodColor: WidgetStateColor.resolveWith(
                                   (states) => const Color(0xFF589399),
@@ -511,14 +522,19 @@ class FrontUtil {
                                 // ... 其他可設定的屬性
                                 confirmButtonStyle: ButtonStyle(
                                   textStyle: WidgetStateProperty.all<TextStyle>(
-                                    const TextStyle(fontWeight: FontWeight.bold), // 設定字體寬度
+                                    const TextStyle(
+                                        fontWeight: FontWeight.bold), // 設定字體寬度
                                   ),
                                   foregroundColor:
-                                      WidgetStateProperty.all<Color>(const Color(0xFF589399)),
+                                      WidgetStateProperty.all<Color>(
+                                          const Color(0xFF589399)),
                                 ),
-                                helpTextStyle: const TextStyle(color: Color(0xFF589399)),
+                                helpTextStyle:
+                                    const TextStyle(color: Color(0xFF589399)),
                                 cancelButtonStyle: ButtonStyle(
-                                  foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+                                  foregroundColor:
+                                      WidgetStateProperty.all<Color>(
+                                          Colors.black),
                                 )),
                             textButtonTheme: TextButtonThemeData(
                               style: TextButton.styleFrom(
@@ -530,9 +546,11 @@ class FrontUtil {
                             builder: (context) => OutlinedButton(
                               style: OutlinedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0), // 調整圓角半徑
+                                  borderRadius:
+                                      BorderRadius.circular(15.0), // 調整圓角半徑
                                 ),
-                                padding: const EdgeInsets.symmetric(horizontal: 70),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 70),
                                 side: const BorderSide(
                                   width: 1,
                                   color: Color.fromRGBO(154, 201, 205, 1),
@@ -542,7 +560,8 @@ class FrontUtil {
                                 final result = await showTimePicker(
                                     context: context,
                                     initialTime: TimeOfDay.now(),
-                                    initialEntryMode: TimePickerEntryMode.dial, // dial 或 input
+                                    initialEntryMode: TimePickerEntryMode
+                                        .dial, // dial 或 input
                                     helpText: "選擇時間",
                                     confirmText: "確定",
                                     cancelText: "取消");
@@ -610,6 +629,7 @@ class FrontUtil {
                         ),
                         onPressed: () {
                           Navigator.pop(context); // 關閉對話框
+                          showSuccess("設定完成 !"); // 顯示成功訊息
                         },
                         child: const Text(
                           '確定',
@@ -640,7 +660,8 @@ class FrontUtil {
     );
   }
 
-  static void showConfirmationDialog(BuildContext context, String img, String type) {
+  static void showConfirmationDialog(
+      BuildContext context, String img, String type) {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -671,7 +692,9 @@ class FrontUtil {
                   Text(
                     "#$type",
                     style: const TextStyle(
-                        color: Color(0xFF589399), height: 3, fontWeight: FontWeight.bold),
+                        color: Color(0xFF589399),
+                        height: 3,
+                        fontWeight: FontWeight.bold),
                   )
                 ],
               ),
@@ -683,8 +706,8 @@ class FrontUtil {
   }
 
   //拍攝照片時跳出兩個按鈕
-  static void showButtonDialog(
-      String text1, String text2, VoidCallback onTap1, VoidCallback onTap2, BuildContext context) {
+  static void showButtonDialog(String text1, String text2, VoidCallback onTap1,
+      VoidCallback onTap2, BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -710,7 +733,8 @@ class FrontUtil {
               highlightColor: const Color(0xFFDFF6F7),
               borderRadius: BorderRadius.circular(15),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 decoration: const BoxDecoration(
                   border: Border(bottom: BorderSide(color: Color(0xFF669FA5))),
                 ),
@@ -719,7 +743,9 @@ class FrontUtil {
                   children: [
                     const Icon(Icons.camera_alt, color: Color(0xFF589399)),
                     const SizedBox(width: 15),
-                    Text(text1, style: const TextStyle(color: Color(0xFF589399), fontSize: 14)),
+                    Text(text1,
+                        style: const TextStyle(
+                            color: Color(0xFF589399), fontSize: 14)),
                   ],
                 ),
               ),
@@ -733,13 +759,16 @@ class FrontUtil {
               highlightColor: const Color(0xFFDFF6F7),
               borderRadius: BorderRadius.circular(15),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 width: double.infinity,
                 child: Row(
                   children: [
                     const Icon(Icons.photo, color: Color(0xFF589399)),
                     const SizedBox(width: 15),
-                    Text(text2, style: const TextStyle(color: Color(0xFF589399), fontSize: 14)),
+                    Text(text2,
+                        style: const TextStyle(
+                            color: Color(0xFF589399), fontSize: 14)),
                   ],
                 ),
               ),
@@ -750,8 +779,8 @@ class FrontUtil {
     );
   }
 
-  void showConfirmWoundDialog(
-      BuildContext context, Color color, String title, String cancel, String confirm) {
+  void showConfirmWoundDialog(BuildContext context, Color color, String title,
+      String cancel, String confirm) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -778,8 +807,10 @@ class FrontUtil {
                 children: [
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 30), // 可視情況調整
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 30), // 可視情況調整
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
                       side: BorderSide(color: color),
                     ),
                     onPressed: () => Navigator.pop(context),
@@ -789,7 +820,8 @@ class FrontUtil {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       backgroundColor: color,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
                     ),
                     onPressed: () {
                       Navigator.pop(context);
@@ -809,8 +841,8 @@ class FrontUtil {
   }
 
   //確認傷口照片
-  static void showConfirmDialog(BuildContext context, Color color, String title, String? subTitle,
-      String cancel, String confirm, VoidCallback onConfirm) {
+  static void showConfirmDialog(BuildContext context, Color color, String title,
+      String? subTitle, String cancel, String confirm, VoidCallback onConfirm) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -849,8 +881,10 @@ class FrontUtil {
                 children: [
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 30), // 可視情況調整
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 30), // 可視情況調整
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
                       side: BorderSide(color: color),
                     ),
                     onPressed: () => Navigator.pop(context),
@@ -860,7 +894,8 @@ class FrontUtil {
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       backgroundColor: color,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
                     ),
                     onPressed: () {
                       Navigator.pop(context);
