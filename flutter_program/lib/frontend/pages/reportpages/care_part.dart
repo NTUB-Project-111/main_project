@@ -89,6 +89,7 @@ class _CarePartState extends State<CarePart> {
                 ],
               ),
               ...[
+                //護理步驟動畫
                 if (report.isSwitch)
                   Column(
                     children: [
@@ -191,12 +192,38 @@ class _CarePartState extends State<CarePart> {
           if (show)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: contents
-                    .map((line) =>
-                        Text('• ${line.replaceAll(RegExp(r'\s+'), '')}'))
+                    .map(
+                      (line) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '•',
+                              style: TextStyle(
+                                color: Color(0xFF589399),
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 6), // bullet 與文字間距
+                            Expanded(
+                              child: Text(
+                                line.replaceAll(RegExp(r'\s+'), ''),
+                                style: const TextStyle(
+                                  color: Color(0xFF589399),
+                                  fontSize: 14,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
             ),
