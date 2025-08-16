@@ -89,44 +89,67 @@ class _CarePartState extends State<CarePart> {
                 ],
               ),
               ...[
-                //護理步驟動畫
+                // 護理步驟動畫
                 if (report.isSwitch)
+                  //   Column(
+                  //     children: [
+                  //       Row(
+                  //         children: [
+                  //           IconButton(
+                  //               onPressed: () {},
+                  //               icon: Icon(
+                  //                 Icons.arrow_back_ios_new_rounded,
+                  //                 color: FrontUtil.textColor,
+                  //               )),
+                  //           Expanded(
+                  //             child: Container(
+                  //               margin: const EdgeInsets.only(
+                  //                   top: 10, bottom: 15, left: 5, right: 5),
+                  //               height: 280,
+                  //               color: Colors.grey,
+                  //             ),
+                  //           ),
+                  //           IconButton(
+                  //               onPressed: () {},
+                  //               icon: Icon(
+                  //                 Icons.arrow_forward_ios_rounded,
+                  //                 color: FrontUtil.textColor,
+                  //               )),
+                  //         ],
+                  //       ),
+                  //       Text(
+                  //         '測試',
+                  //         style: TextStyle(
+                  //             color: FrontUtil.textColor,
+                  //             fontSize: 16,
+                  //             fontWeight: FontWeight.bold),
+                  //       ),
+                  //       const SizedBox(
+                  //         height: 30,
+                  //       )
+                  //     ],
+                  //   )
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
+                      const SizedBox(height: 10),
+                      Image.asset('images/doctor_bear.png', width: 160),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.arrow_back_ios_new_rounded,
-                                color: FrontUtil.textColor,
-                              )),
-                          Expanded(
-                            child: Container(
-                              margin: const EdgeInsets.only(
-                                  top: 10, bottom: 15, left: 5, right: 5),
-                              height: 280,
-                              color: Colors.grey,
+                          Text(
+                            '功能開發中...',
+                            style: TextStyle(
+                              color: FrontUtil.textColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
                           ),
-                          IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.arrow_forward_ios_rounded,
-                                color: FrontUtil.textColor,
-                              )),
                         ],
                       ),
-                      Text(
-                        '測試',
-                        style: TextStyle(
-                            color: FrontUtil.textColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      )
+                      const SizedBox(height: 16),
                     ],
                   )
                 else
