@@ -6,6 +6,7 @@ import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/frontend/headers/header5.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +34,8 @@ class _ShowReportPageState extends State<ShowReportPage> {
       if (parts.length < 2) continue;
       String title = parts[0].trim();
       String contentText = parts[1].trim();
-      List<String> lines = contentText.split('。').where((s) => s.trim().isNotEmpty).toList();
+      List<String> lines =
+          contentText.split('。').where((s) => s.trim().isNotEmpty).toList();
       careSteps[title] = lines;
     }
     for (var r in widget.report.reminds) {
@@ -57,8 +59,9 @@ class _ShowReportPageState extends State<ShowReportPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Header5(),
+                    // const Header5(),
                     Container(
+                      margin: const EdgeInsets.only(top: 16),
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         border: Border(
@@ -135,10 +138,11 @@ class _ShowReportPageState extends State<ShowReportPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               Container(
-                                padding: const EdgeInsets.fromLTRB(
-                                    48, 4, 48, 4), //對稱的內間距，讓Container與裡面的子元素的上下間距為n，左右間距為m
+                                padding: const EdgeInsets.fromLTRB(48, 4, 48,
+                                    4), //對稱的內間距，讓Container與裡面的子元素的上下間距為n，左右間距為m
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF589399).withOpacity(0.65),
+                                  color:
+                                      const Color(0xFF589399).withOpacity(0.65),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: const Text(
@@ -208,9 +212,13 @@ class _ShowReportPageState extends State<ShowReportPage> {
                       children: [
                         Text(
                           '自我紀錄',
-                          style: TextStyle(color: FrontUtil.textColor, fontSize: 20, height: 3),
+                          style: TextStyle(
+                              color: FrontUtil.textColor,
+                              fontSize: 20,
+                              height: 3),
                         ),
-                        (widget.report.choosekind != '' || widget.report.recording != '')
+                        (widget.report.choosekind != '' ||
+                                widget.report.recording != '')
                             ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -269,8 +277,13 @@ class _ShowReportPageState extends State<ShowReportPage> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          FrontUtil.showConfirmDialog(context, const Color(0xFFFF6262),
-                              '此傷口已經癒合了嗎?', '※『是的』將會關閉傷口的後續追蹤', '還沒', '是的', () async {
+                          FrontUtil.showConfirmDialog(
+                              context,
+                              const Color(0xFFFF6262),
+                              '此傷口已經癒合了嗎?',
+                              '※『是的』將會關閉傷口的後續追蹤',
+                              '還沒',
+                              '是的', () async {
                             widget.report.groupId == 0
                                 ? await recordService.updateOktime(
                                     userId: widget.report.userId.toString(),
@@ -282,9 +295,11 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                     oktime: '傷口已痊癒',
                                     recordId: widget.report.id.toString(),
                                     groupId: widget.report.groupId.toString());
-                            final userReport =
-                                await RecordService.fetchReports(widget.report.userId);
-                            final userProvider = Provider.of<UserProvider>(context, listen: false);
+                            final userReport = await RecordService.fetchReports(
+                                widget.report.userId);
+                            final userProvider = Provider.of<UserProvider>(
+                                context,
+                                listen: false);
                             final user = userProvider.user;
                             if (user != null) {
                               user.reports = userReport;
@@ -292,7 +307,8 @@ class _ShowReportPageState extends State<ShowReportPage> {
                               userProvider.setUserInfo(user);
                             }
                             if (mounted) {
-                              Provider.of<ReportProvider>(context, listen: false)
+                              Provider.of<ReportProvider>(context,
+                                      listen: false)
                                   .setReports(userReport);
                               debugPrint(userReport.reversed.first.oktime);
                             }
@@ -325,15 +341,16 @@ class _ShowReportPageState extends State<ShowReportPage> {
         ]));
   }
 
-  Widget _buildCareSteps(
-      Map<String, List<String>> careSteps, UserReport report, UserRemind? remind) {
+  Widget _buildCareSteps(Map<String, List<String>> careSteps, UserReport report,
+      UserRemind? remind) {
     return Row(
       children: [
         Expanded(
           // 讓 Column 占滿 Row 的空間
           child: Container(
             decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: Color(0xFF589399), width: 2))),
+                border: Border(
+                    bottom: BorderSide(color: Color(0xFF589399), width: 2))),
             child: Padding(
               padding: const EdgeInsets.only(bottom: 14),
               child: Column(
@@ -352,26 +369,41 @@ class _ShowReportPageState extends State<ShowReportPage> {
                       Row(
                         children: [
                           IconButton(
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
                             onPressed: () {
                               setState(() {
                                 isSwitch = !isSwitch;
                               });
                             },
-                            icon: const Icon(
-                              Icons.compare_arrows,
-                              color: Color(0xFF589399),
+                            icon: const Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Icon(
+                                  FluentIcons.cube_24_regular,
+                                  color: Color(0xFF589399),
+                                  size: 13,
+                                ),
+                                Icon(
+                                  FluentIcons.arrow_sync_20_regular,
+                                  color: Color(0xFF589399),
+                                  size: 30,
+                                ),
+                              ],
                             ),
                           ),
+                          const SizedBox(width: 2),
                           IconButton(
                             onPressed: () {
                               // final reference = report.getReference(widget.isExtra);
                               // FrontUtil.showReference(context, reference);
                             },
                             icon: const Icon(
-                              Icons.link,
+                              Icons.content_paste_search_rounded,
                               color: Color(0xFF589399),
                             ),
                           ),
+                          const SizedBox(width: 2),
                           IconButton(
                             onPressed: () {
                               if (!isNotify) {
@@ -397,40 +429,64 @@ class _ShowReportPageState extends State<ShowReportPage> {
                   ),
                   ...[
                     if (isSwitch)
+                      // Column(
+                      //   children: [
+                      //     Row(
+                      //       children: [
+                      //         IconButton(
+                      //             onPressed: () {},
+                      //             icon: Icon(
+                      //               Icons.arrow_back_ios_new_rounded,
+                      //               color: FrontUtil.textColor,
+                      //             )),
+                      //         Expanded(
+                      //           child: Container(
+                      //             margin: const EdgeInsets.only(
+                      //                 top: 10, bottom: 15, left: 5, right: 5),
+                      //             height: 280,
+                      //             color: Colors.grey,
+                      //           ),
+                      //         ),
+                      //         IconButton(
+                      //             onPressed: () {},
+                      //             icon: Icon(
+                      //               Icons.arrow_forward_ios_rounded,
+                      //               color: FrontUtil.textColor,
+                      //             )),
+                      //       ],
+                      //     ),
+                      //     Text(
+                      //       '測試',
+                      //       style: TextStyle(
+                      //           color: FrontUtil.textColor,
+                      //           fontWeight: FontWeight.bold),
+                      //     ),
+                      //     const SizedBox(
+                      //       height: 30,
+                      //     )
+                      //   ],
+                      // )
                       Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
+                          const SizedBox(height: 10),
+                          Image.asset('images/doctor_bear.png', width: 160),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.arrow_back_ios_new_rounded,
-                                    color: FrontUtil.textColor,
-                                  )),
-                              Expanded(
-                                child: Container(
-                                  margin:
-                                      const EdgeInsets.only(top: 10, bottom: 15, left: 5, right: 5),
-                                  height: 280,
-                                  color: Colors.grey,
+                              Text(
+                                '功能開發中...',
+                                style: TextStyle(
+                                  color: FrontUtil.textColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
                               ),
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    color: FrontUtil.textColor,
-                                  )),
                             ],
                           ),
-                          Text(
-                            '測試',
-                            style:
-                                TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          )
+                          const SizedBox(height: 16),
                         ],
                       )
                     else
@@ -475,12 +531,14 @@ class _ShowReportPageState extends State<ShowReportPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(title,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 IconButton(
                   onPressed: () {
                     setState(() => show = !show);
                   },
-                  icon: Icon(show ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+                  icon:
+                      Icon(show ? Icons.arrow_drop_up : Icons.arrow_drop_down),
                 ),
               ],
             ),
@@ -492,7 +550,8 @@ class _ShowReportPageState extends State<ShowReportPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: contents
-                    .map((line) => Text('• ${line.replaceAll(RegExp(r'\s+'), '')}'))
+                    .map((line) =>
+                        Text('• ${line.replaceAll(RegExp(r'\s+'), '')}'))
                     .toList(),
               ),
             ),
