@@ -16,7 +16,8 @@ class GalleryPage extends StatefulWidget {
   State<GalleryPage> createState() => _GalleryPageState();
 }
 
-class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStateMixin {
+class _GalleryPageState extends State<GalleryPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -76,7 +77,8 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                 dividerColor: Colors.transparent,
                 indicatorSize: TabBarIndicatorSize.tab,
                 labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
+                unselectedLabelStyle:
+                    const TextStyle(fontWeight: FontWeight.normal),
                 tabs: const [
                   Tab(text: ("全部")),
                   Tab(text: ("割傷")),
@@ -115,12 +117,17 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
           children: [
             const Text(
               "近期傷口",
-              style: TextStyle(color: Color(0xFF589399), fontWeight: FontWeight.w700, height: 3),
+              style: TextStyle(
+                  color: Color(0xFF589399),
+                  fontWeight: FontWeight.w700,
+                  height: 3),
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: [for (var report in reports) _buildRecentImage(report)],
+                children: [
+                  for (var report in reports) _buildRecentImage(report)
+                ],
               ),
             ),
             SingleChildScrollView(
@@ -192,7 +199,8 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildYearlyImage(String y, List<List<UserReport>>? reports, List<UserReport> allReports) {
+  Widget _buildYearlyImage(
+      String y, List<List<UserReport>>? reports, List<UserReport> allReports) {
     List<List<UserReport>> yearlyReports = [];
     for (var report in reports!) {
       if (report.first.date.startsWith(y)) {
@@ -214,14 +222,16 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
           children: [
             Text(
               '$y年',
-              style: const TextStyle(color: Color(0xFF589399), fontWeight: FontWeight.w700),
+              style: const TextStyle(
+                  color: Color(0xFF589399), fontWeight: FontWeight.w700),
             ),
             TextButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TotalPage(yearlyReports: allYearlyReports),
+                    builder: (context) =>
+                        TotalPage(yearlyReports: allYearlyReports),
                   ),
                 );
               },
@@ -240,7 +250,8 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                     ),
                   ),
                   SizedBox(width: 4),
-                  Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF589399)),
+                  Icon(Icons.arrow_forward_ios,
+                      size: 16, color: Color(0xFF589399)),
                 ],
               ),
             )
@@ -252,7 +263,8 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                 ? Center(
                     child: Text(
                       '無 $y 年的傷口紀錄',
-                      style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          color: Colors.grey, fontWeight: FontWeight.bold),
                     ),
                   )
                 : Row(
@@ -299,7 +311,8 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                                     ),
                           Row(
                             children: [
-                              (yearlyReports.length < 3 || yearlyReports[2].isEmpty)
+                              (yearlyReports.length < 3 ||
+                                      yearlyReports[2].isEmpty)
                                   ? Container(
                                       width: 83,
                                       height: 105,
@@ -318,15 +331,18 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                                           105,
                                           const EdgeInsets.only(right: 10),
                                         ),
-                              (yearlyReports.length < 4 || yearlyReports[3].isEmpty)
+                              (yearlyReports.length < 4 ||
+                                      yearlyReports[3].isEmpty)
                                   ? Container(
                                       width: 83,
                                       height: 105,
                                       color: const Color(0xFFEBFEFF),
                                     )
                                   : yearlyReports[3].length == 1
-                                      ? _buildYearImageBox(yearlyReports[3].first, 83, 105, null)
-                                      : _buildYearGroupSwitcher(yearlyReports[3], 83, 105, null),
+                                      ? _buildYearImageBox(
+                                          yearlyReports[3].first, 83, 105, null)
+                                      : _buildYearGroupSwitcher(
+                                          yearlyReports[3], 83, 105, null),
                             ],
                           )
                         ],
@@ -337,13 +353,14 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildYearImageBox(
-      UserReport report, double width, double height, EdgeInsetsGeometry? edge) {
+  Widget _buildYearImageBox(UserReport report, double width, double height,
+      EdgeInsetsGeometry? edge) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ShowReportPage(report: report)),
+          MaterialPageRoute(
+              builder: (context) => ShowReportPage(report: report)),
         );
       },
       child: Container(
@@ -365,8 +382,8 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildYearGroupSwitcher(
-      List<UserReport> reports, double width, double height, EdgeInsetsGeometry? edge) {
+  Widget _buildYearGroupSwitcher(List<UserReport> reports, double width,
+      double height, EdgeInsetsGeometry? edge) {
     return Container(
       width: width,
       height: height,
@@ -384,7 +401,8 @@ class _YearImageSwitcher extends StatefulWidget {
   final List<UserReport> reports;
   final double width;
   final double height;
-  const _YearImageSwitcher({required this.reports, required this.width, required this.height});
+  const _YearImageSwitcher(
+      {required this.reports, required this.width, required this.height});
 
   @override
   State<_YearImageSwitcher> createState() => _YearImageSwitcherState();
@@ -415,7 +433,8 @@ class _YearImageSwitcherState extends State<_YearImageSwitcher> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ShowReportPage(report: report)),
+          MaterialPageRoute(
+              builder: (context) => ShowReportPage(report: report)),
         );
       },
       child: ClipRRect(
