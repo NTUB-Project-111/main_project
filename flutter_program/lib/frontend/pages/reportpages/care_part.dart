@@ -120,6 +120,7 @@ class _CarePartState extends State<CarePart> {
                         '測試',
                         style: TextStyle(
                             color: FrontUtil.textColor,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(
@@ -138,11 +139,19 @@ class _CarePartState extends State<CarePart> {
   }
 
   List<Widget> _buildAllWoundSections(Map<String, List<String>> steps) {
-    return steps.entries.map((entry) {
-      final title = entry.key;
-      final details = entry.value;
-      return _buildWoundSection(title, details);
+    // return steps.entries.map((entry) {
+    //   final title = entry.key;
+    //   final details = entry.value;
+    //   return _buildWoundSection(title, details);
+    // }).toList();
+    final widgets = steps.entries.map((entry) {
+      return _buildWoundSection(entry.key, entry.value);
     }).toList();
+
+    // 在最後一個卡片下方加空間
+    widgets.add(const SizedBox(height: 16)); // 想要多高就改這裡
+
+    return widgets;
   }
 
   Widget _buildWoundSection(String title, List<String> contents) {
