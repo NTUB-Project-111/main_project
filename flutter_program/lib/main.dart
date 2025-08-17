@@ -6,6 +6,7 @@ import 'package:drw/backend/viewmodels/register_view_model.dart';
 import 'package:drw/frontend/pages/login_page.dart';
 import 'package:drw/frontend/pages/personalpages/editdisease_page.dart';
 import 'package:drw/frontend/pages/personalpages/showdisease_page.dart';
+import 'package:drw/frontend/pages/test_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

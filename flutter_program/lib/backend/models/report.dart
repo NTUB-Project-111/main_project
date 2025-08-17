@@ -31,6 +31,38 @@ class UserReport {
     required this.reminds,
   });
 
+  UserReport copyWith({
+    int? id,
+    int? userId,
+    String? date,
+    String? type,
+    String? oktime,
+    String? caremode,
+    String? ifcall,
+    String? choosekind,
+    String? recording,
+    String? photo,
+    String? name,
+    int? groupId,
+    List<UserRemind>? reminds,
+  }) {
+    return UserReport(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      date: date ?? this.date,
+      type: type ?? this.type,
+      oktime: oktime ?? this.oktime,
+      caremode: caremode ?? this.caremode,
+      ifcall: ifcall ?? this.ifcall,
+      choosekind: choosekind ?? this.choosekind,
+      recording: recording ?? this.recording,
+      photo: photo ?? this.photo,
+      name: name ?? this.name,
+      groupId: groupId ?? this.groupId,
+      reminds: reminds ?? this.reminds,
+    );
+  }
+
   factory UserReport.fromJson(Map<String, dynamic> json) {
     return UserReport(
       id: json['id'],

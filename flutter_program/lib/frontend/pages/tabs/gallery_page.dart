@@ -171,11 +171,13 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                     // )
                     )),
             onTap: () {
+              final extra = isExtra(report);
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => ShowReportPage(
                             report: report,
+                            isExtra: extra,
                           )));
             },
           ),
@@ -341,10 +343,14 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
       UserReport report, double width, double height, EdgeInsetsGeometry? edge) {
     return GestureDetector(
       onTap: () {
+        final extra = isExtra(report);
         Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ShowReportPage(report: report)),
-        );
+            context,
+            MaterialPageRoute(
+                builder: (context) => ShowReportPage(
+                      report: report,
+                      isExtra: extra,
+                    )));
       },
       child: Container(
         width: width,
@@ -377,6 +383,29 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
         height: height,
       ),
     );
+  }
+
+  bool isExtra(UserReport report) {
+    int groupId = report.groupId;
+    UserReport? compareReport;
+    List<UserReport> userReports = [];
+    final reportProvider = context.read<ReportProvider>();
+    final reports = reportProvider.reports;
+    if (groupId == 0) {
+      return false;
+    } else {
+      for (var r in reports) {
+        if (r.groupId == groupId) {
+          userReports.add(r);
+        }
+      }
+    }
+    compareReport = userReports.first;
+    if (report.id == compareReport.id) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }
 
@@ -413,10 +442,14 @@ class _YearImageSwitcherState extends State<_YearImageSwitcher> {
     final report = widget.reports[_index];
     return GestureDetector(
       onTap: () {
+        final extra = isExtra(report);
         Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ShowReportPage(report: report)),
-        );
+            context,
+            MaterialPageRoute(
+                builder: (context) => ShowReportPage(
+                      report: report,
+                      isExtra: extra,
+                    )));
       },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
@@ -439,5 +472,28 @@ class _YearImageSwitcherState extends State<_YearImageSwitcher> {
         ),
       ),
     );
+  }
+
+  bool isExtra(UserReport report) {
+    int groupId = report.groupId;
+    UserReport? compareReport;
+    List<UserReport> userReports = [];
+    final reportProvider = context.read<ReportProvider>();
+    final reports = reportProvider.reports;
+    if (groupId == 0) {
+      return false;
+    } else {
+      for (var r in reports) {
+        if (r.groupId == groupId) {
+          userReports.add(r);
+        }
+      }
+    }
+    compareReport = userReports.first;
+    if (report.id == compareReport.id) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

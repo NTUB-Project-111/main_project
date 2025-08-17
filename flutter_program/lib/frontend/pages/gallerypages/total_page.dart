@@ -141,12 +141,12 @@ class _TotalPageState extends State<TotalPage> {
         ),
       ),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ShowReportPage(report: userReport),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => ShowReportPage(report: userReport),
+        //   ),
+        // );
       },
     );
   }

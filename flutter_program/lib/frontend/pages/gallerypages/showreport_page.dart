@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:drw/backend/models/remind.dart';
 import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/models/report_model.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/record_service.dart';
@@ -11,7 +12,8 @@ import 'package:provider/provider.dart';
 
 class ShowReportPage extends StatefulWidget {
   final UserReport report;
-  const ShowReportPage({super.key, required this.report});
+  final bool isExtra;
+  const ShowReportPage({super.key, required this.report, required this.isExtra});
 
   @override
   State<ShowReportPage> createState() => _ShowReportPageState();
@@ -47,6 +49,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
   @override
   Widget build(BuildContext context) {
     RecordService recordService = RecordService();
+    Report userReport = Report();
     return Scaffold(
         backgroundColor: const Color(0xFFEBFEFF),
         body: Column(children: [
@@ -74,8 +77,27 @@ class _ShowReportPageState extends State<ShowReportPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
+                            onPressed: () async {
+                              if (isNotify) {
+                                FrontUtil.showTextDialog(
+                                  context,
+                                  '確定要儲存修改嗎?',
+                                  '確定',
+                                  '取消',
+                                  onConfirm: () async {
+                                    final success =
+                                        await userReport.addRemind(widget.report.userId.toString());
+                                    if (success) {
+                                      FrontUtil.showSuccess('提醒修改成功!');
+                                    } else {
+                                      FrontUtil.showFail('提醒修改失敗');
+                                    }
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              } else {
+                                Navigator.pop(context);
+                              }
                             },
                             icon: const Icon(
                               Icons.arrow_back,
@@ -200,7 +222,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                         ],
                       ),
                     ),
-                    _buildCareSteps(careSteps, widget.report, remind),
+                    _buildCareSteps(careSteps, widget.report, remind, userReport),
                     // ..._buildAllWoundSections(careSteps),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,20 +304,20 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                     oktime: '傷口已痊癒',
                                     recordId: widget.report.id.toString(),
                                     groupId: widget.report.groupId.toString());
-                            final userReport =
-                                await RecordService.fetchReports(widget.report.userId);
-                            final userProvider = Provider.of<UserProvider>(context, listen: false);
-                            final user = userProvider.user;
-                            if (user != null) {
-                              user.reports = userReport;
 
-                              userProvider.setUserInfo(user);
-                            }
-                            if (mounted) {
-                              Provider.of<ReportProvider>(context, listen: false)
-                                  .setReports(userReport);
-                              debugPrint(userReport.reversed.first.oktime);
-                            }
+                            // final userReport =
+                            //     await RecordService.fetchReports(widget.report.userId);
+                            // final userProvider = Provider.of<UserProvider>(context, listen: false);
+                            // final user = userProvider.user;
+                            // if (user != null) {
+                            //   user.reports = userReport;
+                            //   userProvider.setUserInfo(user);
+                            // }
+                            // if (mounted) {
+                            //   Provider.of<ReportProvider>(context, listen: false)
+                            //       .setReports(userReport);
+                            //   debugPrint(userReport.reversed.first.oktime);
+                            // }
                           });
                         },
                         style: ElevatedButton.styleFrom(
@@ -325,8 +347,8 @@ class _ShowReportPageState extends State<ShowReportPage> {
         ]));
   }
 
-  Widget _buildCareSteps(
-      Map<String, List<String>> careSteps, UserReport report, UserRemind? remind) {
+  Widget _buildCareSteps(Map<String, List<String>> careSteps, UserReport report, UserRemind? remind,
+      Report userReport) {
     return Row(
       children: [
         Expanded(
@@ -364,8 +386,8 @@ class _ShowReportPageState extends State<ShowReportPage> {
                           ),
                           IconButton(
                             onPressed: () {
-                              // final reference = report.getReference(widget.isExtra);
-                              // FrontUtil.showReference(context, reference);
+                              final reference = getReference(widget.isExtra, widget.report.type);
+                              FrontUtil.showReference(context, reference);
                             },
                             icon: const Icon(
                               Icons.link,
@@ -375,6 +397,24 @@ class _ShowReportPageState extends State<ShowReportPage> {
                           IconButton(
                             onPressed: () {
                               if (!isNotify) {
+                                userReport.recordId = widget.report.id;
+                                userReport.date = widget.report.date;
+                                userReport.oktime = widget.report.oktime;
+                                final reminds = widget.report.reminds;
+                                for (var r in reminds) {
+                                  if (r.recordId == userReport.recordId) {
+                                    final remind = r;
+                                    userReport.remindFreq = remind.freq;
+                                    userReport.remindTime = remind.time;
+
+                                    break;
+                                  }
+                                }
+                                
+                                debugPrint(userReport.oktime);
+                                debugPrint(userReport.remindFreq);
+                                debugPrint(userReport.remindTime);
+                                FrontUtil.showRemindDialog(context, userReport);
                                 // showRemindDialog(context, report, remind);
                               }
                               setState(() {

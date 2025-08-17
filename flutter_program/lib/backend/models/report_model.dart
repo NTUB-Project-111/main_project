@@ -95,6 +95,9 @@ class Report extends ChangeNotifier {
   }
 
   void _createRemindList() {
+    debugPrint(oktime);
+    debugPrint(remindFreq);
+    debugPrint(remindTime);
     remindList.clear();
     oktime = oktime
         .replaceAll(RegExp(r'\s+'), '') // 移除所有空白（空格、換行等）
@@ -306,7 +309,7 @@ class Report extends ChangeNotifier {
     }
   }
 
-  Future<bool> _addRecord(String userId) async {
+  Future<bool> addRecord(String userId) async {
     final details = [
       injuryParts.toString(),
       woundReactions.toString(),
@@ -319,7 +322,7 @@ class Report extends ChangeNotifier {
         .replaceAll(']', '')
         .trim()
         .replaceFirst(RegExp(r',$'), '');
-    name == '' ? '$woundType診斷報告':name;
+    name == '' ? '$woundType診斷報告' : name;
     int? id = await _record.addRecord(userId, date, woundType, oktime, gptResult,
         notify ? 'Y' : 'N', tags, selfRecord, name, image!);
     if (id != null) {
@@ -330,7 +333,7 @@ class Report extends ChangeNotifier {
     }
   }
 
-  Future<bool> _addRemind(String userId) async {
+  Future<bool> addRemind(String userId) async {
     bool result = true;
     _createRemindList();
     for (var remind in remindList) {
@@ -372,8 +375,8 @@ class Report extends ChangeNotifier {
     bool recordResult = true;
     bool remindResult = true;
     bool groupResult = true;
-    recordResult = await _addRecord(userId);
-    if (notify) remindResult = await _addRemind(userId);
+    recordResult = await addRecord(userId);
+    if (notify) remindResult = await addRemind(userId);
     if (isExtra) {
       //建立群組
       groupResult = await _addGroup(userId, id);

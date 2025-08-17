@@ -1,4 +1,3 @@
-import 'package:drw/backend/models/user_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/user_service.dart';
 import 'package:drw/frontend/utility/front_util.dart';
