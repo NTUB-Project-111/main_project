@@ -7,6 +7,7 @@ import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/frontend/headers/header5.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -60,8 +61,9 @@ class _ShowReportPageState extends State<ShowReportPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Header5(),
+                    // const Header5(),
                     Container(
+                      margin: const EdgeInsets.only(top: 16),
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         border: Border(
@@ -374,26 +376,41 @@ class _ShowReportPageState extends State<ShowReportPage> {
                       Row(
                         children: [
                           IconButton(
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
                             onPressed: () {
                               setState(() {
                                 isSwitch = !isSwitch;
                               });
                             },
-                            icon: const Icon(
-                              Icons.compare_arrows,
-                              color: Color(0xFF589399),
+                            icon: const Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Icon(
+                                  FluentIcons.cube_24_regular,
+                                  color: Color(0xFF589399),
+                                  size: 13,
+                                ),
+                                Icon(
+                                  FluentIcons.arrow_sync_20_regular,
+                                  color: Color(0xFF589399),
+                                  size: 30,
+                                ),
+                              ],
                             ),
                           ),
+                          const SizedBox(width: 2),
                           IconButton(
                             onPressed: () {
                               final reference = getReference(widget.isExtra, widget.report.type);
                               FrontUtil.showReference(context, reference);
                             },
                             icon: const Icon(
-                              Icons.link,
+                              Icons.content_paste_search_rounded,
                               color: Color(0xFF589399),
                             ),
                           ),
+                          const SizedBox(width: 2),
                           IconButton(
                             onPressed: () {
                               if (!isNotify) {
@@ -410,7 +427,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                     break;
                                   }
                                 }
-                                
+
                                 debugPrint(userReport.oktime);
                                 debugPrint(userReport.remindFreq);
                                 debugPrint(userReport.remindTime);
@@ -437,40 +454,64 @@ class _ShowReportPageState extends State<ShowReportPage> {
                   ),
                   ...[
                     if (isSwitch)
+                      // Column(
+                      //   children: [
+                      //     Row(
+                      //       children: [
+                      //         IconButton(
+                      //             onPressed: () {},
+                      //             icon: Icon(
+                      //               Icons.arrow_back_ios_new_rounded,
+                      //               color: FrontUtil.textColor,
+                      //             )),
+                      //         Expanded(
+                      //           child: Container(
+                      //             margin: const EdgeInsets.only(
+                      //                 top: 10, bottom: 15, left: 5, right: 5),
+                      //             height: 280,
+                      //             color: Colors.grey,
+                      //           ),
+                      //         ),
+                      //         IconButton(
+                      //             onPressed: () {},
+                      //             icon: Icon(
+                      //               Icons.arrow_forward_ios_rounded,
+                      //               color: FrontUtil.textColor,
+                      //             )),
+                      //       ],
+                      //     ),
+                      //     Text(
+                      //       '測試',
+                      //       style: TextStyle(
+                      //           color: FrontUtil.textColor,
+                      //           fontWeight: FontWeight.bold),
+                      //     ),
+                      //     const SizedBox(
+                      //       height: 30,
+                      //     )
+                      //   ],
+                      // )
                       Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
+                          const SizedBox(height: 10),
+                          Image.asset('images/doctor_bear.png', width: 160),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.arrow_back_ios_new_rounded,
-                                    color: FrontUtil.textColor,
-                                  )),
-                              Expanded(
-                                child: Container(
-                                  margin:
-                                      const EdgeInsets.only(top: 10, bottom: 15, left: 5, right: 5),
-                                  height: 280,
-                                  color: Colors.grey,
+                              Text(
+                                '功能開發中...',
+                                style: TextStyle(
+                                  color: FrontUtil.textColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
                               ),
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    color: FrontUtil.textColor,
-                                  )),
                             ],
                           ),
-                          Text(
-                            '測試',
-                            style:
-                                TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(
-                            height: 30,
-                          )
+                          const SizedBox(height: 16),
                         ],
                       )
                     else
@@ -532,7 +573,34 @@ class _ShowReportPageState extends State<ShowReportPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: contents
-                    .map((line) => Text('• ${line.replaceAll(RegExp(r'\s+'), '')}'))
+                    .map(
+                      (line) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '•',
+                              style: TextStyle(
+                                color: Color(0xFF589399),
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 6), // bullet 與文字間距
+                            Expanded(
+                              child: Text(
+                                line.replaceAll(RegExp(r'\s+'), ''),
+                                style: const TextStyle(
+                                  color: Color(0xFF589399),
+                                  fontSize: 14,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
             ),

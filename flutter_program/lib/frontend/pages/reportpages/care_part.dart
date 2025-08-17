@@ -38,6 +38,8 @@ class _CarePartState extends State<CarePart> {
                   Row(
                     children: [
                       IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                         onPressed: () {
                           report.toggleSwitch();
                         },
@@ -47,26 +49,28 @@ class _CarePartState extends State<CarePart> {
                             Icon(
                               FluentIcons.cube_24_regular,
                               color: Color(0xFF589399),
-                              size: 16,
+                              size: 13,
                             ),
                             Icon(
-                              FluentIcons.arrow_sync_circle_24_regular,
+                              FluentIcons.arrow_sync_20_regular,
                               color: Color(0xFF589399),
-                              size: 28,
+                              size: 30,
                             ),
                           ],
                         ),
                       ),
+                      const SizedBox(width: 2),
                       IconButton(
                         onPressed: () {
                           final reference = report.getReference(widget.isExtra);
                           FrontUtil.showReference(context, reference);
                         },
                         icon: const Icon(
-                          Icons.link,
+                          Icons.content_paste_search_rounded,
                           color: Color(0xFF589399),
                         ),
                       ),
+                      const SizedBox(width: 2),
                       IconButton(
                         onPressed: () {
                           report.toggleNotify();
