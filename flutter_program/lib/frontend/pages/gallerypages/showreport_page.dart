@@ -26,6 +26,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
   bool isNotify = false;
   bool isSwitch = false;
   UserRemind? remind;
+  Report userReport = Report();
   @override
   void initState() {
     super.initState();
@@ -50,7 +51,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
   @override
   Widget build(BuildContext context) {
     RecordService recordService = RecordService();
-    Report userReport = Report();
+
     return Scaffold(
         backgroundColor: const Color(0xFFEBFEFF),
         body: Column(children: [
@@ -81,6 +82,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                           IconButton(
                             onPressed: () async {
                               if (isNotify) {
+                            
                                 FrontUtil.showTextDialog(
                                   context,
                                   '確定要儲存修改嗎?',
@@ -454,43 +456,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                   ),
                   ...[
                     if (isSwitch)
-                      // Column(
-                      //   children: [
-                      //     Row(
-                      //       children: [
-                      //         IconButton(
-                      //             onPressed: () {},
-                      //             icon: Icon(
-                      //               Icons.arrow_back_ios_new_rounded,
-                      //               color: FrontUtil.textColor,
-                      //             )),
-                      //         Expanded(
-                      //           child: Container(
-                      //             margin: const EdgeInsets.only(
-                      //                 top: 10, bottom: 15, left: 5, right: 5),
-                      //             height: 280,
-                      //             color: Colors.grey,
-                      //           ),
-                      //         ),
-                      //         IconButton(
-                      //             onPressed: () {},
-                      //             icon: Icon(
-                      //               Icons.arrow_forward_ios_rounded,
-                      //               color: FrontUtil.textColor,
-                      //             )),
-                      //       ],
-                      //     ),
-                      //     Text(
-                      //       '測試',
-                      //       style: TextStyle(
-                      //           color: FrontUtil.textColor,
-                      //           fontWeight: FontWeight.bold),
-                      //     ),
-                      //     const SizedBox(
-                      //       height: 30,
-                      //     )
-                      //   ],
-                      // )
+                      
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
