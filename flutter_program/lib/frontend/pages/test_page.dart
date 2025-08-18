@@ -1,5 +1,5 @@
 import 'package:drw/frontend/utility/front_util.dart';
-import 'package:drw/frontend/widgets/report/title.dart';
+
 import 'package:flutter/material.dart';
 
 class TestPage extends StatefulWidget {
@@ -24,7 +24,7 @@ class _TestPageState extends State<TestPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                TitlePart(editable: false,)
+                // TitlePart(editable: false,)
               ],
             ),
           ),

@@ -117,12 +117,21 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
               "近期傷口",
               style: TextStyle(color: Color(0xFF589399), fontWeight: FontWeight.w700, height: 3),
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [for (var report in reports) _buildRecentImage(report)],
-              ),
-            ),
+            reports.isNotEmpty
+                ? SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [for (var report in reports) _buildRecentImage(report)],
+                    ),
+                  )
+                : const SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      '無近期傷口紀錄',
+                      style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, height: 3),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
             SingleChildScrollView(
               child: Column(
                 children: [
