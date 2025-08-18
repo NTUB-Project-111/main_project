@@ -190,11 +190,12 @@ class RecordService {
     return null; // 若失敗則回傳 null
   }
 
-   Future<void> updateOktime({
+  Future<void> updateOktime({
     required String userId,
     String? recordId,
     String? groupId,
     required String oktime,
+    required String ifcall,
   }) async {
     final url = Uri.parse('${ApiBase.baseUrl}/updateOktime'); // 替換成你的伺服器網址
 
@@ -203,6 +204,7 @@ class RecordService {
       'oktime': oktime,
       if (recordId != null) 'recordId': recordId,
       if (groupId != null) 'groupId': groupId,
+      'ifcall': ifcall
     };
 
     try {
@@ -216,7 +218,6 @@ class RecordService {
         final responseData = jsonDecode(response.body);
         if (responseData['success'] == true) {
           FrontUtil.showSuccess('更新成功');
-          
         } else {
           FrontUtil.showFail('更新失敗：${responseData['message']}');
         }
@@ -225,6 +226,40 @@ class RecordService {
       }
     } catch (e) {
       FrontUtil.showFail('請求失敗：$e');
+    }
+  }
+
+  Future<bool> updateIfcall({
+    required int userId,
+    int? recordId,
+    int? groupId,
+    required String ifcall,
+  }) async {
+    final url = Uri.parse("${ApiBase.baseUrl}/updateIfcall");
+
+    final body = {
+      "userId": userId,
+      "ifcall": ifcall,
+    };
+
+    if (groupId != null) {
+      body["groupId"] = groupId;
+    } else if (recordId != null) {
+      body["recordId"] = recordId;
+    }
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final result = jsonDecode(response.body);
+      // 假設後端有回傳 { "success": true } 之類的格式
+      return result["success"] == true;
+    } else {
+      return false;
     }
   }
 }
