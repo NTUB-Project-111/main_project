@@ -34,7 +34,7 @@ class _SelectImagePageState extends State<SelectImagePage> {
               "${selectedDate!.year.toString().padLeft(4, '0')}-${selectedDate!.month.toString().padLeft(2, '0')}-${selectedDate!.day.toString().padLeft(2, '0')}";
       return matchWound && matchDate;
     }).toList();
-    final visibleReports = filteredReports.where((r) => r.first.oktime != '已癒合').toList();
+    final visibleReports = filteredReports.where((r) => r.first.oktime != '傷口已痊癒').toList();
 
     return Scaffold(
         backgroundColor: FrontUtil.bkColor,
