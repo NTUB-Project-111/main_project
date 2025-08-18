@@ -195,7 +195,7 @@ router.post('/updateOktime', async (req, res) => {
     if (groupId) {
       // 若有傳 groupId：用 userId + groupId 為條件
       [result] = await db.query(
-        'UPDATE record SET oktime = ? WHERE fk_userid = ? AND group_id = ?',
+        'UPDATE record SET oktime = ? , ifcall = "N" WHERE fk_userid = ? AND group_id = ?',
         [oktime, userId, groupId]
       );
     } else {
@@ -204,7 +204,7 @@ router.post('/updateOktime', async (req, res) => {
         return res.status(400).json({ success: false, message: '未傳入 groupId 時，recordId 為必要參數' });
       }
       [result] = await db.query(
-        'UPDATE record SET oktime = ? WHERE fk_userid = ? AND id_record = ?',
+        'UPDATE record SET oktime = ? , ifcall = "N" WHERE fk_userid = ? AND id_record = ?',
         [oktime, userId, recordId]
       );
     }
