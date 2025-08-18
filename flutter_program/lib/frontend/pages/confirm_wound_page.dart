@@ -130,7 +130,6 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                   onPressed: () {
                     FrontUtil.showConfirmDialog(
                         context, FrontUtil.textColor, '確定追蹤該傷口嗎?', null, '取消', '確定', () {
-                      debugPrint(widget.report.type);
                       Navigator.push(
                           context,
                           MaterialPageRoute(

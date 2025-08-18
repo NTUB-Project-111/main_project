@@ -229,6 +229,7 @@ class Report extends ChangeNotifier {
 
     try {
       if (isExtra) {
+        name = '$wound診斷報告'.replaceAll(RegExp(r'\s+'), '');
         if (healTime == null) throw Exception('oktime 不應為 null');
 
         DateTime today = DateTime.now();

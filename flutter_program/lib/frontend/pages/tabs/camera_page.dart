@@ -134,12 +134,12 @@ class _CameraPageState extends State<CameraPage> {
         '送出診斷',
         '重新拍攝',
         ReportPage(
-            isExtra: widget.isExtra,
-            id: widget.id,
-            oktime: widget.oktime,
-            date: widget.date,
-            woundType: widget.woundType,
-          ),
+          isExtra: widget.isExtra,
+          id: widget.id,
+          oktime: widget.oktime,
+          date: widget.date,
+          woundType: widget.woundType,
+        ),
       );
     } catch (e) {
       debugPrint("拍照失敗：$e");
