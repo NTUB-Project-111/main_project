@@ -154,7 +154,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                 borderRadius: BorderRadius.circular(10),
                                 child: Image.network(
                                   widget.report.photo.toString(),
-                                  height: 180,
+                                  height: 200,
                                   width: 180,
                                   fit: BoxFit.cover,
                                 )),
@@ -319,12 +319,14 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                           userId: widget.report.userId.toString(),
                                           oktime: '傷口已痊癒',
                                           recordId: widget.report.id.toString(),
+                                          ifcall: 'N'
                                         )
                                       : await recordService.updateOktime(
                                           userId: widget.report.userId.toString(),
                                           oktime: '傷口已痊癒',
                                           recordId: widget.report.id.toString(),
-                                          groupId: widget.report.groupId.toString());
+                                          groupId: widget.report.groupId.toString(),
+                                          ifcall: 'N');
                                   setState(() {
                                     isOktimeChange = true;
                                     isNotify = false;
