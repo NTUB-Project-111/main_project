@@ -1,10 +1,12 @@
 import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/provider/report_provider.dart';
 // import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header3.dart';
 import 'package:drw/frontend/pages/gallerypages/showreport_page.dart';
 import 'package:drw/frontend/pages/remind_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class TotalPage extends StatefulWidget {
   final List<UserReport> yearlyReports;
@@ -141,13 +143,38 @@ class _TotalPageState extends State<TotalPage> {
         ),
       ),
       onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => ShowReportPage(report: userReport),
-        //   ),
-        // );
+        final extra = isExtra(userReport);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ShowReportPage(
+                      report: userReport,
+                      isExtra: extra,
+                    )));
       },
     );
+  }
+
+  bool isExtra(UserReport report) {
+    int groupId = report.groupId;
+    UserReport? compareReport;
+    List<UserReport> userReports = [];
+    final reportProvider = context.read<ReportProvider>();
+    final reports = reportProvider.reports;
+    if (groupId == 0) {
+      return false;
+    } else {
+      for (var r in reports) {
+        if (r.groupId == groupId) {
+          userReports.add(r);
+        }
+      }
+    }
+    compareReport = userReports.first;
+    if (report.id == compareReport.id) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

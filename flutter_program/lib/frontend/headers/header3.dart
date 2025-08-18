@@ -9,38 +9,36 @@ class Header3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.only(left: 25,right: 12),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            bottom: BorderSide(color: Color(0xFF589399), width: 2),
-          ),
+    return Container(
+      padding: const EdgeInsets.only(left: 25, right: 12, top: 30),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(color: Color(0xFF589399), width: 2),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                height: 2.5,
-                color: Color(0xFF669FA5),
-              ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              height: 2.5,
+              color: Color(0xFF669FA5),
             ),
-            IconButton(
-              icon: icon,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => targetPage),
-                );
-              },
-            )
-          ],
-        ),
+          ),
+          IconButton(
+            icon: icon,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => targetPage),
+              );
+            },
+          )
+        ],
       ),
     );
   }
