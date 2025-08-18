@@ -27,6 +27,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
   bool isSwitch = false;
   UserRemind? remind;
   Report userReport = Report();
+  bool isOktimeChange = false;
   @override
   void initState() {
     super.initState();
@@ -63,8 +64,11 @@ class _ShowReportPageState extends State<ShowReportPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // const Header5(),
+                    const SizedBox(
+                      height: 30,
+                    ),
                     Container(
-                      margin: const EdgeInsets.only(top: 16),
+                      margin: const EdgeInsets.only(top: 30),
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         border: Border(
@@ -82,7 +86,6 @@ class _ShowReportPageState extends State<ShowReportPage> {
                           IconButton(
                             onPressed: () async {
                               if (isNotify) {
-                            
                                 FrontUtil.showTextDialog(
                                   context,
                                   '確定要儲存修改嗎?',
@@ -184,43 +187,54 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                 ),
                               ),
                               SizedBox(
-                                  width: 180,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: widget.report.oktime != '傷口已痊癒'
-                                        ? [
-                                            const Text(
-                                              '預計',
-                                              style: TextStyle(
-                                                color: Color(0xFF589399),
-                                                fontSize: 16,
-                                              ),
+                                width: 180,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: isOktimeChange
+                                      ? [
+                                          const Text(
+                                            '傷口已痊癒',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 20,
                                             ),
-                                            Text(
-                                              widget.report.oktime,
-                                              style: const TextStyle(
-                                                color: Color(0xFF589399),
-                                                fontSize: 26,
+                                          )
+                                        ]
+                                      : widget.report.oktime != '傷口已痊癒'
+                                          ? [
+                                              const Text(
+                                                '預計',
+                                                style: TextStyle(
+                                                  color: Color(0xFF589399),
+                                                  fontSize: 16,
+                                                ),
                                               ),
-                                            ),
-                                            const Text(
-                                              '癒合',
-                                              style: TextStyle(
-                                                color: Color(0xFF589399),
-                                                fontSize: 16,
+                                              Text(
+                                                widget.report.oktime,
+                                                style: const TextStyle(
+                                                  color: Color(0xFF589399),
+                                                  fontSize: 26,
+                                                ),
                                               ),
-                                            ),
-                                          ]
-                                        : [
-                                            const Text(
-                                              '傷口已痊癒',
-                                              style: TextStyle(
-                                                color: Colors.red,
-                                                fontSize: 20,
+                                              const Text(
+                                                '癒合',
+                                                style: TextStyle(
+                                                  color: Color(0xFF589399),
+                                                  fontSize: 16,
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                  )),
+                                            ]
+                                          : [
+                                              const Text(
+                                                '傷口已痊癒',
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 20,
+                                                ),
+                                              ),
+                                            ],
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -291,55 +305,60 @@ class _ShowReportPageState extends State<ShowReportPage> {
                               )
                       ],
                     ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          FrontUtil.showConfirmDialog(context, const Color(0xFFFF6262),
-                              '此傷口已經癒合了嗎?', '※『是的』將會關閉傷口的後續追蹤', '還沒', '是的', () async {
-                            widget.report.groupId == 0
-                                ? await recordService.updateOktime(
-                                    userId: widget.report.userId.toString(),
-                                    oktime: '傷口已痊癒',
-                                    recordId: widget.report.id.toString(),
-                                  )
-                                : await recordService.updateOktime(
-                                    userId: widget.report.userId.toString(),
-                                    oktime: '傷口已痊癒',
-                                    recordId: widget.report.id.toString(),
-                                    groupId: widget.report.groupId.toString());
-
-                            // final userReport =
-                            //     await RecordService.fetchReports(widget.report.userId);
-                            // final userProvider = Provider.of<UserProvider>(context, listen: false);
-                            // final user = userProvider.user;
-                            // if (user != null) {
-                            //   user.reports = userReport;
-                            //   userProvider.setUserInfo(user);
-                            // }
-                            // if (mounted) {
-                            //   Provider.of<ReportProvider>(context, listen: false)
-                            //       .setReports(userReport);
-                            //   debugPrint(userReport.reversed.first.oktime);
-                            // }
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          backgroundColor: const Color(0xFF589399),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                    widget.report.oktime == '傷口已痊癒' || isOktimeChange
+                        ? const SizedBox()
+                        : SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                FrontUtil.showConfirmDialog(context, const Color(0xFFFF6262),
+                                    '此傷口已經癒合了嗎?', '※『是的』將會關閉傷口的後續追蹤', '還沒', '是的', () async {
+                                  widget.report.groupId == 0
+                                      ? await recordService.updateOktime(
+                                          userId: widget.report.userId.toString(),
+                                          oktime: '傷口已痊癒',
+                                          recordId: widget.report.id.toString(),
+                                        )
+                                      : await recordService.updateOktime(
+                                          userId: widget.report.userId.toString(),
+                                          oktime: '傷口已痊癒',
+                                          recordId: widget.report.id.toString(),
+                                          groupId: widget.report.groupId.toString());
+                                  setState(() {
+                                    isOktimeChange = true;
+                                  });
+                                  final userReport =
+                                      await RecordService.fetchReports(widget.report.userId);
+                                  final userProvider =
+                                      Provider.of<UserProvider>(context, listen: false);
+                                  final user = userProvider.user;
+                                  if (user != null) {
+                                    user.reports = userReport;
+                                    userProvider.setUserInfo(user);
+                                  }
+                                  if (mounted) {
+                                    Provider.of<ReportProvider>(context, listen: false)
+                                        .setReports(userReport);
+                                    debugPrint(userReport.reversed.first.oktime);
+                                  }
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                backgroundColor: const Color(0xFF589399),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text(
+                                '傷口已痊癒?',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          '傷口已痊癒?',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
                     const SizedBox(
                       height: 30,
                     )
@@ -440,15 +459,29 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                 isNotify = !isNotify;
                               });
                             },
-                            icon: isNotify
+                            icon: isOktimeChange
                                 ? const Icon(
-                                    Icons.notifications_active,
-                                    color: Colors.red,
-                                  )
-                                : const Icon(
                                     Icons.notifications_off_sharp,
                                     color: Color(0xFF589399),
-                                  ),
+                                  )
+                                : isNotify
+                                    ? const Icon(
+                                        Icons.notifications_active,
+                                        color: Colors.red,
+                                      )
+                                    : const Icon(
+                                        Icons.notifications_off_sharp,
+                                        color: Color(0xFF589399),
+                                      ),
+                            // icon:  isNotify
+                            //     ? const Icon(
+                            //         Icons.notifications_active,
+                            //         color: Colors.red,
+                            //       )
+                            //     : const Icon(
+                            //         Icons.notifications_off_sharp,
+                            //         color: Color(0xFF589399),
+                            //       ),
                           ),
                         ],
                       ),
@@ -456,7 +489,6 @@ class _ShowReportPageState extends State<ShowReportPage> {
                   ),
                   ...[
                     if (isSwitch)
-                      
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
