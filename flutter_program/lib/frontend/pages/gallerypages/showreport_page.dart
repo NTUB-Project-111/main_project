@@ -29,6 +29,9 @@ class _ShowReportPageState extends State<ShowReportPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.report.ifcall == 'Y') {
+      isNotify = true;
+    }
     List<String> steps = widget.report.caremode.split(';');
     for (var step in steps) {
       if (step.trim().isEmpty) continue;
@@ -324,6 +327,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                           groupId: widget.report.groupId.toString());
                                   setState(() {
                                     isOktimeChange = true;
+                                    isNotify = false;
                                   });
                                   final userReport =
                                       await RecordService.fetchReports(widget.report.userId);
@@ -431,56 +435,39 @@ class _ShowReportPageState extends State<ShowReportPage> {
                           ),
                           const SizedBox(width: 2),
                           IconButton(
-                            onPressed: () {
-                              if (!isNotify) {
-                                userReport.recordId = widget.report.id;
-                                userReport.date = widget.report.date;
-                                userReport.oktime = widget.report.oktime;
-                                final reminds = widget.report.reminds;
-                                for (var r in reminds) {
-                                  if (r.recordId == userReport.recordId) {
-                                    final remind = r;
-                                    userReport.remindFreq = remind.freq;
-                                    userReport.remindTime = remind.time;
+                              onPressed: () {
+                                if (!isNotify) {
+                                  userReport.recordId = widget.report.id;
+                                  userReport.date = widget.report.date;
+                                  userReport.oktime = widget.report.oktime;
+                                  final reminds = widget.report.reminds;
+                                  for (var r in reminds) {
+                                    if (r.recordId == userReport.recordId) {
+                                      final remind = r;
+                                      userReport.remindFreq = remind.freq;
+                                      userReport.remindTime = remind.time;
 
-                                    break;
+                                      break;
+                                    }
                                   }
+                                  FrontUtil.showRemindDialog(context, userReport);
+                                  // showRemindDialog(context, report, remind);
                                 }
-
-                                debugPrint(userReport.oktime);
-                                debugPrint(userReport.remindFreq);
-                                debugPrint(userReport.remindTime);
-                                FrontUtil.showRemindDialog(context, userReport);
-                                // showRemindDialog(context, report, remind);
-                              }
-                              setState(() {
-                                isNotify = !isNotify;
-                              });
-                            },
-                            icon: isOktimeChange
-                                ? const Icon(
-                                    Icons.notifications_off_sharp,
-                                    color: Color(0xFF589399),
-                                  )
-                                : isNotify
-                                    ? const Icon(
-                                        Icons.notifications_active,
-                                        color: Colors.red,
-                                      )
-                                    : const Icon(
-                                        Icons.notifications_off_sharp,
-                                        color: Color(0xFF589399),
-                                      ),
-                            // icon:  isNotify
-                            //     ? const Icon(
-                            //         Icons.notifications_active,
-                            //         color: Colors.red,
-                            //       )
-                            //     : const Icon(
-                            //         Icons.notifications_off_sharp,
-                            //         color: Color(0xFF589399),
-                            //       ),
-                          ),
+                                setState(() {
+                                  isNotify = !isNotify;
+                                });
+                              },
+                              icon: widget.report.oktime == '傷口已痊癒' || isOktimeChange
+                                  ? const SizedBox()
+                                  : isNotify
+                                      ? const Icon(
+                                          Icons.notifications_active,
+                                          color: Colors.red,
+                                        )
+                                      : const Icon(
+                                          Icons.notifications_off_sharp,
+                                          color: Color(0xFF589399),
+                                        )),
                         ],
                       ),
                     ],
