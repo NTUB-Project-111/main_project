@@ -106,7 +106,10 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
         ),
         title: const Text(
           "特殊病症",
-          style: TextStyle(color: Color(0xFF5C9EA0), fontWeight: FontWeight.bold, fontSize: 20),
+          style: TextStyle(
+              color: Color(0xFF5C9EA0),
+              fontWeight: FontWeight.bold,
+              fontSize: 20),
         ),
         actions: [
           IconButton(
@@ -120,24 +123,30 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Wrap(
-              spacing: 28, // 每個項目的水平間距
-              runSpacing: 28, // 換行的垂直間距
-              children: mainConditions.map((condition) {
-                return _buildSeletedDisease(condition);
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 3,
+              crossAxisSpacing: 35,
+              mainAxisSpacing: 35,
+              physics: const NeverScrollableScrollPhysics(),
+              children: mainConditions.map((disease) {
+                return _buildSeletedDisease(disease);
               }).toList(),
             ),
             // const SizedBox(height: 20),
             const Text(
               "其他",
-              style: TextStyle(color: Color(0xFF669FA5), fontWeight: FontWeight.bold, height: 5),
+              style: TextStyle(
+                  color: Color(0xFF669FA5),
+                  fontWeight: FontWeight.bold,
+                  height: 5),
             ),
             // const SizedBox(height: 20),
             Expanded(
               child: GridView.count(
                 crossAxisCount: 3,
-                crossAxisSpacing: 30,
-                mainAxisSpacing: 30,
+                crossAxisSpacing: 35,
+                mainAxisSpacing: 35,
                 children: otherConditions.map((condition) {
                   final isSelected = selectedConditions.contains(condition);
                   return GestureDetector(
@@ -152,7 +161,8 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
                       padding: const EdgeInsets.all(15),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: isSelected ? const Color(0xFFB2E2E4) : Colors.white,
+                        color:
+                            isSelected ? const Color(0xFFB2E2E4) : Colors.white,
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: const [
                           BoxShadow(
@@ -190,12 +200,16 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
                                 '確定',
                                 '取消',
                                 onConfirm: () async {
-                                  final success = await userService.updateDisease(
-                                      id: user!.id, disease: mainConditions.toString());
+                                  final success =
+                                      await userService.updateDisease(
+                                          id: user!.id,
+                                          disease: mainConditions.toString());
                                   if (success) {
-                                    final updatedUser =
-                                        user.copyWith(disease: mainConditions.toString());
-                                    context.read<UserProvider>().setUserInfo(updatedUser);
+                                    final updatedUser = user.copyWith(
+                                        disease: mainConditions.toString());
+                                    context
+                                        .read<UserProvider>()
+                                        .setUserInfo(updatedUser);
                                     FrontUtil.showSuccess('修改成功');
                                     Navigator.pop(context);
                                   } else {
@@ -226,38 +240,36 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
 
   Widget _buildSeletedDisease(String disease) {
     return GestureDetector(
-        onTap: () {
-          setState(() {
-            mainConditions.remove(disease);
-            otherConditions.add(disease);
-            showButton = compare(mainConditions, compareList);
-          });
-        },
-        child: Container(
-          width: 85,
-          height: 85,
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: const Color(0x40589399),
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: const [
-              // BoxShadow(
-              //   // color: Color(0x40589399),
-              //    color: Colors.white,
-              //   blurRadius: 5,
-              // ),
-            ],
-          ),
-          child: Text(
-            disease,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Color(0xFF669FA5),
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.5,
+      onTap: () {
+        setState(() {
+          mainConditions.remove(disease);
+          otherConditions.add(disease);
+          showButton = compare(mainConditions, compareList);
+        });
+      },
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(188, 128, 179, 185),
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x40589399),
+              blurRadius: 15,
             ),
+          ],
+        ),
+        child: Text(
+          disease,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Color.fromARGB(255, 255, 255, 255),
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
