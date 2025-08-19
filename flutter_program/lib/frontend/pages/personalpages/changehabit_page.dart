@@ -60,7 +60,9 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
           children: [
             Text(title,
                 style: const TextStyle(
-                    fontSize: 14, color: Color(0xFF2E6D74), fontWeight: FontWeight.bold)),
+                    fontSize: 14,
+                    color: Color(0xFF2E6D74),
+                    fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
             Text(subtitle, style: TextStyle(fontSize: 18, color: textColor)),
           ],
@@ -168,11 +170,14 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                               }
                             }
                             final freqString = freq.join('、');
-                            final success =
-                                await userService.updateFreq(id: user!.id, freq: freqString);
+                            final success = await userService.updateFreq(
+                                id: user!.id, freq: freqString);
                             if (success) {
-                              final updatedUser = user.copyWith(freq: freqString);
-                              context.read<UserProvider>().setUserInfo(updatedUser);
+                              final updatedUser =
+                                  user.copyWith(freq: freqString);
+                              context
+                                  .read<UserProvider>()
+                                  .setUserInfo(updatedUser);
                               FrontUtil.showSuccess('修改成功');
                               Navigator.pop(context);
                             } else {
@@ -192,7 +197,10 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                   const SizedBox(width: 8),
                   Text("個人習慣",
                       style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold, color: textColor, height: 2)),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                          height: 2)),
                   const Spacer(),
                   Icon(Icons.info_outline, color: textColor),
                 ],
@@ -217,7 +225,10 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
 
             // 標題
             Text("變更『$habit』頻率",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: textColor)),
 
             const SizedBox(height: 25),
 
@@ -236,7 +247,8 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
             const SizedBox(height: 20),
 
             // 備註
-            Text("＊偶爾：每天 1~10 支", style: TextStyle(fontSize: 14, color: textColor)),
+            Text("＊偶爾：每天 1~10 支",
+                style: TextStyle(fontSize: 14, color: textColor)),
 
             const SizedBox(height: 50),
             showButton
@@ -263,7 +275,8 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                       const SizedBox(width: 30),
                       IconButton(
                           onPressed: () async {
-                            FrontUtil.showTextDialog(context, '要儲存修改嗎?', '確定', '取消',
+                            FrontUtil.showTextDialog(
+                                context, '要儲存修改嗎?', '確定', '取消',
                                 onConfirm: () async {
                               for (int i = 0; i < 3; i++) {
                                 if (selectedFrequencyIndex[i] == 0) {
@@ -275,11 +288,14 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                                 }
                               }
                               final freqString = freq.join('、');
-                              final success =
-                                  await userService.updateFreq(id: user!.id, freq: freqString);
+                              final success = await userService.updateFreq(
+                                  id: user!.id, freq: freqString);
                               if (success) {
-                                final updatedUser = user.copyWith(freq: freqString);
-                                context.read<UserProvider>().setUserInfo(updatedUser);
+                                final updatedUser =
+                                    user.copyWith(freq: freqString);
+                                context
+                                    .read<UserProvider>()
+                                    .setUserInfo(updatedUser);
                                 FrontUtil.showSuccess('修改成功');
                                 Navigator.pop(context);
                               } else {
@@ -299,10 +315,10 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
             // 小熊護士圖片
             Image.asset(
               "images/nursebear.png",
-              height: 150,
+              height: 160,
             ),
 
-            const SizedBox(height: 60),
+            const SizedBox(height: 40),
           ],
         ),
       ),
