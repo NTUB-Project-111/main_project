@@ -154,12 +154,14 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                   IconButton(
                     onPressed: () async {
                       if (showButton) {
-                        FrontUtil.showTextDialog(
+                        FrontUtil.showConfirmDialog(
                           context,
+                          FrontUtil.textColor,
                           '要儲存修改嗎?',
-                          '確定',
+                          null,
                           '取消',
-                          onConfirm: () async {
+                          '確定',
+                          () async {
                             for (int i = 0; i < 3; i++) {
                               if (selectedFrequencyIndex[i] == 0) {
                                 freq[i] = '無';
@@ -169,9 +171,13 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                                 freq[i] = '經常';
                               }
                             }
+
                             final freqString = freq.join('、');
                             final success = await userService.updateFreq(
-                                id: user!.id, freq: freqString);
+                              id: user!.id,
+                              freq: freqString,
+                            );
+
                             if (success) {
                               final updatedUser =
                                   user.copyWith(freq: freqString);
@@ -183,9 +189,6 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                             } else {
                               FrontUtil.showFail('修改失敗');
                             }
-                          },
-                          onCancel: () {
-                            Navigator.pop(context);
                           },
                         );
                       } else {
@@ -257,12 +260,14 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                     children: [
                       IconButton(
                           onPressed: () {
-                            FrontUtil.showTextDialog(
+                            FrontUtil.showConfirmDialog(
                               context,
-                              '要取消修改嗎?',
-                              '確定',
+                              FrontUtil.textColor,
+                              '取消修改?',
+                              null,
                               '取消',
-                              onConfirm: () {
+                              '確定',
+                              () {
                                 Navigator.pop(context);
                               },
                             );
@@ -275,9 +280,13 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                       const SizedBox(width: 30),
                       IconButton(
                           onPressed: () async {
-                            FrontUtil.showTextDialog(
-                                context, '要儲存修改嗎?', '確定', '取消',
-                                onConfirm: () async {
+                            FrontUtil.showConfirmDialog(
+                                context,
+                                FrontUtil.textColor,
+                                '要儲存修改嗎?',
+                                null,
+                                '取消',
+                                '確定', () async {
                               for (int i = 0; i < 3; i++) {
                                 if (selectedFrequencyIndex[i] == 0) {
                                   freq[i] = '無';
