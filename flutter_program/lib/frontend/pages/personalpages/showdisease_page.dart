@@ -103,7 +103,7 @@ class _ShowdiseasePageState extends State<ShowdiseasePage> {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.add_circle, color: textColor),
+                      icon: const Icon(Icons.edit_square, color: textColor),
                     ),
                   ),
                 ],
