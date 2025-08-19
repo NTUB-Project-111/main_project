@@ -849,7 +849,7 @@ class FrontUtil {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         contentPadding: const EdgeInsets.symmetric(vertical: 20),
         content: SizedBox(
-          width: 280, // 設定最大寬度
+          width: 220, // 設定最大寬度
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

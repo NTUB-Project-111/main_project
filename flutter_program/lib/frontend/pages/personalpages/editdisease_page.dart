@@ -90,12 +90,14 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF5C9EA0)),
           onPressed: () async {
             if (showButton) {
-              FrontUtil.showTextDialog(
+              FrontUtil.showConfirmDialog(
                 context,
-                '要取消修改嗎?',
-                '確定',
+                FrontUtil.textColor, // ✅ 你想要的主題色
+                '放棄修改嗎?',
+                null, // ✅ subTitle 如果沒有就傳 null
                 '取消',
-                onConfirm: () async {
+                '確定',
+                () async {
                   Navigator.pop(context);
                 },
               );
@@ -194,19 +196,23 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
                       IconButton(
                           onPressed: () async {
                             if (showButton) {
-                              FrontUtil.showTextDialog(
+                              FrontUtil.showConfirmDialog(
                                 context,
+                                FrontUtil.textColor, // ✅ 你想要的主題色
                                 '要儲存修改嗎?',
-                                '確定',
+                                null, // ✅ subTitle 如果沒有就傳 null
                                 '取消',
-                                onConfirm: () async {
+                                '確定',
+                                () async {
                                   final success =
                                       await userService.updateDisease(
-                                          id: user!.id,
-                                          disease: mainConditions.toString());
+                                    id: user!.id,
+                                    disease: mainConditions.toString(),
+                                  );
                                   if (success) {
                                     final updatedUser = user.copyWith(
-                                        disease: mainConditions.toString());
+                                      disease: mainConditions.toString(),
+                                    );
                                     context
                                         .read<UserProvider>()
                                         .setUserInfo(updatedUser);
@@ -215,9 +221,6 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
                                   } else {
                                     FrontUtil.showFail('修改失敗');
                                   }
-                                },
-                                onCancel: () {
-                                  Navigator.pop(context);
                                 },
                               );
                             } else {
