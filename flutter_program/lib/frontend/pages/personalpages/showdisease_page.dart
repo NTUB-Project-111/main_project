@@ -1,4 +1,5 @@
 import 'package:drw/frontend/pages/personalpages/editdisease_page.dart';
+import 'package:drw/frontend/pages/personalpages/nodisease_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
@@ -24,6 +25,10 @@ class ShowdiseasePage extends StatelessWidget {
             .map((e) => e.trim())
             .where((e) => e.isNotEmpty)
             .toList();
+
+    if (mainConditions.isEmpty) {
+      return const NoDiseasePage();
+    }
 
     return Scaffold(
       backgroundColor: backgroundColor,
