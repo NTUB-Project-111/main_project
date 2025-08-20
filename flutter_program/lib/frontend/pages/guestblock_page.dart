@@ -73,11 +73,6 @@ class _GuestBlockPage extends State<GuestBlockPage> {
                 ),
               ],
             ),
-            // const SizedBox(height: 5),
-            // Text(
-            //   '(護理提醒、紀錄冊、我的)',
-            //   style: TextStyle(color: FrontUtil.textColor, fontSize: 14),
-            // ),
             const SizedBox(height: 5),
             TextButton(
               onPressed: () {
