@@ -23,9 +23,11 @@ class _ShowReportPageState extends State<ShowReportPage> {
   late List<dynamic> tags = [];
   bool isNotify = false;
   bool isSwitch = false;
+  bool isNotifyChange = false;
   UserRemind? remind;
   Report userReport = Report();
   bool isOktimeChange = false;
+  RecordService recordService = RecordService();
   @override
   void initState() {
     super.initState();
@@ -86,21 +88,59 @@ class _ShowReportPageState extends State<ShowReportPage> {
                         children: [
                           IconButton(
                             onPressed: () async {
-                              if (isNotify) {
+                              if (isNotifyChange) {
                                 FrontUtil.showTextDialog(
                                   context,
                                   '確定要儲存修改嗎?',
                                   '確定',
                                   '取消',
                                   onConfirm: () async {
-                                    final success =
-                                        await userReport.addRemind(widget.report.userId.toString());
-                                    if (success) {
-                                      FrontUtil.showSuccess('提醒修改成功!');
+                                    if (isNotify) {
+                                      bool s2 = false;
+                                      final s1 = await userReport
+                                          .addRemind(widget.report.userId.toString());
+                                      if (widget.report.groupId == 0) {
+                                        s2 = await recordService.updateIfcall(
+                                            userId: widget.report.userId,
+                                            recordId: widget.report.id,
+                                            ifcall: 'Y');
+                                      } else {
+                                        s2 = await recordService.updateIfcall(
+                                            userId: widget.report.userId,
+                                            groupId: widget.report.groupId,
+                                            ifcall: 'Y');
+                                      }
+                                      final success = s1 || s2;
+                                      if (success) {
+                                        final updatedReport = widget.report.copyWith(ifcall: 'Y');
+                                        context.read<ReportProvider>().updateReport(updatedReport);
+                                        FrontUtil.showSuccess('提醒修改成功!');
+                                      } else {
+                                        FrontUtil.showFail('提醒修改失敗');
+                                      }
                                     } else {
-                                      FrontUtil.showFail('提醒修改失敗');
+                                      bool success = false;
+                                      if (widget.report.groupId == 0) {
+                                        success = await recordService.updateIfcall(
+                                            userId: widget.report.userId,
+                                            recordId: widget.report.id,
+                                            ifcall: 'N');
+                                      } else {
+                                        success = await recordService.updateIfcall(
+                                            userId: widget.report.userId,
+                                            groupId: widget.report.groupId,
+                                            ifcall: 'N');
+                                      }
+                                      if (success) {
+                                        final updatedReport = widget.report.copyWith(ifcall: 'N');
+                                        context.read<ReportProvider>().updateReport(updatedReport);
+                                        FrontUtil.showSuccess('提醒修改成功!');
+                                      } else {
+                                        FrontUtil.showFail('提醒修改失敗');
+                                      }
                                     }
                                     Navigator.pop(context);
+                                    debugPrint(isNotify.toString());
                                   },
                                 );
                               } else {
@@ -319,8 +359,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                           userId: widget.report.userId.toString(),
                                           oktime: '傷口已痊癒',
                                           recordId: widget.report.id.toString(),
-                                          ifcall: 'N'
-                                        )
+                                          ifcall: 'N')
                                       : await recordService.updateOktime(
                                           userId: widget.report.userId.toString(),
                                           oktime: '傷口已痊癒',
@@ -456,6 +495,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                   // showRemindDialog(context, report, remind);
                                 }
                                 setState(() {
+                                  isNotifyChange = true;
                                   isNotify = !isNotify;
                                 });
                               },
