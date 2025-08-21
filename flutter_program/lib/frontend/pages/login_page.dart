@@ -1,6 +1,7 @@
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
+import 'package:drw/frontend/utility/notifier_util.dart';
 import 'forget_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -42,8 +43,7 @@ class _LoginPageState extends State<LoginPage> {
             backgroundColor: const Color.fromARGB(255, 229, 248, 248),
             body: Center(
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -60,8 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: const TextStyle(
                         color: Color(0xFF669FA5),
                       ),
-                      decoration: _inputDecoration(
-                          label: "帳號", hint: "example@gmail.com"),
+                      decoration: _inputDecoration(label: "帳號", hint: "example@gmail.com"),
                     ),
                     const SizedBox(height: 10),
 
@@ -73,18 +72,13 @@ class _LoginPageState extends State<LoginPage> {
                       style: const TextStyle(
                         color: Color(0xFF669FA5),
                       ),
-                      decoration:
-                          _inputDecoration(label: "密碼", hint: "XXXXXXXXXXXX")
-                              .copyWith(
+                      decoration: _inputDecoration(label: "密碼", hint: "XXXXXXXXXXXX").copyWith(
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureText
-                                ? Icons.visibility_off
-                                : Icons.visibility,
+                            _obscureText ? Icons.visibility_off : Icons.visibility,
                             color: const Color.fromRGBO(135, 135, 135, 0.5),
                           ),
-                          onPressed: () =>
-                              setState(() => _obscureText = !_obscureText),
+                          onPressed: () => setState(() => _obscureText = !_obscureText),
                         ),
                       ),
                     ),
@@ -99,12 +93,10 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => const ForgetPage()),
+                              MaterialPageRoute(builder: (context) => const ForgetPage()),
                             );
                           },
-                          child: const Text("忘記密碼？",
-                              style: TextStyle(color: Color(0xFF669FA5))),
+                          child: const Text("忘記密碼？", style: TextStyle(color: Color(0xFF669FA5))),
                         ),
                         // TextButton(
                         //   onPressed: () {
@@ -148,8 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                         TextButton(
                           onPressed: () => Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => const DisclaimerPage()),
+                            MaterialPageRoute(builder: (context) => const DisclaimerPage()),
                           ),
                           child: const Text(
                             "註冊新帳號",
@@ -175,31 +166,25 @@ class _LoginPageState extends State<LoginPage> {
                                     FrontUtil.showFail('請填寫帳號及密碼');
                                     return;
                                   }
-                                  final error = await login.login(
-                                      login.email, login.password);
+                                  final error = await login.login(login.email, login.password);
                                   if (!mounted) return;
                                   if (error) {
                                     // 1. 從後端取得完整使用者資料
                                     final userInfo =
-                                        await UserService.fetchUserInfo(
-                                            login.accessToken!);
+                                        await UserService.fetchUserInfo(login.accessToken!);
 
                                     // 2. 儲存使用者資料
-                                    Provider.of<UserProvider>(context,
-                                            listen: false)
+                                    Provider.of<UserProvider>(context, listen: false)
                                         .setUserInfo(userInfo);
 
                                     // 3. 儲存診斷報告
-                                    Provider.of<ReportProvider>(context,
-                                            listen: false)
+                                    Provider.of<ReportProvider>(context, listen: false)
                                         .setReports(userInfo.reports);
 
                                     // 4. 提取所有提醒並儲存
-                                    final allReminds = userInfo.reports
-                                        .expand((r) => r.reminds)
-                                        .toList();
-                                    Provider.of<RemindProvider>(context,
-                                            listen: false)
+                                    final allReminds =
+                                        userInfo.reports.expand((r) => r.reminds).toList();
+                                    Provider.of<RemindProvider>(context, listen: false)
                                         .setReminds(allReminds);
                                     // 打印診斷報告與每筆報告底下的提醒
                                     debugPrint(userInfo.toString());
@@ -225,12 +210,10 @@ class _LoginPageState extends State<LoginPage> {
                                     if (!mounted) return;
                                     Navigator.pushReplacement(
                                       myContext,
-                                      MaterialPageRoute(
-                                          builder: (context) => const Tabs()),
+                                      MaterialPageRoute(builder: (context) => const Tabs()),
                                     );
                                   } else {
-                                    debugPrint(
-                                        'email:${login.email} psd:${login.password}');
+                                    debugPrint('email:${login.email} psd:${login.password}');
                                     FrontUtil.showFail(
                                       '登入失敗，帳號或密碼輸入錯誤',
                                     );
@@ -239,16 +222,13 @@ class _LoginPageState extends State<LoginPage> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF669FA5),
                             minimumSize: const Size(double.infinity, 45),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           ),
                           child: login.isLoading
                               ? const Text("登入中...",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16))
+                                  style: TextStyle(color: Colors.white, fontSize: 16))
                               : const Text("登入",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16)),
+                                  style: TextStyle(color: Colors.white, fontSize: 16)),
                         ),
                       );
                     }),
@@ -276,20 +256,18 @@ class _LoginPageState extends State<LoginPage> {
         }));
   }
 
-  InputDecoration _inputDecoration(
-      {required String label, required String hint}) {
+  InputDecoration _inputDecoration({required String label, required String hint}) {
     return InputDecoration(
       filled: true,
       fillColor: Colors.white,
       labelText: label,
       hintText: hint,
-      hintStyle: const TextStyle(
-          color: Color.fromRGBO(135, 135, 135, 0.4), fontSize: 14),
-      labelStyle: const TextStyle(
-          fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF669FA5)),
+      hintStyle: const TextStyle(color: Color.fromRGBO(135, 135, 135, 0.4), fontSize: 14),
+      labelStyle:
+          const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF669FA5)),
       floatingLabelBehavior: FloatingLabelBehavior.never,
-      border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+      border:
+          OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
     );
   }
 }

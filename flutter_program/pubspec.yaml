@@ -57,6 +57,9 @@ dependencies:
   permission_handler: ^11.3.0 #權限請求
   file_picker: ^10.2.0 #另一種圖片選擇器
   fluentui_system_icons: ^1.1.273
+  flutter_local_notifications: ^18.0.1 #提醒器
+  timezone: ^0.9.4 #系統通知比對時間(取得時區)
+  flutter_timezone: ^4.1.0 #系統通知比對時間(取得時區)
 
 dev_dependencies:
   flutter_test:
