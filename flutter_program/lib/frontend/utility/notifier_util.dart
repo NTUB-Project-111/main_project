@@ -1,3 +1,4 @@
+import 'package:drw/backend/models/remind.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -42,31 +43,29 @@ class Notifier {
     );
   }
 
-  static void scheduleReminders(List<Map<String, dynamic>> userCalls) {
+  static void scheduleReminders(List<UserRemind> userCalls) {
     for (int i = 0; i < userCalls.length; i++) {
       final call = userCalls[i];
-      final dateStr = call['day'];
-      final timeStr = call['time'];
-      if (dateStr != null && timeStr != null) {
-        try {
-          final dateParts = dateStr.split('-').map(int.parse).toList();
-          final timeParts = timeStr.split(':').map(int.parse).toList();
-          final rawDateTime = DateTime(
-            dateParts[0],
-            dateParts[1],
-            dateParts[2],
-            timeParts[0],
-            timeParts[1],
-          );
-          if (rawDateTime.isAfter(DateTime.now())) {
-            final scheduled = tz.TZDateTime.from(rawDateTime, tz.local);
-            scheduleReminder(i, scheduled);
-          }
-        } catch (e) {
-          debugPrint("排程提醒失敗: $e");
+      final dateStr = call.date;
+      final timeStr = call.time;
+      try {
+        final dateParts = dateStr.split('-').map(int.parse).toList();
+        final timeParts = timeStr.split(':').map(int.parse).toList();
+        final rawDateTime = DateTime(
+          dateParts[0],
+          dateParts[1],
+          dateParts[2],
+          timeParts[0],
+          timeParts[1],
+        );
+        if (rawDateTime.isAfter(DateTime.now())) {
+          final scheduled = tz.TZDateTime.from(rawDateTime, tz.local);
+          scheduleReminder(i, scheduled);
         }
+      } catch (e) {
+        debugPrint("排程提醒失敗: $e");
       }
-    }
+        }
   }
 
   static void _handleNotificationTap(NotificationResponse notificationResponse) {
