@@ -1,8 +1,8 @@
 import 'package:drw/backend/models/remind.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
+import 'package:drw/backend/provider/report_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -96,9 +96,15 @@ class Notifier {
 
   static Future<void> setRemind(BuildContext context) async {
     final userRemind = Provider.of<RemindProvider>(context, listen: false);
-    final userCalls = userRemind.reminds;
+    final userReport = Provider.of<ReportProvider>(context, listen: false);
+
+    final userCalls = userReport.reports
+        .where((report) => report.ifcall == 'Y')
+        .expand((report) => userRemind.reminds.where((remind) => remind.recordId == report.id))
+        .toList();
+
     await cancelAllReminders();
-    scheduleReminders(userCalls);
+    await scheduleReminders(userCalls);
     await debugPrintAllScheduledReminders();
   }
 }
