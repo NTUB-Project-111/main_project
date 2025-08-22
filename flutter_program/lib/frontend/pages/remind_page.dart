@@ -7,6 +7,7 @@ import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/backend/viewmodels/remind_view_model.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:drw/frontend/utility/notifier_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,7 +64,10 @@ class _RemindPageState extends State<RemindPage> {
                 "是否儲存變更?",
                 "確定",
                 "取消",
-                () => Navigator.pop(context),
+                () {
+                  Navigator.pop(context);
+                  Notifier.setRemind(context);
+                },
                 modifiedList,
               );
             } else {
@@ -73,10 +77,7 @@ class _RemindPageState extends State<RemindPage> {
         ),
         title: const Text('護理提醒',
             style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                height: 2.5,
-                color: Color(0xFF669FA5))),
+                fontWeight: FontWeight.bold, fontSize: 18, height: 2.5, color: Color(0xFF669FA5))),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_rounded, color: Color(0xFF669FA5)),
@@ -135,12 +136,10 @@ class _RemindPageState extends State<RemindPage> {
                         .map((day) => DropdownMenuItem<String>(
                               value: day,
                               child: Text(day,
-                                  style: const TextStyle(
-                                      color: Color(0xFF589399), fontSize: 14)),
+                                  style: const TextStyle(color: Color(0xFF589399), fontSize: 14)),
                             ))
                         .toList(),
-                    onChanged: (value) =>
-                        setState(() => data.selectedFreq = value!),
+                    onChanged: (value) => setState(() => data.selectedFreq = value!),
                     buttonStyleData: ButtonStyleData(
                       height: 30,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -180,10 +179,8 @@ class _RemindPageState extends State<RemindPage> {
                     setState(() => data.selectedTime = formatted);
                   }
                 },
-                child: _buildTimeBox(Reminder.parseTime(data.selectedTime)
-                    .hour
-                    .toString()
-                    .padLeft(2, '0')),
+                child: _buildTimeBox(
+                    Reminder.parseTime(data.selectedTime).hour.toString().padLeft(2, '0')),
               ),
               const Text(' ：'),
               GestureDetector(
@@ -198,16 +195,13 @@ class _RemindPageState extends State<RemindPage> {
                     setState(() => data.selectedTime = formatted);
                   }
                 },
-                child: _buildTimeBox(Reminder.parseTime(data.selectedTime)
-                    .minute
-                    .toString()
-                    .padLeft(2, '0')),
+                child: _buildTimeBox(
+                    Reminder.parseTime(data.selectedTime).minute.toString().padLeft(2, '0')),
               ),
             ],
           ),
         ] else ...[
-          Text('換藥時間 ：${data.remindDate} ${_formatTime(data.selectedTime)}',
-              style: _infoStyle()),
+          Text('換藥時間 ：${data.remindDate} ${_formatTime(data.selectedTime)}', style: _infoStyle()),
           Text('換藥頻率 ：${data.selectedFreq}', style: _infoStyle()),
         ]
       ],
@@ -223,16 +217,13 @@ class _RemindPageState extends State<RemindPage> {
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    border:
-                        Border.all(color: const Color(0xFF669FA5), width: 2),
+                    border: Border.all(color: const Color(0xFF669FA5), width: 2),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   padding: const EdgeInsets.all(12),
                   child: Row(
                     children: [
-                      ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: imageWidget),
+                      ClipRRect(borderRadius: BorderRadius.circular(12), child: imageWidget),
                       const SizedBox(width: 12),
                       Flexible(child: infoWidgets),
                     ],
@@ -244,12 +235,9 @@ class _RemindPageState extends State<RemindPage> {
                     top: data.isEditing ? -3 : null,
                     bottom: data.isEditing ? null : -3,
                     child: IconButton(
-                      icon: Icon(
-                          data.isEditing ? Icons.check : Icons.edit_rounded,
-                          size: 20,
-                          color: data.isEditing ? Colors.green : null),
-                      onPressed: () =>
-                          setState(() => data.isEditing = !data.isEditing),
+                      icon: Icon(data.isEditing ? Icons.check : Icons.edit_rounded,
+                          size: 20, color: data.isEditing ? Colors.green : null),
+                      onPressed: () => setState(() => data.isEditing = !data.isEditing),
                     ),
                   ),
               ],
@@ -283,17 +271,15 @@ class _RemindPageState extends State<RemindPage> {
                       });
 
                       final remindViewModel = RemindViewModel();
-                      final success = await remindViewModel
-                          .updateRemind([reminders[index]]);
+                      final success = await remindViewModel.updateRemind([reminders[index]]);
                       if (success) {
                         FrontUtil.showSuccess('提醒已刪除');
                         // 重新從後端取得最新報告資料
-                        final userReport = await RecordService.fetchReports(
-                            reminders[index].userId);
+                        final userReport =
+                            await RecordService.fetchReports(reminders[index].userId);
 
                         // 更新 UserProvider 的 user 資料
-                        final userProvider =
-                            Provider.of<UserProvider>(context, listen: false);
+                        final userProvider = Provider.of<UserProvider>(context, listen: false);
                         final user = userProvider.user;
                         if (user != null) {
                           user.reports = userReport;
@@ -317,8 +303,7 @@ class _RemindPageState extends State<RemindPage> {
     );
   }
 
-  TextStyle _infoStyle() =>
-      const TextStyle(fontSize: 14, color: Color(0xFF589399), height: 1.5);
+  TextStyle _infoStyle() => const TextStyle(fontSize: 14, color: Color(0xFF589399), height: 1.5);
 
   String _formatTime(String timeStr) {
     final time = Reminder.parseTime(timeStr);
@@ -334,13 +319,11 @@ class _RemindPageState extends State<RemindPage> {
         ),
         child: Text(text,
             style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF264E5C))),
+                fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF264E5C))),
       );
 
-  void showConfirmDialog(BuildContext context, String title, String confirm,
-      String cancel, VoidCallback onConfirm, List<Reminder> reminds) {
+  void showConfirmDialog(BuildContext context, String title, String confirm, String cancel,
+      VoidCallback onConfirm, List<Reminder> reminds) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -353,9 +336,7 @@ class _RemindPageState extends State<RemindPage> {
         title: Text(title,
             textAlign: TextAlign.center,
             style: const TextStyle(
-                fontSize: 20,
-                color: Color(0xFF589399),
-                fontWeight: FontWeight.w700)),
+                fontSize: 20, color: Color(0xFF589399), fontWeight: FontWeight.w700)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -370,10 +351,8 @@ class _RemindPageState extends State<RemindPage> {
                 if (message) {
                   FrontUtil.showSuccess('儲存成功!');
 
-                  final userReport =
-                      await RecordService.fetchReports(reminds[0].userId);
-                  final userProvider =
-                      Provider.of<UserProvider>(context, listen: false);
+                  final userReport = await RecordService.fetchReports(reminds[0].userId);
+                  final userProvider = Provider.of<UserProvider>(context, listen: false);
                   final user = userProvider.user;
                   if (user != null) {
                     user.reports = userReport;
@@ -381,12 +360,9 @@ class _RemindPageState extends State<RemindPage> {
                   }
 
                   if (mounted) {
-                    Provider.of<ReportProvider>(context, listen: false)
-                        .setReports(userReport);
-                    final allReminds =
-                        userReport.expand((r) => r.reminds).toList();
-                    Provider.of<RemindProvider>(context, listen: false)
-                        .setReminds(allReminds);
+                    Provider.of<ReportProvider>(context, listen: false).setReports(userReport);
+                    final allReminds = userReport.expand((r) => r.reminds).toList();
+                    Provider.of<RemindProvider>(context, listen: false).setReminds(allReminds);
                     onConfirm();
                     await loadReminders();
                   }
@@ -398,9 +374,7 @@ class _RemindPageState extends State<RemindPage> {
               },
               child: Text(confirm,
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700)),
+                      color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700)),
             ),
             const SizedBox(height: 10),
             OutlinedButton(
@@ -411,9 +385,7 @@ class _RemindPageState extends State<RemindPage> {
               onPressed: () => Navigator.pop(context),
               child: Text(cancel,
                   style: const TextStyle(
-                      color: Color(0xFF589399),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700)),
+                      color: Color(0xFF589399), fontSize: 15, fontWeight: FontWeight.w700)),
             ),
           ],
         ),

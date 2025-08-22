@@ -1,6 +1,9 @@
 import 'package:drw/backend/models/remind.dart';
+import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -43,14 +46,13 @@ class Notifier {
     );
   }
 
-  static void scheduleReminders(List<UserRemind> userCalls) {
+  static Future<void> scheduleReminders(List<UserRemind> userCalls) async {
     for (int i = 0; i < userCalls.length; i++) {
       final call = userCalls[i];
-      final dateStr = call.date;
-      final timeStr = call.time;
       try {
-        final dateParts = dateStr.split('-').map(int.parse).toList();
-        final timeParts = timeStr.split(':').map(int.parse).toList();
+        final dateParts = call.date.split('-').map(int.parse).toList();
+        final timeParts = call.time.split(':').map(int.parse).toList();
+
         final rawDateTime = DateTime(
           dateParts[0],
           dateParts[1],
@@ -58,14 +60,14 @@ class Notifier {
           timeParts[0],
           timeParts[1],
         );
+
         if (rawDateTime.isAfter(DateTime.now())) {
-          final scheduled = tz.TZDateTime.from(rawDateTime, tz.local);
-          scheduleReminder(i, scheduled);
+          await scheduleReminder(i, rawDateTime);
         }
       } catch (e) {
         debugPrint("排程提醒失敗: $e");
       }
-        }
+    }
   }
 
   static void _handleNotificationTap(NotificationResponse notificationResponse) {
@@ -90,5 +92,13 @@ class Notifier {
             "ID: ${notification.id}, 時間: ${notification.payload}, 標題: ${notification.title}, 內容: ${notification.body}");
       }
     }
+  }
+
+  static Future<void> setRemind(BuildContext context) async {
+    final userRemind = Provider.of<RemindProvider>(context, listen: false);
+    final userCalls = userRemind.reminds;
+    await cancelAllReminders();
+    scheduleReminders(userCalls);
+    await debugPrintAllScheduledReminders();
   }
 }

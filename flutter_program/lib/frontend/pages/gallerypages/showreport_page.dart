@@ -5,6 +5,7 @@ import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:drw/frontend/utility/notifier_util.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -139,8 +140,8 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                         FrontUtil.showFail('提醒修改失敗');
                                       }
                                     }
+                                    Notifier.setRemind(context);
                                     Navigator.pop(context);
-                                    debugPrint(isNotify.toString());
                                   },
                                 );
                               } else {
@@ -384,6 +385,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                         .setReports(userReport);
                                     debugPrint(userReport.reversed.first.oktime);
                                   }
+                                  Notifier.setRemind(context);
                                 });
                               },
                               style: ElevatedButton.styleFrom(

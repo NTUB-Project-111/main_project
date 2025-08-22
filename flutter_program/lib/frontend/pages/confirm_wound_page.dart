@@ -5,6 +5,7 @@ import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/frontend/pages/tabs/camera_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:drw/frontend/utility/notifier_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -99,8 +100,7 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                               userId: widget.report.userId.toString(),
                               oktime: '傷口已痊癒',
                               recordId: widget.report.id.toString(),
-                              ifcall: 'N'
-                            )
+                              ifcall: 'N')
                           : await recordService.updateOktime(
                               userId: widget.report.userId.toString(),
                               oktime: '傷口已痊癒',
@@ -119,6 +119,7 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                         Provider.of<ReportProvider>(context, listen: false).setReports(userReport);
                         debugPrint(userReport.reversed.first.oktime);
                       }
+                      Notifier.setRemind(context);
                       Navigator.pop(context, true);
                     });
                   },

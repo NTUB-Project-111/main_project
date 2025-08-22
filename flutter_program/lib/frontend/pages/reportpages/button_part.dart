@@ -5,6 +5,7 @@ import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/frontend/pages/tabs/tabs.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:drw/frontend/utility/notifier_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -87,7 +88,7 @@ class _ButtonPartState extends State<ButtonPart> {
                                   }
                                   // 可能額外需要觸發資料儲存/紀錄刷新
                                   await RecordService.getRecords(context, user.id.toString());
-
+                                  Notifier.setRemind(context);
                                   // 顯示成功訊息並跳頁
                                   FrontUtil.showSuccess('報告儲存成功!');
                                   // Navigator.pushReplacement(
