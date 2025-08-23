@@ -273,154 +273,171 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
           ],
         ),
       );
-  
-  
-  
-  
-  
-  
-  // 醫院卡片 UI
-  Widget _buildHospitalCard() {
-    return Consumer<HospitalView>(builder: (context, hospital, _) {
-      final selected = hospital.selectedHospital;
-      if (selected == null) return const SizedBox();
 
-      return Align(
-        alignment: Alignment.bottomCenter,
-        child: Dismissible(
-          key: UniqueKey(),
-          direction: DismissDirection.down,
-          onDismissed: (_) => hospital.toggleShowMode(),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 20),
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            width: MediaQuery.of(context).size.width * 0.95,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
+  // 醫院卡片 UI
+// 醫院卡片 UI
+Widget _buildHospitalCard() {
+  return Consumer<HospitalView>(builder: (context, hospital, _) {
+    final selected = hospital.selectedHospital;
+    if (selected == null) return const SizedBox();
+
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Dismissible(
+        key: UniqueKey(),
+        direction: DismissDirection.down,
+        onDismissed: (_) => hospital.toggleShowMode(),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          width: MediaQuery.of(context).size.width * 0.95,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 80,
+                height: 5,
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(50, 88, 146, 153),
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 80,
-                  height: 5,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(50, 88, 146, 153),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: _selectedHospitalPhotoUrl != null
-                          ? Image.network(
-                              _selectedHospitalPhotoUrl!,
-                              width: MediaQuery.of(context).size.width * 0.3,
-                              height: 120,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Image.asset(
-                                'images/hospital.png',
-                                width: MediaQuery.of(context).size.width * 0.3,
-                                height: 120,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : Image.asset(
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// 左邊圖片
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: _selectedHospitalPhotoUrl != null
+                        ? Image.network(
+                            _selectedHospitalPhotoUrl!,
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            height: 120,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Image.asset(
                               'images/hospital.png',
                               width: MediaQuery.of(context).size.width * 0.3,
                               height: 120,
                               fit: BoxFit.cover,
                             ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                selected.openStatus ?? '未營業',
+                          )
+                        : Image.asset(
+                            'images/hospital.png',
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            height: 120,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+
+                  const SizedBox(width: 16),
+
+                  /// 右邊文字 + 星星
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        /// ⭐ 星星 + 名稱 + 營業狀態
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.star_border,
+                                  color: Colors.grey),
+                              onPressed: () {
+                                // 這邊你可以加收藏/切換 marker style 的邏輯
+                              },
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                selected.name,
                                 style: const TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.red,
+                                  color: Color.fromRGBO(88, 147, 153, 1),
                                 ),
-                                maxLines: 2,
+                                maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                            ],
-                          ),
-                          Text(
-                            selected.name,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromRGBO(88, 147, 153, 1),
                             ),
-                            maxLines: 2,
-                            softWrap: true,
-                            overflow: TextOverflow.visible,
-                          ),
-                          const SizedBox(height: 8),
-                          _buildInfoRow(
-                              Icons.location_on_outlined, selected.address,
-                              maxLines: 2),
-                          const SizedBox(height: 4),
-                          _buildInfoRow(
-                              Icons.phone_outlined, '電話：${selected.phone}'),
-                          const SizedBox(height: 4),
-                          _buildInfoRow(Icons.directions_walk_outlined,
-                              '距離：${selected.distance}'),
-                          const SizedBox(height: 4),
-                          _buildInfoRow(Icons.access_time_outlined,
-                              '行走時間：${selected.walkTime} 分鐘'),
-                        ],
-                      ),
+                            const SizedBox(width: 4),
+                            Text(
+                              selected.openStatus ?? '未營業',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: (selected.openStatus == '營業中')
+                                    ? Colors.red
+                                    : Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 8),
+                        _buildInfoRow(Icons.location_on_outlined, selected.address,
+                            maxLines: 2),
+                        const SizedBox(height: 4),
+                        _buildInfoRow(
+                            Icons.phone_outlined, '電話：${selected.phone}'),
+                        const SizedBox(height: 4),
+                        _buildInfoRow(Icons.directions_walk_outlined,
+                            '距離：${selected.distance}'),
+                        const SizedBox(height: 4),
+                        _buildInfoRow(Icons.access_time_outlined,
+                            '行走時間：${selected.walkTime} 分鐘'),
+                      ],
                     ),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton.icon(
-                    icon: const Icon(
-                      Icons.navigation_outlined,
-                      size: 18,
-                      color: Color.fromRGBO(88, 147, 153, 1),
-                    ),
-                    label: const Text(
-                      '開始導航',
-                      style: TextStyle(
-                          fontSize: 13, color: Color.fromRGBO(88, 147, 153, 1)),
-                    ),
-                    onPressed: () {
-                      final mapService =
-                          Provider.of<GoogleMapService>(context, listen: false);
-                      mapService.navigateToHospital(
-                          selected.latitude, selected.longitude);
-                    },
                   ),
+                ],
+              ),
+
+              /// 導航按鈕
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  icon: const Icon(
+                    Icons.navigation_outlined,
+                    size: 18,
+                    color: Color.fromRGBO(88, 147, 153, 1),
+                  ),
+                  label: const Text(
+                    '開始導航',
+                    style: TextStyle(
+                        fontSize: 13, color: Color.fromRGBO(88, 147, 153, 1)),
+                  ),
+                  onPressed: () {
+                    final mapService =
+                        Provider.of<GoogleMapService>(context, listen: false);
+                    mapService.navigateToHospital(
+                        selected.latitude, selected.longitude);
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      );
-    });
-  }
+      ),
+    );
+  });
+}
+
+
 
   // 資訊列 UI
   Widget _buildInfoRow(IconData icon, String text, {int maxLines = 1}) {
