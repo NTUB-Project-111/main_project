@@ -85,29 +85,44 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
   }
 
   Future<void> _initLocation() async {
-    final latLng = await _mapService.getCurrentLocation();
-    if (!mounted) return;
+  final latLng = await _mapService.getCurrentLocation();
+  if (!mounted) return;
 
-    if (latLng != null) {
-      setState(() => _currentPosition = latLng);
+  if (latLng != null) {
+    setState(() => _currentPosition = latLng);
 
-      final hospitalView = Provider.of<HospitalView>(context, listen: false);
+    final hospitalView = Provider.of<HospitalView>(context, listen: false);
 
-      // 自動搜尋使用者附近的醫院
-      await hospitalView.fetchHospitalsByDistance(latLng);
+    // 1) 抓最近 10 間（後端 /hospitals/nearby 已 LIMIT 10）
+    await hospitalView.fetchHospitalsByDistance(latLng);
 
-      // 使用紅色圖釘標記（下面②你會新增 pinColor）
-      await _mapService.setMarkers(
-        hospitalView.hospitals,
-        (selectedHospital) {
-          hospitalView.selectHospital(selectedHospital);
-          _fetchPhotoFor(selectedHospital.name);
-        },
-        latLng,
-        pinColor: BitmapDescriptor.hueRed,
-      );
+    // 2) 畫 marker
+    await _mapService.setMarkers(
+      hospitalView.hospitals,
+      (selectedHospital) {
+        hospitalView.selectHospital(selectedHospital);
+        _fetchPhotoFor(selectedHospital.name);
+      },
+      latLng,
+      pinColor: BitmapDescriptor.hueRed,
+    );
+
+    // 3) 若有資料：自動移鏡頭到第一間（最近）
+    if (hospitalView.hospitals.isNotEmpty) {
+      final first = hospitalView.hospitals.first;
+      _fetchPhotoFor(first.name);
+      try {
+        await _mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(
+            LatLng(first.latitude, first.longitude),
+            16,
+          ),
+        );
+      } catch (_) {}
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

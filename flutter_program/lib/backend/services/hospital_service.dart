@@ -65,16 +65,16 @@ class HospitalService {
       '?lat=${userLocation.latitude}&lng=${userLocation.longitude}',
     );
 
-    final response = await http.get(uri);
-    // 🔥 加 debugPrint 出來看看 statusCode / body
-    debugPrint('Nearby 👉 $uri');
-    debugPrint('→ status ${response.statusCode}, body=${response.body}');
+    final res = await http.get(uri);
+    debugPrint('Nearby 👉 $uri'); // 建議加這行，方便你在 log 看到真正請求的 URL
+    debugPrint('→ status ${res.statusCode}, body=${res.body}');
 
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonList = json.decode(response.body);
-      return jsonList.map((j) => Hospital.fromJson(j)).toList();
+    if (res.statusCode == 200) {
+      final List<dynamic> jsonList = json.decode(res.body);
+      final list = jsonList.map((j) => Hospital.fromJson(j)).toList();
+      return list; // 後端已經 LIMIT 10
     } else {
-      throw Exception('無法取得附近醫院資料 (HTTP ${response.statusCode})');
+      throw Exception('無法取得附近醫院資料 (HTTP ${res.statusCode})');
     }
   }
 
@@ -96,6 +96,29 @@ class HospitalService {
       }
     } catch (e) {
       throw Exception('無法取得附近醫院：$e');
+    }
+  }
+
+  Future<Hospital?> fetchNearestHospital(LatLng userLocation) async {
+    final uri = Uri.parse(
+      '${ApiBase.baseUrl}/hospitals/nearby'
+      '?lat=${userLocation.latitude}&lng=${userLocation.longitude}',
+    );
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        if (jsonList.isNotEmpty) {
+          // 取第一筆 (最近的一間)
+          return Hospital.fromJson(jsonList.first);
+        }
+        return null;
+      } else {
+        throw Exception('伺服器回應錯誤：${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('無法取得最近醫院：$e');
     }
   }
 }

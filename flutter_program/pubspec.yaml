@@ -86,7 +86,7 @@ flutter:
     - images/gray_maker.png
     - images/doctor_bear.png
     - images/red_maker.png
-    - images/star_maker.png
+    - images/star_marker.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

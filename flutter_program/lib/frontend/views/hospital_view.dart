@@ -6,7 +6,7 @@ import 'package:drw/backend/services/hospital_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter/foundation.dart'; 
+import 'package:flutter/foundation.dart';
 
 class HospitalView extends ChangeNotifier {
   bool showDropDownForm = false;
@@ -42,7 +42,6 @@ class HospitalView extends ChangeNotifier {
   List<Hospital> hospitals = [];
   Hospital? selectedHospital;
 
-
   void selectHospital(Hospital hospital) {
     selectedHospital = hospital;
     showHospitalInfo = true;
@@ -61,14 +60,18 @@ class HospitalView extends ChangeNotifier {
     notifyListeners();
   }
 
-Future<void> fetchHospitalsByDistance(LatLng userLocation) async {
-  try {
-    hospitals = await _hospitalService.fetchHospitalsByDistance(userLocation);
-    notifyListeners();
-  } catch (e) {
-    debugPrint('fetchHospitalsByDistance 發生錯誤: $e');
+  Future<void> fetchHospitalsByDistance(LatLng userLocation) async {
+    try {
+      hospitals = await _hospitalService.fetchHospitalsByDistance(userLocation);
+      if (hospitals.isNotEmpty) {
+        // 自動選最近的第一筆
+        selectHospital(hospitals.first);
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('fetchHospitalsByDistance 發生錯誤: $e');
+    }
   }
-}
 
   Future loadDistricts(String city) async {
     selectedDistrict = null; // 清除舊選擇
@@ -119,13 +122,12 @@ Future<void> fetchHospitalsByDistance(LatLng userLocation) async {
     notifyListeners();
   }
 
-
-
   Future<void> fetchHospitals() async {
     if (_selectedCounty == null) return;
 
     try {
-      final List<Map<String, dynamic>> rawData = await _hospitalService.fetchHospitals(
+      final List<Map<String, dynamic>> rawData =
+          await _hospitalService.fetchHospitals(
         city: _selectedCounty!,
         district: _selectedDistrict ?? '',
         dept: _selectedDepartment ?? '',

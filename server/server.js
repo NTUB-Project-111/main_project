@@ -19,8 +19,8 @@ const callRoutes = require('./routes/call');
 app.use('/', callRoutes);
 
 const hospitalRoutes = require('./routes/hospital');
-app.use('/', hospitalRoutes);
 
+app.use('/', hospitalRoutes);
 app.get('/', (req, res) => {
   res.send(' Server is running!');
 });
@@ -28,5 +28,4 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(` Server running at http://localhost:${PORT}`);
 });
-
 //ssssssssssssssssssssssssssssssssssssssssssssss
