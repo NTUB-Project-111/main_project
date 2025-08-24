@@ -276,195 +276,202 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
 
   // 醫院卡片 UI
 // 醫院卡片 UI（右上角：星星＋營業狀態；下一行才是名稱）
-Widget _buildHospitalCard() {
-  return Consumer2<HospitalView, GoogleMapService>(
-    builder: (context, hospital, mapService, _) {
-      final selected = hospital.selectedHospital;
-      if (selected == null) return const SizedBox();
+  Widget _buildHospitalCard() {
+    return Consumer2<HospitalView, GoogleMapService>(
+      builder: (context, hospital, mapService, _) {
+        final selected = hospital.selectedHospital;
+        if (selected == null) return const SizedBox();
 
-      return Align(
-        alignment: Alignment.bottomCenter,
-        child: Dismissible(
-          key: UniqueKey(),
-          direction: DismissDirection.down,
-          onDismissed: (_) => hospital.toggleShowMode(),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 20),
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            width: MediaQuery.of(context).size.width * 0.95,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 上方拖把
-                Container(
-                  width: 80,
-                  height: 5,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(50, 88, 146, 153),
-                    borderRadius: BorderRadius.circular(12.0),
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: Dismissible(
+            key: UniqueKey(),
+            direction: DismissDirection.down,
+            onDismissed: (_) => hospital.toggleShowMode(),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              width: MediaQuery.of(context).size.width * 0.95,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
                   ),
-                ),
-
-                // ❶ 右上角：星星 + 營業狀態（與標題分開一行）
-                Row(
-                  children: [
-                    const Spacer(),
-                    IconButton(
-                      tooltip: '收藏 / 星星樣式',
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      icon: const Icon(Icons.star_border_rounded,
-                          size: 22, color: Color(0xFF669FA5)),
-                      onPressed: () {
-                        // 這邊保留你原本的切換動作（若不需要可改成收藏）
-                        final useStar =
-                            mapService.openMarkerStyle != OpenMarkerStyle.star;
-                        mapService.setOpenMarkerStyle(
-                            useStar ? OpenMarkerStyle.star : OpenMarkerStyle.red);
-                      },
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 上方拖把
+                  Container(
+                    width: 80,
+                    height: 5,
+                    margin: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(50, 88, 146, 153),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      selected.openStatus ?? '未營業',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: (selected.openStatus == '營業中')
-                            ? Colors.red
-                            : const Color(0xFF9AA7AD),
+                  ),
+
+                  // ❶ 右上角：星星 + 營業狀態（與標題分開一行）
+                  // ❶ 右上角：星星 + 營業狀態（與標題分開一行）
+                  Row(
+                    children: [
+                      const Spacer(),
+                      // 圖示依目前是否加星而變化
+                      IconButton(
+                        tooltip: '收藏 / 取消收藏',
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: Icon(
+                          mapService.isStarred(selected.id)
+                              ? Icons.star_rounded
+                              : Icons.star_border_rounded,
+                          size: 22,
+                          color: const Color(0xFF669FA5),
+                        ),
+                        onPressed: () async {
+                          // 1) 切換該院所的收藏狀態
+                          mapService.toggleStar(selected.id);
+
+                          // 2) 重新繪製地圖上的 markers（用現有的清單與位置）
+                          final hv =
+                              Provider.of<HospitalView>(context, listen: false);
+                          if (_currentPosition != null &&
+                              hv.hospitals.isNotEmpty) {
+                            await _mapService.setMarkers(
+                              hv.hospitals,
+                              (h) {
+                                hv.selectHospital(h);
+                                _fetchPhotoFor(h.name);
+                              },
+                              _currentPosition!,
+                              pinColor: BitmapDescriptor.hueRed,
+                            );
+                          }
+                        },
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(width: 8),
+                      Text(
+                        selected.openStatus ?? '未營業',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: (selected.openStatus == '營業中')
+                              ? Colors.red
+                              : const Color(0xFF9AA7AD),
+                        ),
+                      ),
+                    ],
+                  ),
 
-                // ❷ 主內容：左圖 + 右文字
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 左側圖片
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: _selectedHospitalPhotoUrl != null
-                          ? Image.network(
-                              _selectedHospitalPhotoUrl!,
-                              width: MediaQuery.of(context).size.width * 0.3,
-                              height: 120,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Image.asset(
+                  // ❷ 主內容：左圖 + 右文字
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 左側圖片
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: _selectedHospitalPhotoUrl != null
+                            ? Image.network(
+                                _selectedHospitalPhotoUrl!,
+                                width: MediaQuery.of(context).size.width * 0.3,
+                                height: 120,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Image.asset(
+                                  'images/hospital.png',
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Image.asset(
                                 'images/hospital.png',
                                 width: MediaQuery.of(context).size.width * 0.3,
                                 height: 120,
                                 fit: BoxFit.cover,
                               ),
-                            )
-                          : Image.asset(
-                              'images/hospital.png',
-                              width: MediaQuery.of(context).size.width * 0.3,
-                              height: 120,
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                    const SizedBox(width: 16),
-
-                    // 右側：標題 + 資訊
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // ❸ 醫院名稱（獨立一行）
-                          Text(
-                            selected.name,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              height: 1.2,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF589399),
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 10),
-
-                          _buildInfoRow(
-                            Icons.location_on_outlined,
-                            selected.address,
-                            maxLines: 2,
-                          ),
-                          const SizedBox(height: 6),
-                          _buildInfoRow(
-                              Icons.phone_outlined, '電話：${selected.phone}'),
-                          const SizedBox(height: 6),
-                          _buildInfoRow(Icons.directions_walk_outlined,
-                              '距離：${selected.distance}'),
-                          const SizedBox(height: 6),
-                          _buildInfoRow(Icons.access_time_outlined,
-                              '行走時間：${selected.walkTime} 分鐘'),
-                        ],
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(width: 16),
 
-                // 導航按鈕
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton.icon(
-                    icon: const Icon(
-                      Icons.navigation_outlined,
-                      size: 18,
-                      color: Color.fromRGBO(88, 147, 153, 1),
-                    ),
-                    label: const Text(
-                      '開始導航',
-                      style: TextStyle(
-                        fontSize: 13,
+                      // 右側：標題 + 資訊
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // ❸ 醫院名稱（獨立一行）
+                            Text(
+                              selected.name,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                height: 1.2,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF589399),
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 10),
+
+                            _buildInfoRow(
+                              Icons.location_on_outlined,
+                              selected.address,
+                              maxLines: 2,
+                            ),
+                            const SizedBox(height: 6),
+                            _buildInfoRow(
+                                Icons.phone_outlined, '電話：${selected.phone}'),
+                            const SizedBox(height: 6),
+                            _buildInfoRow(Icons.directions_walk_outlined,
+                                '距離：${selected.distance}'),
+                            const SizedBox(height: 6),
+                            _buildInfoRow(Icons.access_time_outlined,
+                                '行走時間：${selected.walkTime} 分鐘'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // 導航按鈕
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      icon: const Icon(
+                        Icons.navigation_outlined,
+                        size: 18,
                         color: Color.fromRGBO(88, 147, 153, 1),
                       ),
+                      label: const Text(
+                        '開始導航',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color.fromRGBO(88, 147, 153, 1),
+                        ),
+                      ),
+                      onPressed: () {
+                        Provider.of<GoogleMapService>(context, listen: false)
+                            .navigateToHospital(
+                          selected.latitude,
+                          selected.longitude,
+                        );
+                      },
                     ),
-                    onPressed: () {
-                      Provider.of<GoogleMapService>(context, listen: false)
-                          .navigateToHospital(
-                        selected.latitude,
-                        selected.longitude,
-                      );
-                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        );
+      },
+    );
+  }
 
   // 資訊列 UI
   Widget _buildInfoRow(IconData icon, String text, {int maxLines = 1}) {
