@@ -105,58 +105,6 @@ class _GalleryPageState extends State<GalleryPage>
         ));
   }
 
-  // Widget _buildImagePage(List<UserReport> reports) {
-  //   Gallery gallery = Gallery();
-  //   gallery.sortReports(reports);
-  //   return SingleChildScrollView(
-  //     scrollDirection: Axis.vertical,
-  //     child: Padding(
-  //       padding: const EdgeInsets.fromLTRB(15, 0, 15, 25),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           const Text(
-  //             "近期傷口",
-  //             style: TextStyle(
-  //                 color: Color(0xFF589399),
-  //                 fontWeight: FontWeight.w700,
-  //                 height: 3),
-  //           ),
-  //           reports.isNotEmpty
-  //               ? SingleChildScrollView(
-  //                   scrollDirection: Axis.horizontal,
-  //                   child: Row(
-  //                     children: [
-  //                       for (var report in reports) _buildRecentImage(report)
-  //                     ],
-  //                   ),
-  //                 )
-  //               : const SizedBox(
-  //                   width: double.infinity,
-  //                   child: Text(
-  //                     '無近期傷口紀錄',
-  //                     style: TextStyle(
-  //                         color: Colors.grey,
-  //                         fontWeight: FontWeight.bold,
-  //                         height: 3),
-  //                     textAlign: TextAlign.center,
-  //                   ),
-  //                 ),
-  //           SingleChildScrollView(
-  //             child: Column(
-  //               children: [
-  //                 _buildYearlyImage('2025', gallery.reports, reports),
-  //                 _buildYearlyImage('2024', gallery.reports, reports),
-  //                 _buildYearlyImage('2023', gallery.reports, reports),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildImagePage(List<UserReport> reports) {
     Gallery gallery = Gallery();
     gallery.sortReports(reports);
