@@ -63,7 +63,7 @@
         android:label="Dr.w" >
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="" />
+            android:value="AIzaSyAWLO8EBkVp_6k9iqeYEpfvgoOJ32Evr0c" />
 
         <activity
             android:name="com.example.drw.MainActivity"

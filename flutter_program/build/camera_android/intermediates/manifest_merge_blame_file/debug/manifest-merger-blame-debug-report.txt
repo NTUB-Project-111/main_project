@@ -5,10 +5,10 @@
 5    <uses-sdk android:minSdkVersion="21" />
 6
 7    <uses-permission android:name="android.permission.CAMERA" />
-7-->C:\Users\sally\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android-0.10.10\android\src\main\AndroidManifest.xml:3:5-64
-7-->C:\Users\sally\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android-0.10.10\android\src\main\AndroidManifest.xml:3:22-62
+7-->C:\Users\User\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android-0.10.10\android\src\main\AndroidManifest.xml:3:5-64
+7-->C:\Users\User\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android-0.10.10\android\src\main\AndroidManifest.xml:3:22-62
 8    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-8-->C:\Users\sally\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android-0.10.10\android\src\main\AndroidManifest.xml:4:5-70
-8-->C:\Users\sally\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android-0.10.10\android\src\main\AndroidManifest.xml:4:22-68
+8-->C:\Users\User\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android-0.10.10\android\src\main\AndroidManifest.xml:4:5-70
+8-->C:\Users\User\AppData\Local\Pub\Cache\hosted\pub.dev\camera_android-0.10.10\android\src\main\AndroidManifest.xml:4:22-68
 9
 10</manifest>
