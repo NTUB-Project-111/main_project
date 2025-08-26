@@ -31,12 +31,12 @@ class GoogleMapService extends ChangeNotifier {
   Set<int> get starredIds => Set.unmodifiable(_starredHospitalIds);
 
   void toggleStar(int hospitalId) {
-  if (!_starredHospitalIds.add(hospitalId)) {
-    _starredHospitalIds.remove(hospitalId);
+    if (!_starredHospitalIds.add(hospitalId)) {
+      _starredHospitalIds.remove(hospitalId);
+    }
+    _persistFavorites(); // <-- 新增：存到 SharedPreferences
+    notifyListeners();
   }
-  _persistFavorites();   // <-- 新增：存到 SharedPreferences
-  notifyListeners();
-}
 
 // 用頁面現有的 hospitals 過濾出收藏清單
   List<Hospital> getStarredHospitals(List<Hospital> all) =>
@@ -60,8 +60,6 @@ class GoogleMapService extends ChangeNotifier {
       _starredHospitalIds.map((e) => e.toString()).toList(),
     );
   }
-
-  
 
   // --- icon cache：載一次就好 ---
   BitmapDescriptor? _iconGray;
@@ -177,7 +175,10 @@ class GoogleMapService extends ChangeNotifier {
           position: LatLng(h.latitude, h.longitude),
           infoWindow: InfoWindow(title: h.name, snippet: h.address),
           icon: icon,
-          onTap: () => onMarkerTap(h),
+          onTap: () {
+            // 讓地圖點擊先完成，再排進 UI queue 更新 provider，比較不會被地圖手勢影響
+            Future.microtask(() => onMarkerTap(h));
+          },
         ),
       );
     }));

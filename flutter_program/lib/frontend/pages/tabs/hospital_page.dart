@@ -108,9 +108,12 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
       // 2) 畫 marker
       await _mapService.setMarkers(
         hospitalView.hospitals,
-        (selectedHospital) {
-          hospitalView.selectHospital(selectedHospital);
-          _fetchPhotoFor(selectedHospital.name);
+        (h) {
+          debugPrint('marker tapped: ${h.name} (${h.id})');
+          final hv = context.read<HospitalView>();
+          hv.selectHospital(
+              h); // 這行會把 showHospitalInfo 設成 true + notifyListeners()
+          _fetchPhotoFor(h.name);
         },
         latLng,
         pinColor: BitmapDescriptor.hueRed,
@@ -161,26 +164,24 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                     ),
                   ],
                 ),
+// ✅ 加回資訊卡
                 if (hospital.showHospitalInfo)
                   Positioned(
-                    left: 16,
-                    // 卡片顯示時：在卡片上緣再加一點間距；未顯示時：離底 24
-                    bottom:
-                        hospital.showHospitalInfo ? (_infoCardHeight + 24) : 24,
-                    child: SafeArea(
-                      minimum: const EdgeInsets.only(left: 8),
-                      child: _FavoritesFab(
-                        onTap: () => _openFavoritesSheet(context),
-                      ),
-                    ),
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: _buildHospitalCard(),
                   ),
-                // ❹ 左下角：收藏列表按鈕（會永遠浮在地圖上）
+                // 單一「收藏列表」浮動按鈕（永遠存在，依卡片高度調整 Y 位置）
                 Positioned(
                   left: 16,
                   bottom:
-                      hospital.showHospitalInfo ? 190 : 24, // 若有下方卡片，按鈕往上騰出空間
-                  child: _FavoritesFab(
-                    onTap: () => _openFavoritesSheet(context),
+                      hospital.showHospitalInfo ? (_infoCardHeight + 28) : 24,
+                  child: SafeArea(
+                    minimum: const EdgeInsets.only(left: 8),
+                    child: _FavoritesFab(
+                      onTap: () => _openFavoritesSheet(context),
+                    ),
                   ),
                 ),
               ],
@@ -735,11 +736,10 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                   ),
                   const SizedBox(height: 8),
                   const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Center(
                       child: Text(
-                        '我的收藏',
+                        '收藏列表',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
