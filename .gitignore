@@ -47,3 +47,52 @@ model/wound_photo/*.zip
 model/wound_photo/Abrasions_1000.zip model/wound_photo/NEW_Abrasions.zip model/wound_photo/NEW_Bruise.zip model/wound_photo/NEW_Burn.zip model/wound_photo/NEW_Cut.zip model/wound_photo/NEW_Stab.zip model/wound_photo/NEW_Surgical.zip model/wound_photo/SERIOUS_ Wounds.zip model/wound_photo/新的假照片(生15張的.zip
 model/wound_photo/Abrasions_1000.zip model/wound_photo/NEW_Abrasions.zip model/wound_photo/NEW_Bruise.zip model/wound_photo/NEW_Burn.zip model/wound_photo/NEW_Cut.zip model/wound_photo/NEW_Stab.zip model/wound_photo/NEW_Surgical.zip model/wound_photo/SERIOUS_ Wounds.zip model/wound_photo/新的假照片(生15張的.zip
 model/wound_photo/*.zip
+# ---- Global ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.iml
+*.log
+
+# ---- Env / secrets ----
+.env
+**/.env
+*.keystore
+**/key.properties
+
+# ---- Flutter project (flutter_program/) ----
+flutter_program/.dart_tool/
+flutter_program/.packages
+flutter_program/.flutter-plugins
+flutter_program/.flutter-plugins-dependencies
+flutter_program/build/
+flutter_program/coverage/
+flutter_program/pubspec.lock
+
+# Android
+flutter_program/android/.gradle/
+flutter_program/android/local.properties
+flutter_program/android/**/GeneratedPluginRegistrant.java
+
+# iOS
+flutter_program/ios/Flutter/Generated.xcconfig
+flutter_program/ios/Flutter/flutter_export_environment.sh
+flutter_program/ios/Runner/GeneratedPluginRegistrant.* 
+flutter_program/ios/Pods/
+
+# macOS
+flutter_program/macos/Flutter/ephemeral/
+flutter_program/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Web (若有)
+flutter_program/build/web/
+
+# ---- Node server (server/) ----
+server/node_modules/
+server/npm-debug.log*
+server/yarn-error.log
+server/package-lock.json
+server/pnpm-lock.yaml
+server/.env
+server/uploads/
