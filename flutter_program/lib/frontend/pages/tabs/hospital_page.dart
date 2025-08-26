@@ -81,6 +81,12 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
   @override
   void initState() {
     super.initState();
+
+    // ❶ 換成你登入後拿到的使用者 ID；暫用 guest
+    final userId = 'guest';
+    _mapService.initFavorites(userId: userId);
+
+    // ❷ 再開始定位與抓附近院所
     _initLocation();
   }
 
@@ -160,6 +166,14 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                     right: 0,
                     child: _buildHospitalCard(),
                   ),
+                  // ❹ 左下角：收藏列表按鈕（會永遠浮在地圖上）
+Positioned(
+  left: 16,
+  bottom: hospital.showHospitalInfo ? 190 : 24, // 若有下方卡片，按鈕往上騰出空間
+  child: _FavoritesFab(
+    onTap: () => _openFavoritesSheet(context),
+  ),
+),
               ],
             );
           },
@@ -591,4 +605,255 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
       ],
     );
   }
+  // ===== 收藏列表浮動按鈕（左下角）=====
+Widget _FavoritesFab({required VoidCallback onTap}) {
+  return Consumer2<GoogleMapService, HospitalView>(
+    builder: (context, mapService, hv, _) {
+      final favHospitals =
+          hv.hospitals.where((h) => mapService.isStarred(h.id)).toList();
+      final count = favHospitals.length;
+
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(28),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+              border: Border.all(color: const Color(0xFF669FA5), width: 1),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.star_rounded, color: Color(0xFF669FA5), size: 20),
+                const SizedBox(width: 6),
+                const Text(
+                  '收藏',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF669FA5),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF669FA5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '$count',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+// ===== 收藏列表面板（BottomSheet + 可拖拉高度）=====
+Future<void> _openFavoritesSheet(BuildContext context) async {
+  final mapService = context.read<GoogleMapService>();
+  final hv = context.read<HospitalView>();
+
+  await showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (_) {
+      return DraggableScrollableSheet(
+        initialChildSize: 0.35,
+        minChildSize: 0.2,
+        maxChildSize: 0.8,
+        builder: (context, scrollController) {
+          final favorites =
+              hv.hospitals.where((h) => mapService.isStarred(h.id)).toList();
+
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 12,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade400,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '我的收藏',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF589399),
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(height: 1),
+                Expanded(
+                  child: favorites.isEmpty
+                      ? const Center(
+                          child: Text('尚未收藏任何醫療院所',
+                              style: TextStyle(color: Color(0xFF9AA7AD))),
+                        )
+                      : ListView.builder(
+                          controller: scrollController,
+                          itemCount: favorites.length,
+                          itemBuilder: (_, i) {
+                            final h = favorites[i];
+                            return ListTile(
+                              dense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 6),
+                              leading: const Icon(Icons.local_hospital_outlined,
+                                  color: Color(0xFF669FA5)),
+                              title: Text(
+                                h.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF589399),
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.phone_outlined,
+                                          size: 14, color: Color(0xFF9AA7AD)),
+                                      const SizedBox(width: 6),
+                                      Expanded(
+                                        child: Text(
+                                          h.phone.isEmpty ? '—' : h.phone,
+                                          style: const TextStyle(
+                                              fontSize: 12,
+                                              color: Color(0xFF65747A)),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.location_on_outlined,
+                                          size: 14, color: Color(0xFF9AA7AD)),
+                                      const SizedBox(width: 6),
+                                      Expanded(
+                                        child: Text(
+                                          h.address,
+                                          style: const TextStyle(
+                                              fontSize: 12,
+                                              color: Color(0xFF65747A)),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.info_outline,
+                                          size: 14, color: Color(0xFF9AA7AD)),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        h.openStatus ?? '狀態未知',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          color: (h.openStatus == '營業中')
+                                              ? Colors.red
+                                              : const Color(0xFF9AA7AD),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              trailing: IconButton(
+                                tooltip: '取消收藏',
+                                icon: const Icon(Icons.star_rounded,
+                                    color: Color(0xFF669FA5)),
+                                onPressed: () async {
+                                  mapService.toggleStar(h.id);
+                                  final left = hv.hospitals.where(
+                                          (x) => mapService.isStarred(x.id))
+                                      .length;
+                                  if (left == 0 &&
+                                      Navigator.of(context).canPop()) {
+                                    Navigator.of(context).pop();
+                                  } else {
+                                    setState(() {}); // 更新角標數
+                                  }
+                                },
+                              ),
+                              onTap: () async {
+                                context.read<HospitalView>().selectHospital(h);
+                                try {
+                                  await _mapController?.animateCamera(
+                                    CameraUpdate.newLatLngZoom(
+                                      LatLng(h.latitude, h.longitude),
+                                      16,
+                                    ),
+                                  );
+                                } catch (_) {}
+                                if (Navigator.of(context).canPop()) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
 }

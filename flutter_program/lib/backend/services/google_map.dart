@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum OpenMarkerStyle { red, gray, star }
 
@@ -20,13 +21,47 @@ class GoogleMapService extends ChangeNotifier {
 
   // 新增：被加星的院所 id
   final Set<int> _starredHospitalIds = {};
+
+  // === 收藏（本機持久化） ===
+  String _userId = 'guest';
+  String _favKey(String uid) => 'fav_hospitals_$uid';
+
   bool isStarred(int hospitalId) => _starredHospitalIds.contains(hospitalId);
+
+  Set<int> get starredIds => Set.unmodifiable(_starredHospitalIds);
+
   void toggleStar(int hospitalId) {
-    if (!_starredHospitalIds.add(hospitalId)) {
-      _starredHospitalIds.remove(hospitalId);
-    }
-    notifyListeners(); // 讓卡片星星同步亮/滅
+  if (!_starredHospitalIds.add(hospitalId)) {
+    _starredHospitalIds.remove(hospitalId);
   }
+  _persistFavorites();   // <-- 新增：存到 SharedPreferences
+  notifyListeners();
+}
+
+// 用頁面現有的 hospitals 過濾出收藏清單
+  List<Hospital> getStarredHospitals(List<Hospital> all) =>
+      all.where((h) => _starredHospitalIds.contains(h.id)).toList();
+
+// 初始化或切換帳號時呼叫
+  Future<void> initFavorites({required String userId}) async {
+    _userId = (userId.isEmpty) ? 'guest' : userId;
+    final prefs = await SharedPreferences.getInstance();
+    final ids = prefs.getStringList(_favKey(_userId)) ?? const [];
+    _starredHospitalIds
+      ..clear()
+      ..addAll(ids.map(int.parse));
+    notifyListeners();
+  }
+
+  Future<void> _persistFavorites() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      _favKey(_userId),
+      _starredHospitalIds.map((e) => e.toString()).toList(),
+    );
+  }
+
+  
 
   // --- icon cache：載一次就好 ---
   BitmapDescriptor? _iconGray;
@@ -57,7 +92,8 @@ class GoogleMapService extends ChangeNotifier {
     }
     // 保底：至少要有內建紅釘，避免全失敗
     _iconRed ??= BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
-    _iconGray ??= BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
+    _iconGray ??=
+        BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
   }
 
   String? get _apiKey => dotenv.env['GOOGLE_MAPS_API_KEY'];

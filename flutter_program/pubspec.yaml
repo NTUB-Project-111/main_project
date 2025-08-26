@@ -48,6 +48,7 @@ dependencies:
   carousel_slider: ^5.1.1 #輪播圖片
   permission_handler: ^11.3.0 #權限請求
   file_picker: ^10.2.0 #另一種圖片選擇器
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
