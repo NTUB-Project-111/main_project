@@ -49,7 +49,10 @@ dependencies:
   location: ^7.0.1 #定位使用者位置
   mime: ^2.0.0 #確定副檔名
   google_maps_flutter: ^2.10.1 #顯示google地圖
+  
   geolocator: ^10.1.0 #取得地理位置
+
+
   google_maps_webservice: ^0.0.20-nullsafety.5  # Google Places & 距離計算
   flutter_dotenv: ^5.2.1 #使用.env檔案
   url_launcher: ^6.3.1 #跳轉至外部網站
@@ -60,6 +63,12 @@ dependencies:
   flutter_local_notifications: ^18.0.1 #提醒器
   timezone: ^0.9.4 #系統通知比對時間(取得時區)
   flutter_timezone: ^4.1.0 #系統通知比對時間(取得時區)
+  shared_preferences: ^2.2.3
+
+  geolocator: ^13.0.2 #取得地理位置
+  
+  geolocator_android: 4.6.1
+  
 
 dev_dependencies:
   flutter_test:
@@ -71,7 +80,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
-
+  flutter_dotenv: ^5.1.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -97,6 +106,9 @@ flutter:
     - images/old_photo_icon.png
     - images/doctor_bear.png
     - images/nursebear.png
+    - images/gray_maker.png
+    - images/red_maker.png
+    - images/star_marker.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
