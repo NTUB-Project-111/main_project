@@ -6,6 +6,11 @@ class ReportProvider extends ChangeNotifier {
 
   List<UserReport> get reports => _reports;
 
+  // void deleteReport(int reportId) {
+  //   _reports.removeWhere((report) => report.id == reportId);
+  //   notifyListeners();
+  // }
+
   void setReports(List<UserReport> reports) {
     _reports = reports;
     notifyListeners();
