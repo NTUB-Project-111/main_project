@@ -140,6 +140,7 @@ router.get('/getUserDetail', async (req, res) => {
             r.recording,
             r.photo,
             r.group_id,
+            r.name,
             c.fk_user_id,
             c.id_calls AS remindId,
             c.fk_record_id,
@@ -168,6 +169,7 @@ router.get('/getUserDetail', async (req, res) => {
                     choosekind: row.choosekind,
                     recording: row.recording,
                     photo: row.photo,
+                    name: row.name,
                     group_id:row.group_id,
                     reminds: [],
                 };
@@ -191,6 +193,36 @@ router.get('/getUserDetail', async (req, res) => {
     } catch (err) {
         console.error('資料取得錯誤:', err);
         res.status(500).json({ message: '伺服器錯誤' });
+    }
+});
+
+// === 修改習慣頻率 ===
+router.post('/updateFreq', async (req, res) => {
+    const { id, freq } = req.body;
+    console.log('接收到請求', req.body);
+
+    try {
+        const [result] = await db.query('UPDATE user SET freq = ? WHERE id = ?', [freq, id]);
+        console.log('更新成功', result);
+        return res.json({ message: '更新成功' });
+    } catch (err) {
+        console.error('資料庫錯誤:', err);
+        return res.status(500).json({ error: '資料庫錯誤' });
+    }
+});
+
+// === 修改特殊病症 ===
+router.post('/updateDisease', async (req, res) => {
+    const { id, disease } = req.body;
+    console.log('接收到請求', req.body);
+
+    try {
+        const [result] = await db.query('UPDATE user SET disease = ? WHERE id = ?', [disease, id]);
+        console.log('更新成功', result);
+        return res.json({ message: '更新成功' });
+    } catch (err) {
+        console.error('資料庫錯誤:', err);
+        return res.status(500).json({ error: '資料庫錯誤' });
     }
 });
 

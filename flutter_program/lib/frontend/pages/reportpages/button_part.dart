@@ -5,6 +5,7 @@ import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/frontend/pages/tabs/tabs.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:drw/frontend/utility/notifier_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -87,15 +88,19 @@ class _ButtonPartState extends State<ButtonPart> {
                                   }
                                   // 可能額外需要觸發資料儲存/紀錄刷新
                                   await RecordService.getRecords(context, user.id.toString());
-                                  
+                                  Notifier.setRemind(context);
                                   // 顯示成功訊息並跳頁
-                                  FrontUtil.showError('報告儲存成功!', Colors.green, Colors.white);
-                                  Navigator.pushReplacement(
-                                    context,
+                                  FrontUtil.showSuccess('報告儲存成功!');
+                                  // Navigator.pushReplacement(
+                                  //   context,
+                                  //   MaterialPageRoute(builder: (_) => const Tabs(currentIndex: 0)),
+                                  // );
+                                  Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(builder: (_) => const Tabs(currentIndex: 0)),
+                                    (route) => false,
                                   );
                                 } else {
-                                  FrontUtil.showError('報告儲存失敗', Colors.red, Colors.white);
+                                  FrontUtil.showFail('報告儲存失敗');
                                 }
                               },
                         style: ElevatedButton.styleFrom(

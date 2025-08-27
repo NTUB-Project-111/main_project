@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FrontUtil {
   static Color bkColor = const Color(0xFFEBFEFF); //主畫面的背景顏色
@@ -68,9 +69,107 @@ class FrontUtil {
     ));
   }
 
+  static void showReference(BuildContext context, List<String> sources) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          constraints: const BoxConstraints(
+            minWidth: 200,
+            maxWidth: 310,
+            minHeight: 100,
+            maxHeight: 380,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x33000000),
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Center(
+                child: Text(
+                  'AI護理建議_資料來源',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF589399),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: Scrollbar(
+                  thumbVisibility: true,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: sources.map((s) {
+                        return InkWell(
+                          onTap: () async {
+                            final uri = Uri.tryParse(s);
+                            if (uri != null && await canLaunchUrl(uri)) {
+                              await launchUrl(uri,
+                                  mode: LaunchMode.externalApplication);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('無法開啟連結')),
+                              );
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  '• ',
+                                  style: TextStyle(
+                                    color: Color(0xFF589399),
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    s,
+                                    style: const TextStyle(
+                                      color: Color(0xFF589399),
+                                      fontSize: 15,
+                                      decoration:
+                                          TextDecoration.underline, // 顯示超連結風格
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   static void showTextDialog(
       BuildContext context, String title, String confirm, String cancel,
-      {VoidCallback? onConfirm}) {
+      {VoidCallback? onConfirm, VoidCallback? onCancel}) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -129,6 +228,9 @@ class FrontUtil {
               ),
               onPressed: () {
                 Navigator.pop(context);
+                if (onCancel != null) {
+                  onCancel(); // ✅ 執行傳入的動作
+                }
               },
               child: Text(
                 cancel,
@@ -387,15 +489,29 @@ class FrontUtil {
                         ),
                         Theme(
                           data: Theme.of(context).copyWith(
+                            colorScheme: const ColorScheme.light(
+                              primary: Color.fromARGB(255, 176, 215, 219),
+                              onPrimary: Colors.white,
+                              onSurface: Color.fromARGB(255, 125, 173, 178),
+                            ),
                             timePickerTheme: TimePickerThemeData(
+                                //時間選擇器 顏色設定
                                 backgroundColor: const Color(0xFFF7FCFD),
                                 dialHandColor: const Color(0xFF589399),
-                                dialTextColor: const Color(0xFF2E6D74),
+                                dialTextColor: WidgetStateColor.resolveWith(
+                                    (Set<WidgetState> states) {
+                                  if (states.contains(WidgetState.selected)) {
+                                    return const Color.fromARGB(
+                                        255, 255, 255, 255); // 選中狀態下的數字
+                                  }
+                                  return const Color(0xFF2E6D74); // 未選中狀態下的數字
+                                }),
+                                // dialTextColor: const Color(0xFF2E6D74),
                                 dialBackgroundColor: Colors.white,
                                 // hourMinuteColor: const Color(0xFFBBD3D6),
                                 hourMinuteTextColor: const Color(0xFF164449),
                                 hourMinuteShape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(10),
                                   side: const BorderSide(
                                       color: Color(0xFF589399), width: 2),
                                 ),
@@ -420,6 +536,11 @@ class FrontUtil {
                                       WidgetStateProperty.all<Color>(
                                           Colors.black),
                                 )),
+                            textButtonTheme: TextButtonThemeData(
+                              style: TextButton.styleFrom(
+                                foregroundColor: FrontUtil.bkColor,
+                              ),
+                            ),
                           ),
                           child: Builder(
                             builder: (context) => OutlinedButton(
@@ -508,6 +629,7 @@ class FrontUtil {
                         ),
                         onPressed: () {
                           Navigator.pop(context); // 關閉對話框
+                          showSuccess("設定完成 !"); // 顯示成功訊息
                         },
                         child: const Text(
                           '確定',
@@ -652,6 +774,142 @@ class FrontUtil {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void showConfirmWoundDialog(BuildContext context, Color color, String title,
+      String cancel, String confirm) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        contentPadding: const EdgeInsets.symmetric(vertical: 20),
+        content: SizedBox(
+          width: 280, // 設定最大寬度
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  height: 2,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 30), // 可視情況調整
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      side: BorderSide(color: color),
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(cancel, style: TextStyle(color: color)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      backgroundColor: color,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      confirm,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  //確認傷口照片
+  static void showConfirmDialog(BuildContext context, Color color, String title,
+      String? subTitle, String cancel, String confirm, VoidCallback onConfirm) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        contentPadding: const EdgeInsets.symmetric(vertical: 20),
+        content: SizedBox(
+          width: 220, // 設定最大寬度
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  height: 2,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              subTitle != null
+                  ? Text(
+                      subTitle,
+                      style: TextStyle(
+                        height: 2,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
+                      textAlign: TextAlign.center,
+                    )
+                  : const SizedBox(),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 30), // 可視情況調整
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      side: BorderSide(color: color),
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(cancel, style: TextStyle(color: color)),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      backgroundColor: color,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      onConfirm();
+                    },
+                    child: Text(
+                      confirm,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

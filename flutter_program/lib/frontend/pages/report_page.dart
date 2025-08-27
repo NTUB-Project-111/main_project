@@ -1,6 +1,6 @@
 import 'package:drw/backend/models/report_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
-import 'package:drw/frontend/headers/header5.dart';
+// import 'package:drw/frontend/headers/header5.dart';
 import 'package:drw/frontend/pages/reportpages/button_part.dart';
 import 'package:drw/frontend/pages/reportpages/care_part.dart';
 import 'package:drw/frontend/pages/reportpages/hospital_part.dart';
@@ -14,7 +14,11 @@ import 'package:drw/frontend/pages/reportpages/title_part.dart';
 class ReportPage extends StatefulWidget {
   final bool isExtra;
   final int? id;
-  const ReportPage({super.key,required this.isExtra, this.id});
+  final String? oktime;
+  final String? date;
+  final String? woundType;
+  const ReportPage(
+      {super.key, required this.isExtra, this.id, this.oktime, this.date, this.woundType});
 
   @override
   State<ReportPage> createState() => _ReportPageState();
@@ -42,8 +46,8 @@ class _ReportPageState extends State<ReportPage> {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final user = userProvider.user;
       report.isLoading = true; // <-- 這行很關鍵！每次都要先設為 loading
-      await report.loadData(
-          user!.birthday, user.disease, user.freq); // 這樣 Consumer 才會觸發 CircularProgressIndicator
+      await report.loadData(user!.birthday, user.disease, user.freq, widget.isExtra, widget.oktime,
+          widget.date, widget.woundType); // 這樣 Consumer 才會觸發 CircularProgressIndicator
     });
   }
 
@@ -63,10 +67,10 @@ class _ReportPageState extends State<ReportPage> {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 children: [
-                  const Header5(),
+                  // const Header5(),
                   const TitlePart(),
                   const WoundPart(),
-                  const CarePart(),
+                  CarePart(isExtra: widget.isExtra),
                   const HospitalPart(),
                   const RecordPart(),
                   ButtonPart(isExtra: widget.isExtra, id: widget.id)

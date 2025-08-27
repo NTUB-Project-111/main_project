@@ -183,14 +183,14 @@ class _DiseasePageState extends State<DiseasePage> {
                       register.setDisease(selectedSymptoms);
                       final error = await register.register();
                       if (error == null) {
-                        FrontUtil.showError(
-                            '註冊成功!請登入帳號', Colors.green, Colors.white);
+                        FrontUtil.showSuccess(
+                            '註冊成功!請登入帳號');
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (_) => const LoginPage()),
                         );
                       } else {
-                        FrontUtil.showError(error, Colors.red, Colors.white);
+                        FrontUtil.showFail(error);
                       }
                     },
                     icon: Icon(

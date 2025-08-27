@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:drw/backend/models/records_model.dart';
 import 'package:drw/backend/models/report.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -20,6 +21,7 @@ class RecordService {
     String ifcall,
     String choosekind,
     String recording,
+    String name,
     File photoFile,
   ) async {
     final uri = Uri.parse("${ApiBase.baseUrl}/addRecord");
@@ -33,6 +35,7 @@ class RecordService {
     request.fields['ifcall'] = ifcall;
     request.fields['choosekind'] = choosekind;
     request.fields['recording'] = recording;
+    request.fields['name'] = name;
     // 添加圖片檔案
     var mimeType = lookupMimeType(photoFile.path) ?? "image/jpeg"; // 確保有 MIME 類型
     var multipartFile = await http.MultipartFile.fromPath(
@@ -69,6 +72,11 @@ class RecordService {
             recordsJson.map((json) => UserRecord.fromJson(json)).toList();
 
         Provider.of<Records>(context, listen: false).setRecords(records);
+        for (var record in records) {
+          debugPrint('==========新的一筆record===========');
+          debugPrint(record.recordId.toString());
+          debugPrint(record.groupId.toString());
+        }
       } else {
         debugPrint('取得紀錄失敗: ${response.statusCode}');
         debugPrint('錯誤訊息: ${response.body}');
@@ -103,10 +111,13 @@ class RecordService {
 
           // 確保 data 是 List 並過濾掉 null，再轉為 int
           final List<int> groupList = (data is List)
-              ? data
-                  .where((id) => id != null)
-                  .map((id) => int.tryParse(id.toString()) ?? 0)
-                  .toList()
+              ? data.map((id) {
+                  if (id == null || id.toString().trim().isEmpty) {
+                    return 0;
+                  } else {
+                    return int.tryParse(id.toString()) ?? 0;
+                  }
+                }).toList()
               : [0];
 
           return groupList;
@@ -177,5 +188,78 @@ class RecordService {
     }
 
     return null; // 若失敗則回傳 null
+  }
+
+  Future<void> updateOktime({
+    required String userId,
+    String? recordId,
+    String? groupId,
+    required String oktime,
+    required String ifcall,
+  }) async {
+    final url = Uri.parse('${ApiBase.baseUrl}/updateOktime'); // 替換成你的伺服器網址
+
+    final Map<String, dynamic> body = {
+      'userId': userId,
+      'oktime': oktime,
+      if (recordId != null) 'recordId': recordId,
+      if (groupId != null) 'groupId': groupId,
+      'ifcall': ifcall
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['success'] == true) {
+          FrontUtil.showSuccess('更新成功');
+        } else {
+          FrontUtil.showFail('更新失敗：${responseData['message']}');
+        }
+      } else {
+        FrontUtil.showFail('伺服器錯誤，狀態碼：${response.statusCode}');
+      }
+    } catch (e) {
+      FrontUtil.showFail('請求失敗：$e');
+    }
+  }
+
+  Future<bool> updateIfcall({
+    required int userId,
+    int? recordId,
+    int? groupId,
+    required String ifcall,
+  }) async {
+    final url = Uri.parse("${ApiBase.baseUrl}/updateIfcall");
+
+    final body = {
+      "userId": userId,
+      "ifcall": ifcall,
+    };
+
+    if (groupId != null) {
+      body["groupId"] = groupId;
+    } else if (recordId != null) {
+      body["recordId"] = recordId;
+    }
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final result = jsonDecode(response.body);
+      // 假設後端有回傳 { "success": true } 之類的格式
+      return result["success"] == true;
+    } else {
+      return false;
+    }
   }
 }

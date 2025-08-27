@@ -58,8 +58,14 @@ class Reminder {
   }
 
   /// 是否有被使用者修改過
-  bool get isModified => selectedFreq != initialFreq || selectedTime != initialTime || isDelete;
+  // bool get isModified => selectedFreq != initialFreq || selectedTime != initialTime || isDelete;
+  bool isModifiedFlag = false;
 
+  bool get isModified {
+    return isModifiedFlag ||
+          selectedFreq != initialFreq ||
+          selectedTime != initialTime;
+  }
   /// 如果需要轉成 TimeOfDay 顯示用（例如開時間選擇器）
   TimeOfDay get selectedTimeOfDay => parseTime(selectedTime);
 

@@ -11,6 +11,7 @@ class UserReport {
   final String choosekind;
   final String recording;
   final String photo;
+  final String name;
   final int groupId;
   List<UserRemind> reminds;
 
@@ -25,9 +26,42 @@ class UserReport {
     required this.choosekind,
     required this.recording,
     required this.photo,
+    required this.name,
     required this.groupId,
     required this.reminds,
   });
+
+  UserReport copyWith({
+    int? id,
+    int? userId,
+    String? date,
+    String? type,
+    String? oktime,
+    String? caremode,
+    String? ifcall,
+    String? choosekind,
+    String? recording,
+    String? photo,
+    String? name,
+    int? groupId,
+    List<UserRemind>? reminds,
+  }) {
+    return UserReport(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      date: date ?? this.date,
+      type: type ?? this.type,
+      oktime: oktime ?? this.oktime,
+      caremode: caremode ?? this.caremode,
+      ifcall: ifcall ?? this.ifcall,
+      choosekind: choosekind ?? this.choosekind,
+      recording: recording ?? this.recording,
+      photo: photo ?? this.photo,
+      name: name ?? this.name,
+      groupId: groupId ?? this.groupId,
+      reminds: reminds ?? this.reminds,
+    );
+  }
 
   factory UserReport.fromJson(Map<String, dynamic> json) {
     return UserReport(
@@ -41,6 +75,7 @@ class UserReport {
       choosekind: json['choosekind'],
       recording: json['recording'],
       photo: json['photo'],
+      name: json['name'] ?? '',
       groupId: json['group_id'] ?? 0,
       reminds: (json['reminds'] as List).map((r) => UserRemind.fromJson(r)).toList(),
     );

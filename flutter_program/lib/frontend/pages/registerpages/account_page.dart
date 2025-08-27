@@ -170,8 +170,8 @@ class _AccountPageState extends State<AccountPage> {
                               ),
                             );
                           } else {
-                            FrontUtil.showError(
-                                error, Colors.red, Colors.white);
+                            FrontUtil.showFail(
+                                error);
                           }
                         },
                         icon: Icon(
@@ -250,9 +250,9 @@ class _AccountPageState extends State<AccountPage> {
           final error = await register.sendCode();
           if (error == null) {
             setState(() => isCodeEnabled = true);
-            FrontUtil.showError('驗證碼已寄出，請於電子郵件查看', Colors.green, Colors.white);
+            FrontUtil.showSuccess('驗證碼已寄出，請於電子郵件查看');
           } else {
-            FrontUtil.showError(error, Colors.red, Colors.white);
+            FrontUtil.showFail(error);
           }
           setState(() => isSending = false);
         }, true, isSending),
@@ -309,9 +309,9 @@ class _AccountPageState extends State<AccountPage> {
           final error = await register.verifyCode();
           if (error == null) {
             setState(() => isPwdEnabled = true);
-            FrontUtil.showError('驗證成功 ! 請設定密碼', Colors.green, Colors.white);
+            FrontUtil.showSuccess('驗證成功 ! 請設定密碼');
           } else {
-            FrontUtil.showError(error, Colors.red, Colors.white);
+            FrontUtil.showFail(error);
           }
           setState(() => isVerifing = false);
         }, isCodeEnabled, isVerifing),

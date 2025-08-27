@@ -1,6 +1,8 @@
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/headers/header4.dart';
+import 'package:drw/frontend/pages/personalpages/changehabit_page.dart';
+import 'package:drw/frontend/pages/personalpages/showdisease_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../tabs/tabs.dart';
@@ -30,56 +32,54 @@ class _ProfilesPageState extends State<ProfilesPage> {
                   margin: const EdgeInsets.only(top: 30, bottom: 22),
                   width: 110,
                   height: 110,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.35),
-                        blurRadius: 1,
-                      ),
-                    ],
+                  decoration: const BoxDecoration(
+                    // color: Colors.white,
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //     color: Colors.black.withOpacity(0.35),
+                    //     blurRadius: 1,
+                    //   ),
+                    // ],
                     shape: BoxShape.circle,
                   ),
                   child: ClipOval(
-                    child: user!.picture.isNotEmpty
-                        ? Image.network(
-                            Uri.parse(ApiBase.baseUrl).resolve(user.picture).toString(),
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Center(child: Text("圖片載入失敗"));
-                            },
-                          )
-                        : const Icon(
-                            Icons.person,
-                            color: Color(0xFF669FA5),
-                            size: 80,
-                          ),
-                  ),
+                      child: user!.picture.isNotEmpty
+                          ? Image.network(
+                              Uri.parse(ApiBase.baseUrl).resolve(user.picture).toString(),
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Center(child: Text("圖片載入失敗"));
+                              },
+                            )
+                          : Image.asset(
+                              "images/register_icon.png",
+                              fit: BoxFit.contain,
+                            )),
                 );
               }),
 
-              // 更換頭像按鈕（無動作）
-              ElevatedButton(
-                onPressed: () async {
-                  // final userProvider = context.read<UserProvider>();
-                  // final user = userProvider.user;
-                  // final message = await UserService.updateImage(userId: user!.id, imageFile: imageFile);
-                },
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: const Color.fromRGBO(102, 159, 165, 1),
-                ),
-                child: const Text(
-                  "更換頭像",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.white,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-              ),
+              // // 更換頭像按鈕（無動作）
+              // ElevatedButton(
+              //   onPressed: () async {
+              //     // final userProvider = context.read<UserProvider>();
+              //     // final user = userProvider.user;
+              //     // final message = await UserService.updateImage(userId: user!.id, imageFile: imageFile);
+              //   },
+              //   style: ElevatedButton.styleFrom(
+              //     elevation: 0,
+              //     backgroundColor: const Color.fromRGBO(102, 159, 165, 1),
+              //   ),
+              //   child: const Text(
+              //     "更換頭像",
+              //     style: TextStyle(
+              //       fontSize: 15,
+              //       color: Colors.white,
+              //       letterSpacing: 1.5,
+              //     ),
+              //   ),
+              // ),
 
               // 使用者資訊表（靜態假資料）
               Container(
@@ -184,6 +184,64 @@ class _ProfilesPageState extends State<ProfilesPage> {
                               ),
                             );
                           }),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 60,
+                      decoration: const BoxDecoration(
+                          border: Border(top: BorderSide(color: Color.fromRGBO(242, 254, 255, 1)))),
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('個人習慣',
+                              style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                          IconButton(
+                            padding: const EdgeInsets.only(left: 35),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ChangeHabitPage(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 15,
+                              color: Color(0xFF669FA5),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 60,
+                      decoration: const BoxDecoration(
+                          border: Border(top: BorderSide(color: Color.fromRGBO(242, 254, 255, 1)))),
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('特殊病症',
+                              style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                          IconButton(
+                            padding: const EdgeInsets.only(left: 35),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ShowdiseasePage(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 15,
+                              color: Color(0xFF669FA5),
+                            ),
+                          )
                         ],
                       ),
                     ),

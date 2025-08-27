@@ -1,31 +1,33 @@
 const express = require('express');
 const router = express.Router();
-const upload = require('../utils/upload');
+// const upload = require('../utils/upload');
+const { upload, uploadToCloudinary } = require('../utils/upload');
 const db = require('../config/db');
 
 // === 新增診斷紀錄 ===
 router.post('/addRecord', upload.single('photo'), async (req, res) => {
   try {
-    const { fk_userid, date, type, oktime, caremode, ifcall, choosekind, recording } = req.body;
+    const { fk_userid, date, type, oktime, caremode, ifcall, choosekind, recording, name } = req.body;
     if (!req.file) {
       return res.status(400).json({ error: '請提供圖片' });
     }
-    const photoPath = `/uploads/${req.file.filename}`;
+    // 上傳至 Cloudinary
+    const cloudResult = await uploadToCloudinary(req.file.buffer, Date.now().toString());
+    const photoUrl = cloudResult.secure_url;
     const [result] = await db.query(
       `
       INSERT INTO record 
-      (fk_userid, date, photo, type, oktime, caremode, ifcall, choosekind, recording)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (fk_userid, date, photo, type, oktime, caremode, ifcall, choosekind, recording, name)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
-      [fk_userid, date, photoPath, type, oktime, caremode, ifcall, choosekind, recording]
+      [fk_userid, date, photoUrl, type, oktime, caremode, ifcall, choosekind, recording, name]
     );
     const insertedId = result.insertId;
     return res.json({
       message: 'Record added successfully',
       id_record: insertedId,
-      photoPath,
+      photoPath: photoUrl, // Cloudinary 圖片網址
     });
-
   } catch (err) {
     console.error('新增錯誤:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -79,6 +81,7 @@ router.get('/getRecordRemind', async (req, res) => {
                 r.ifcall,
                 r.choosekind,
                 r.recording,
+                r.name,
                 r.photo,
                 r.group_id,
                 c.fk_user_id,
@@ -108,6 +111,7 @@ router.get('/getRecordRemind', async (req, res) => {
           ifcall: row.ifcall,
           choosekind: row.choosekind,
           recording: row.recording,
+          name: row.name,
           photo: row.photo,
           group_id: row.group_id,
           reminds: [],
@@ -183,28 +187,31 @@ router.get('/getGroupId', async (req, res) => {
 
 //更新癒合時間
 router.post('/updateOktime', async (req, res) => {
-  const { userId, recordId, groupId, oktime } = req.body;
-  if (!userId || !oktime) {
+  const { userId, recordId, groupId, oktime , ifcall} = req.body;
+
+  // 檢查必要參數
+  if (userId == null || oktime == null) {
     return res.status(400).json({ success: false, message: '缺少必要參數 (userId 或 oktime)' });
   }
+
   try {
     let result;
     if (groupId) {
-      // 若有傳 groupId：用 userId + groupId 為條件
+      // 用 userId + groupId 更新
       [result] = await db.query(
-        'UPDATE record SET oktime = ? WHERE fk_userid = ? AND group_id = ?',
-        [oktime, userId, groupId]
+        'UPDATE record SET oktime = ?, ifcall = ? WHERE fk_userid = ? AND group_id = ?',
+        [oktime, ifcall, userId, groupId]
       );
     } else {
-      // 未傳 groupId：必須傳 recordId
       if (!recordId) {
         return res.status(400).json({ success: false, message: '未傳入 groupId 時，recordId 為必要參數' });
       }
       [result] = await db.query(
-        'UPDATE record SET oktime = ? WHERE fk_userid = ? AND id_record = ?',
-        [oktime, userId, recordId]
+        'UPDATE record SET oktime = ?, ifcall = ? WHERE fk_userid = ? AND id_record = ?',
+        [oktime, ifcall, userId, recordId]
       );
     }
+
     if (result.affectedRows > 0) {
       res.status(200).json({ success: true });
     } else {
@@ -216,5 +223,40 @@ router.post('/updateOktime', async (req, res) => {
   }
 });
 
+// 更新是否提醒
+router.post('/updateIfcall', async (req, res) => {
+  const { userId, recordId, groupId, ifcall } = req.body;
+  // 檢查必要參數
+  if (!userId || !ifcall) {
+    return res.status(400).json({ success: false, message: '缺少必要參數 (userId 或 ifcall)' });
+  }
+  try {
+    let result;
+    if (groupId) {
+      // 用 userId + groupId 更新
+      [result] = await db.query(
+        'UPDATE record SET ifcall = ? WHERE fk_userid = ? AND group_id = ?',
+        [ifcall, userId, groupId]
+      );
+    } else {
+      if (!recordId) {
+        return res.status(400).json({ success: false, message: '未傳入 groupId 時，recordId 為必要參數' });
+      }
+      [result] = await db.query(
+        'UPDATE record SET ifcall = ? WHERE fk_userid = ? AND id_record = ?',
+        [ifcall, userId, recordId]
+      );
+    }
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ success: true });
+    } else {
+      res.status(404).json({ success: false, message: '找不到符合條件的紀錄' });
+    }
+  } catch (error) {
+    console.error('更新失敗：', error);
+    res.status(500).json({ success: false, message: '伺服器錯誤' });
+  }
+});
 
 module.exports = router;

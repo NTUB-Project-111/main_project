@@ -7,6 +7,7 @@ import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/backend/viewmodels/remind_view_model.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:drw/frontend/utility/notifier_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,7 +64,10 @@ class _RemindPageState extends State<RemindPage> {
                 "是否儲存變更?",
                 "確定",
                 "取消",
-                () => Navigator.pop(context),
+                () {
+                  Navigator.pop(context);
+                  Notifier.setRemind(context);
+                },
                 modifiedList,
               );
             } else {
@@ -76,7 +80,7 @@ class _RemindPageState extends State<RemindPage> {
                 fontWeight: FontWeight.bold, fontSize: 18, height: 2.5, color: Color(0xFF669FA5))),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: Color(0xFF669FA5)),
+            icon: const Icon(Icons.delete_rounded, color: Color(0xFF669FA5)),
             onPressed: () => setState(() {
               showDeleteButtons = !showDeleteButtons;
             }),
@@ -92,7 +96,9 @@ class _RemindPageState extends State<RemindPage> {
         itemCount: reminders.length,
         itemBuilder: (context, index) {
           final reminder = reminders[index];
-          if (reminder.isDelete) return const SizedBox(); // 或 return Container()
+          if (reminder.isDelete) {
+            return const SizedBox(); // 或 return Container()
+          }
           return buildReminderCard(index);
         },
       ),
@@ -240,13 +246,56 @@ class _RemindPageState extends State<RemindPage> {
           if (showDeleteButtons)
             Container(
               margin: const EdgeInsets.only(left: 3),
+              // child: IconButton(
+              //   icon: const Icon(Icons.cancel, color: Colors.red, size: 30),
+              //   onPressed: () => setState(() {
+              //     reminders[index].isDelete = true;
+
+              //     // reminders.removeAt(index);
+              //   }),
+              // ),
               child: IconButton(
                 icon: const Icon(Icons.cancel, color: Colors.red, size: 30),
-                onPressed: () => setState(() {
-                  reminders[index].isDelete = true;
+                onPressed: () {
+                  FrontUtil.showConfirmDialog(
+                    context,
+                    FrontUtil.textColor,
+                    '確定要刪除嗎？', // title
+                    null, // subTitle 可放 null 或字串
+                    '取消', // 取消按鈕文字
+                    '確定', // 確認按鈕文字
+                    () async {
+                      setState(() {
+                        reminders[index].isDelete = true;
+                        reminders[index].isModifiedFlag = true;
+                      });
 
-                  // reminders.removeAt(index);
-                }),
+                      final remindViewModel = RemindViewModel();
+                      final success = await remindViewModel.updateRemind([reminders[index]]);
+                      if (success) {
+                        FrontUtil.showSuccess('提醒已刪除');
+                        // 重新從後端取得最新報告資料
+                        final userReport =
+                            await RecordService.fetchReports(reminders[index].userId);
+
+                        // 更新 UserProvider 的 user 資料
+                        final userProvider = Provider.of<UserProvider>(context, listen: false);
+                        final user = userProvider.user;
+                        if (user != null) {
+                          user.reports = userReport;
+                          userProvider.setUserInfo(user);
+                        }
+
+                        // 重新載入 reminders 並刷新畫面
+                        await loadReminders();
+
+                        setState(() {}); // 強制刷新 UI
+                      } else {
+                        FrontUtil.showFail('刪除失敗，請稍後再試');
+                      }
+                    },
+                  );
+                },
               ),
             ),
         ],
@@ -300,7 +349,7 @@ class _RemindPageState extends State<RemindPage> {
                 RemindViewModel remind = RemindViewModel();
                 final message = await remind.updateRemind(reminds);
                 if (message) {
-                  FrontUtil.showError('儲存成功!', Colors.green, Colors.white);
+                  FrontUtil.showSuccess('儲存成功!');
 
                   final userReport = await RecordService.fetchReports(reminds[0].userId);
                   final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -320,7 +369,7 @@ class _RemindPageState extends State<RemindPage> {
 
                   Navigator.pop(context);
                 } else {
-                  FrontUtil.showError('儲存變更失敗，請稍後再試', Colors.red, Colors.white);
+                  FrontUtil.showFail('儲存變更失敗，請稍後再試');
                 }
               },
               child: Text(confirm,
