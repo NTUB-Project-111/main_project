@@ -101,7 +101,10 @@
 // }
 
 import 'dart:convert';
+import 'package:drw/backend/models/hospital_model.dart';
 import 'package:drw/backend/services/apibase.dart';
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
 class HospitalService {
@@ -156,4 +159,46 @@ class HospitalService {
       throw Exception('無法取得醫院資料：$e');
     }
   }
+  Future<Hospital?> fetchNearestHospital(LatLng userLocation) async {
+    final uri = Uri.parse(
+      '${ApiBase.baseUrl}/hospitals/nearby'
+      '?lat=${userLocation.latitude}&lng=${userLocation.longitude}',
+    );
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        if (jsonList.isNotEmpty) {
+          return Hospital.fromJson(jsonList.first);
+        }
+        return null;
+      } else {
+        throw Exception('伺服器回應錯誤：${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('無法取得最近醫院：$e');
+    }
+  }
+
+  Future<List<Hospital>> fetchHospitalsByDistance(LatLng userLocation) async {
+    final uri = Uri.parse(
+      '${ApiBase.baseUrl}/hospitals/nearby'
+      '?lat=${userLocation.latitude}&lng=${userLocation.longitude}',
+    );
+
+    final res = await http.get(uri);
+    debugPrint('Nearby 👉 $uri');
+    debugPrint('→ status ${res.statusCode}, body=${res.body}');
+
+    if (res.statusCode == 200) {
+      final List<dynamic> jsonList = json.decode(res.body);
+      return jsonList.map((j) => Hospital.fromJson(j)).toList();
+    } else {
+      throw Exception('無法取得附近醫院資料 (HTTP ${res.statusCode})');
+    }
+  }
 }
+
+
+
