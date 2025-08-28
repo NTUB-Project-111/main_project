@@ -20,37 +20,58 @@ class _HabitPageState extends State<HabitPage> {
   HabitOption? drinking = HabitOption.none;
   HabitOption? betelNut = HabitOption.none;
 
-  Widget buildOptionRow(String title, HabitOption? groupValue,
-      void Function(HabitOption?) onChanged, List<String> options) {
+  Widget buildOptionRow(
+    String title,
+    HabitOption? groupValue,
+    void Function(HabitOption?) onChanged,
+    List<String> options, {
+    String? note,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-            color: Color(0xFF2E6D74),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        // const SizedBox(height: 6),
         Row(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: Color(0xFF2E6D74),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (note != null) ...[
+              const SizedBox(width: 6),
+              Text(
+                note,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: HabitOption.values.asMap().entries.map((entry) {
             final index = entry.key;
             final value = entry.value;
-            return Row(
-              children: [
-                Radio<HabitOption>(
-                  value: value,
-                  groupValue: groupValue,
-                  onChanged: onChanged,
-                  activeColor: const Color(0xFF5E9CA0),
-                ),
-                Text(
-                  options[index],
-                  style: const TextStyle(color: Color(0xFF5E9CA0)),
-                ),
-                // const SizedBox(width: 10),
-              ],
+            return Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Radio<HabitOption>(
+                    value: value,
+                    groupValue: groupValue,
+                    onChanged: onChanged,
+                    activeColor: const Color(0xFF5E9CA0),
+                  ),
+                  Text(
+                    options[index],
+                    style: const TextStyle(color: Color(0xFF5E9CA0)),
+                  ),
+                ],
+              ),
             );
           }).toList(),
         ),
@@ -128,6 +149,7 @@ class _HabitPageState extends State<HabitPage> {
                                             }
                                           }),
                                           ['無', '偶爾', '經常'],
+                                          note: '※偶爾：每周 1~6 根',
                                         ),
                                         buildOptionRow(
                                           '喝酒',
@@ -143,6 +165,7 @@ class _HabitPageState extends State<HabitPage> {
                                             }
                                           }),
                                           ['無', '偶爾', '經常'],
+                                          note: '※偶爾：每月 1~3 次',
                                         ),
                                         buildOptionRow(
                                           '嚼檳榔',
@@ -158,6 +181,7 @@ class _HabitPageState extends State<HabitPage> {
                                             }
                                           }),
                                           ['無', '偶爾', '經常'],
+                                          note: '※偶爾：每月 1~5 次',
                                         ),
                                       ],
                                     ),
