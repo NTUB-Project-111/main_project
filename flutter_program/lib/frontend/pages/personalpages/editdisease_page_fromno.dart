@@ -18,13 +18,15 @@ class _EditDiseasePageFromnoState extends State<EditDiseasePageFromno> {
   UserService userService = UserService();
 
   final List<String> allConditions = [
-    "貧血",
     "高血壓",
+    "高血脂",
     "糖尿病",
+    "愛滋病",
     "壞血病",
     "白血病",
     "敗血病",
     "血友病",
+    "貧血",
     "肝病",
     "腎病",
     "癌症",
