@@ -198,7 +198,7 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                       }).toList(),
                     ),
 
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 50),
 
                     // 標題
                     Center(
@@ -213,7 +213,7 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
 
                     // 下半部：頻率選項
                     GridView.count(
@@ -263,7 +263,7 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                       }).toList(),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
 
                     Center(
                       child: Text(
