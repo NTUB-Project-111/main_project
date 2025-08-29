@@ -262,10 +262,14 @@ class Report extends ChangeNotifier {
         final wound = await WoundAnalysis.analyzeWound(image!);
         woundType = wound;
         name = '$woundType診斷報告'.replaceAll(RegExp(r'\s+'), '');
-        response =
-            await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, oktime, date);
-        debugPrint(response.toString());
-        oktime = response != null ? (response['healingTime'] ?? '0') : '0';
+        if (woundType != '無異常') {
+          response = await CareInfo.getCareSteps(
+              woundType, birthday, disease, freq, isExtra, oktime, date);
+          debugPrint(response.toString());
+          oktime = response != null ? (response['healingTime'] ?? '0') : '0';
+        } else if (woundType == '無異常') {
+          return;
+        }
       }
       careSteps = response?['careSteps'] ?? {};
       gptResult = response?['gptResult'] ?? {};
@@ -287,7 +291,7 @@ class Report extends ChangeNotifier {
     debugPrint('$birthday\n$disease\n$freq');
     try {
       await Future.wait([
-        // _fetchHospitals(),
+        _fetchHospitals(),
         _analyzeWoundImage(birthday, disease, freq, isExtra, oktime, date, woundType)
       ]);
     } finally {

@@ -70,10 +70,12 @@ class _ReportPageState extends State<ReportPage> {
                   // const Header5(),
                   const TitlePart(),
                   const WoundPart(),
-                  CarePart(isExtra: widget.isExtra),
-                  const HospitalPart(),
-                  const RecordPart(),
-                  ButtonPart(isExtra: widget.isExtra, id: widget.id)
+                  report.woundType != '無異常' ? CarePart(isExtra: widget.isExtra) : const SizedBox(),
+                  report.woundType != '無異常' ? const HospitalPart() : const SizedBox(),
+                  report.woundType != '無異常' ? const RecordPart() : const SizedBox(),
+                  report.woundType != '無異常'
+                      ? ButtonPart(isExtra: widget.isExtra, id: widget.id)
+                      : const SizedBox()
                 ],
               ),
             )));
