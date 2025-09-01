@@ -1,8 +1,112 @@
 const express = require('express');
 const router = express.Router();
-// const upload = require('../utils/upload');
 const { upload, uploadToCloudinary } = require('../utils/upload');
 const db = require('../config/db');
+
+// === STABILITY ===
+// const axios = require('axios');
+// const FormData = require('form-data');
+// const STABILITY_API_KEY = process.env.STABILITY_API_KEY;
+
+// === OpenAI DALL·E ===
+// const OpenAI = require('openai');
+// require('dotenv').config();
+// const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+
+// === 依據護理建議產生圖片OpenAI DALL·E ===
+// router.post('/generateImage', async (req, res) => {
+//   try {
+//     const { advice } = req.body;
+//     if (!advice) {
+//       return res.status(400).json({ success: false, message: '缺少護理建議' });
+//     }
+
+//     const prompt = `medical illustration, wound care instruction: ${advice}, clear step-by-step, educational, minimal blood, clean design`;
+
+//     // 產生圖片
+//     const result = await openai.images.generate({
+//       model: 'gpt-image-1',
+//       prompt: prompt,
+//       size: '1024x1024',
+//       n: 1,
+//     });
+
+//     const b64 = result.data[0]?.b64_json;
+//     if (!b64) {
+//       return res.status(500).json({ success: false, message: 'OpenAI 沒回傳圖片資料', raw: result });
+//     }
+
+//     // 將 Base64 轉成 Buffer
+//     const buffer = Buffer.from(b64, 'base64');
+
+//     // 上傳到 Cloudinary，並取得網址
+//     const cloudResult = await uploadToCloudinary(buffer, `wound_${Date.now()}`);
+//     const imageUrl = cloudResult.secure_url;
+
+//     res.json({
+//       success: true,
+//       imageUrl, // 這個就是可公開存取的圖片網址
+//     });
+//   } catch (err) {
+//     console.error('圖片生成錯誤:', err);
+//     res.status(500).json({
+//       success: false,
+//       message: '圖片生成失敗',
+//       error: err.message,
+//       raw: err
+//     });
+//   }
+// });
+// ==== 依據護理建議產生圖片 Stability ====
+// router.post('/generateImage', async (req, res) => {
+//   try {
+//     const { advice } = req.body;
+//     if (!advice) {
+//       return res.status(400).json({ success: false, message: '缺少護理建議' });
+//     }
+
+//     const prompt = `medical illustration, wound care instruction: ${advice}, clear step-by-step, educational, minimal blood, clean design`;
+
+//     // 使用 FormData
+//     const form = new FormData();
+//     form.append('prompt', prompt);
+//     form.append('output_format', 'png'); // 可以改成 'webp'
+
+//     // 呼叫 Stability AI v2beta
+//     const response = await axios.post(
+//       'https://api.stability.ai/v2beta/stable-image/generate/core',
+//       form,
+//       {
+//         headers: {
+//           ...form.getHeaders(),
+//           'Authorization': `Bearer ${STABILITY_API_KEY}`,
+//           'Accept': 'image/*',
+//         },
+//         responseType: 'arraybuffer', // 取得圖片二進位資料
+//       }
+//     );
+
+//     const buffer = Buffer.from(response.data, 'binary');
+
+//     // 上傳到 Cloudinary
+//     const cloudResult = await uploadToCloudinary(buffer, `wound_${Date.now()}`);
+//     const imageUrl = cloudResult.secure_url;
+
+//     res.json({
+//       success: true,
+//       imageUrl,
+//     });
+
+//   } catch (err) {
+//     console.error('圖片生成錯誤:', err.response?.data || err.message);
+//     res.status(500).json({
+//       success: false,
+//       message: '圖片生成失敗',
+//       error: err.response?.data || err.message,
+//     });
+//   }
+// });
 
 // === 新增診斷紀錄 ===
 router.post('/addRecord', upload.single('photo'), async (req, res) => {
