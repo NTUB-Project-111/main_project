@@ -1,17 +1,90 @@
 const express = require('express');
 const router = express.Router();
+// const upload = require('../utils/upload');
 const { upload, uploadToCloudinary } = require('../utils/upload');
 const db = require('../config/db');
 
-// === STABILITY ===
+// // === STABILITY ===
 // const axios = require('axios');
 // const FormData = require('form-data');
 // const STABILITY_API_KEY = process.env.STABILITY_API_KEY;
 
 // === OpenAI DALL·E ===
-// const OpenAI = require('openai');
-// require('dotenv').config();
-// const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const OpenAI = require('openai');
+require('dotenv').config();
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+// === Stable Diffusion (Modelslab) ===
+// const USER_KEY = process.env.MODELSLAB_API_KEY || '你的Modelslab Key';
+// const ENDPOINT_URL = 'https://modelslab.com/api/v7/images/text-to-image';
+
+
+// //  === StableDiffusion ===
+// router.post('/generateImage', async (req, res) => {
+//   try {
+//     const { advice } = req.body;
+//     if (!advice) {
+//       return res.status(400).json({ success: false, message: '缺少護理建議' });
+//     }
+
+//     const prompt = `medical illustration, wound care instruction: ${advice}, clear step-by-step, educational, minimal blood, clean design`;
+
+//     const requestBody = {
+//       prompt,
+//       model_id: 'imagen-4',
+//       aspect_ratio: '1:1',
+//       key: USER_KEY
+//     };
+
+//     // Node 18+ 內建 fetch
+//     const response = await fetch(ENDPOINT_URL, {
+//       method: 'POST',
+//       headers: {
+//         'key': USER_KEY,
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify(requestBody)
+//     });
+
+//     let result;
+//     try {
+//       result = await response.json();
+//     } catch (e) {
+//       const text = await response.text();
+//       return res.status(500).json({
+//         success: false,
+//         message: '無法解析 Modelslab 回傳結果',
+//         raw: text
+//       });
+//     }
+
+//     // 檢查回傳是否有圖片
+//     if (!result?.data?.[0]?.b64_json) {
+//       return res.status(500).json({
+//         success: false,
+//         message: 'Modelslab 沒回傳圖片資料或發生錯誤',
+//         raw: result
+//       });
+//     }
+
+//     const b64 = result.data[0].b64_json;
+//     const buffer = Buffer.from(b64, 'base64');
+
+//     // 上傳到 Cloudinary
+//     const cloudResult = await uploadToCloudinary(buffer, `wound_${Date.now()}`);
+//     const imageUrl = cloudResult.secure_url;
+
+//     res.json({ success: true, imageUrl });
+
+//   } catch (err) {
+//     console.error('Stable Diffusion 生成錯誤:', err);
+//     res.status(500).json({
+//       success: false,
+//       message: '圖片生成失敗',
+//       error: err.message
+//     });
+//   }
+// });
 
 
 // === 依據護理建議產生圖片OpenAI DALL·E ===
@@ -22,13 +95,16 @@ const db = require('../config/db');
 //       return res.status(400).json({ success: false, message: '缺少護理建議' });
 //     }
 
-//     const prompt = `medical illustration, wound care instruction: ${advice}, clear step-by-step, educational, minimal blood, clean design`;
+//     const prompt = `medical illustration of wound care instruction:
+//      ${advice}, single clear image (not split panels), educational style, 
+//      minimal blood, clean medical design, no text, no captions`;
 
 //     // 產生圖片
 //     const result = await openai.images.generate({
 //       model: 'gpt-image-1',
 //       prompt: prompt,
 //       size: '1024x1024',
+//         quality: "low",
 //       n: 1,
 //     });
 
@@ -58,7 +134,53 @@ const db = require('../config/db');
 //     });
 //   }
 // });
-// ==== 依據護理建議產生圖片 Stability ====
+router.post('/generateImages', async (req, res) => {
+  try {
+    const { advices } = req.body; // advices: ["洗手", "止血", "清潔傷口"]
+    if (!advices || !Array.isArray(advices) || advices.length === 0) {
+      return res.status(400).json({ success: false, message: '缺少護理步驟' });
+    }
+    const imageUrls = [];
+    for (const advice of advices) {
+      // 安全 prompt
+      const prompt = `Educational medical illustration of a first aid or wound care step:
+        ${advice}, clear, step-by-step instructional style, non-graphic, professional medical illustration, 
+        bandaged or covered wound, minimal blood, fully clothed, no nudity, no text or captions, 
+        simple clean background`;
+      const result = await openai.images.generate({
+        model: 'gpt-image-1',
+        prompt: prompt,
+        size: '1024x1024',
+        quality: "low",
+        n: 1,
+      });
+      const b64 = result.data[0]?.b64_json;
+      if (!b64) continue; // 跳過沒有回傳的
+      const buffer = Buffer.from(b64, 'base64');
+      const cloudResult = await uploadToCloudinary(buffer, `wound_${Date.now()}`);
+      imageUrls.push(cloudResult.secure_url);
+    }
+    if (imageUrls.length === 0) {
+      return res.status(500).json({ success: false, message: '所有步驟圖片生成失敗' });
+    }
+    res.json({
+      success: true,
+      imageUrls,
+    });
+  } catch (err) {
+    console.error('圖片生成錯誤:', err);
+    res.status(500).json({
+      success: false,
+      message: '圖片生成失敗',
+      error: err.message,
+      raw: err
+    });
+  }
+});
+
+
+
+// // ==== 依據護理建議產生圖片 Stability ====
 // router.post('/generateImage', async (req, res) => {
 //   try {
 //     const { advice } = req.body;
@@ -108,7 +230,7 @@ const db = require('../config/db');
 //   }
 // });
 
-// === 新增診斷紀錄 ===
+
 router.post('/addRecord', upload.single('photo'), async (req, res) => {
   try {
     const { fk_userid, date, type, oktime, caremode, ifcall, choosekind, recording, name } = req.body;
@@ -138,6 +260,7 @@ router.post('/addRecord', upload.single('photo'), async (req, res) => {
   }
 });
 
+
 // === 取得使用者診斷報告 ===
 router.get('/getRecords', async (req, res) => {
   const id = req.query.id;
@@ -149,7 +272,7 @@ router.get('/getRecords', async (req, res) => {
       id_record, fk_userid,
       DATE_FORMAT(date, '%Y-%m-%d') AS date,
       photo, type, oktime, caremode,
-      ifcall, choosekind, recording, group_id
+      ifcall, choosekind, recording, group_id, name
     FROM record
     WHERE fk_userid = ?
   `;
@@ -185,8 +308,8 @@ router.get('/getRecordRemind', async (req, res) => {
                 r.ifcall,
                 r.choosekind,
                 r.recording,
-                r.name,
                 r.photo,
+                r.name
                 r.group_id,
                 c.fk_user_id,
                 c.id_calls AS remindId,
@@ -291,31 +414,28 @@ router.get('/getGroupId', async (req, res) => {
 
 //更新癒合時間
 router.post('/updateOktime', async (req, res) => {
-  const { userId, recordId, groupId, oktime , ifcall} = req.body;
-
-  // 檢查必要參數
-  if (userId == null || oktime == null) {
+  const { userId, recordId, groupId, oktime } = req.body;
+  if (!userId || !oktime) {
     return res.status(400).json({ success: false, message: '缺少必要參數 (userId 或 oktime)' });
   }
-
   try {
     let result;
     if (groupId) {
-      // 用 userId + groupId 更新
+      // 若有傳 groupId：用 userId + groupId 為條件
       [result] = await db.query(
-        'UPDATE record SET oktime = ?, ifcall = ? WHERE fk_userid = ? AND group_id = ?',
-        [oktime, ifcall, userId, groupId]
+        'UPDATE record SET oktime = ? WHERE fk_userid = ? AND group_id = ?',
+        [oktime, userId, groupId]
       );
     } else {
+      // 未傳 groupId：必須傳 recordId
       if (!recordId) {
         return res.status(400).json({ success: false, message: '未傳入 groupId 時，recordId 為必要參數' });
       }
       [result] = await db.query(
-        'UPDATE record SET oktime = ?, ifcall = ? WHERE fk_userid = ? AND id_record = ?',
-        [oktime, ifcall, userId, recordId]
+        'UPDATE record SET oktime = ? WHERE fk_userid = ? AND id_record = ?',
+        [oktime, userId, recordId]
       );
     }
-
     if (result.affectedRows > 0) {
       res.status(200).json({ success: true });
     } else {
@@ -327,40 +447,5 @@ router.post('/updateOktime', async (req, res) => {
   }
 });
 
-// 更新是否提醒
-router.post('/updateIfcall', async (req, res) => {
-  const { userId, recordId, groupId, ifcall } = req.body;
-  // 檢查必要參數
-  if (!userId || !ifcall) {
-    return res.status(400).json({ success: false, message: '缺少必要參數 (userId 或 ifcall)' });
-  }
-  try {
-    let result;
-    if (groupId) {
-      // 用 userId + groupId 更新
-      [result] = await db.query(
-        'UPDATE record SET ifcall = ? WHERE fk_userid = ? AND group_id = ?',
-        [ifcall, userId, groupId]
-      );
-    } else {
-      if (!recordId) {
-        return res.status(400).json({ success: false, message: '未傳入 groupId 時，recordId 為必要參數' });
-      }
-      [result] = await db.query(
-        'UPDATE record SET ifcall = ? WHERE fk_userid = ? AND id_record = ?',
-        [ifcall, userId, recordId]
-      );
-    }
-
-    if (result.affectedRows > 0) {
-      res.status(200).json({ success: true });
-    } else {
-      res.status(404).json({ success: false, message: '找不到符合條件的紀錄' });
-    }
-  } catch (error) {
-    console.error('更新失敗：', error);
-    res.status(500).json({ success: false, message: '伺服器錯誤' });
-  }
-});
 
 module.exports = router;
