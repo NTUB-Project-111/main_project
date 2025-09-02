@@ -4,7 +4,7 @@ import 'package:drw/backend/provider/report_provider.dart'; //
 import 'package:drw/backend/provider/user_provider.dart'; //
 import 'package:drw/backend/viewmodels/register_view_model.dart';
 import 'package:drw/frontend/pages/login_page.dart';
-import 'package:drw/frontend/pages/tabs/tabs.dart';
+import 'package:drw/frontend/pages/test_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:drw/frontend/utility/notifier_util.dart';
 import 'package:flutter/material.dart';
@@ -90,13 +90,8 @@ class MyApp extends StatelessWidget {
         ),
         fontFamily: 'NotoSansTC',
       ),
-      // home: const ShowdiseasePage()
-      // home: const EditDiseasePage()
-      home: const LoginPage(),
-      // home: const ChangeHabitPage()
-      // home: HabitPage(),
-      // home: const TestPage(),
-      // home: const Tabs(currentIndex: 1),
+      // home: const LoginPage(),
+      home: const TestPage(),
     );
   }
 }
