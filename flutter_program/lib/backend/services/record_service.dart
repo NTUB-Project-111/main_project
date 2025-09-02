@@ -262,4 +262,54 @@ class RecordService {
       return false;
     }
   }
+
+  // Future<String> generateImage(String advice) async {
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse("${ApiBase.baseUrl}/generateImage"),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: jsonEncode({"advice": advice}),
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+  //       if (data["success"] == true && data["imageUrl"] != null) {
+  //         return data["imageUrl"];
+  //       } else {
+  //         throw Exception(data["message"] ?? "未知錯誤");
+  //       }
+  //     } else {
+  //       throw Exception("Server 回應錯誤: ${response.statusCode}");
+  //     }
+  //   } catch (e) {
+  //     debugPrint("生成圖片失敗: $e");
+  //     return ""; // 確保一定有回傳值
+  //   }
+  // }
+  Future<List<String>> generateImages(List<String> advices) async {
+    try {
+      final response = await http.post(
+        Uri.parse("${ApiBase.baseUrl}/generateImages"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"advices": advices}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data["success"] == true && data["imageUrls"] != null) {
+          // 回傳圖片網址陣列
+          return List<String>.from(data["imageUrls"]);
+        } else {
+          throw Exception(data["message"] ?? "未知錯誤");
+        }
+      } else {
+        throw Exception("Server 回應錯誤: ${response.statusCode}");
+      }
+    } catch (e) {
+      debugPrint("生成圖片失敗: $e");
+      return []; // 回傳空陣列
+    }
+  }
 }
