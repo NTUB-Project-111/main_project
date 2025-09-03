@@ -153,6 +153,7 @@ class TestPage extends StatefulWidget {
 class _TestPageState extends State<TestPage> {
   final RecordService recordService = RecordService();
   final TextEditingController adviceController = TextEditingController();
+  final CarouselSliderController _carouselController = CarouselSliderController();
 
   bool isLoading = false;
   List<String> imageUrls = [];
@@ -177,7 +178,7 @@ class _TestPageState extends State<TestPage> {
         adviceController.text.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
 
     final results = await recordService.generateImages(steps);
-
+    debugPrint(results.toString());
     setState(() {
       isLoading = false;
       imageUrls = results;
@@ -215,22 +216,22 @@ class _TestPageState extends State<TestPage> {
               Expanded(
                 child: Column(
                   children: [
-                    // 輪播圖 + 左右箭頭
                     Row(
                       children: [
                         // 左箭頭
                         IconButton(
-                          icon: const Icon(Icons.arrow_back_ios, color: Colors.black54),
+                          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF589399)),
                           onPressed: () {
                             if (currentIndex > 0) {
-                              setState(() {
-                                currentIndex--;
-                              });
+                              _carouselController.previousPage(); // 用 controller 控制
                             }
                           },
                         ),
-                        Expanded(
+                        SizedBox(
+                          width: 250,
+                          height: 250,
                           child: CarouselSlider.builder(
+                            carouselController: _carouselController, // 加上 controller
                             itemCount: imageUrls.length,
                             itemBuilder: (context, index, realIndex) {
                               return ClipRRect(
@@ -238,13 +239,15 @@ class _TestPageState extends State<TestPage> {
                                 child: Image.network(
                                   imageUrls[index],
                                   fit: BoxFit.cover,
-                                  width: double.infinity,
+                                  width: 250,
+                                  height: 250,
                                 ),
                               );
                             },
                             options: CarouselOptions(
                               viewportFraction: 1.0,
                               enableInfiniteScroll: false,
+                              height: 250,
                               onPageChanged: (index, reason) {
                                 setState(() {
                                   currentIndex = index;
@@ -256,24 +259,22 @@ class _TestPageState extends State<TestPage> {
 
                         // 右箭頭
                         IconButton(
-                          icon: const Icon(Icons.arrow_forward_ios, color: Colors.black54),
+                          icon: const Icon(Icons.arrow_forward_ios, color: Color(0xFF589399)),
                           onPressed: () {
                             if (currentIndex < imageUrls.length - 1) {
-                              setState(() {
-                                currentIndex++;
-                              });
+                              _carouselController.nextPage(); // 用 controller 控制
                             }
                           },
                         ),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    // 下方顯示步驟文字
                     Text(
                       steps.isNotEmpty ? steps[currentIndex] : "步驟 ${currentIndex + 1}",
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF589399)
                       ),
                       textAlign: TextAlign.center,
                     ),

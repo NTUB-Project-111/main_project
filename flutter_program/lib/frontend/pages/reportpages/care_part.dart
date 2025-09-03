@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drw/backend/models/report_model.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
@@ -13,7 +14,9 @@ class CarePart extends StatefulWidget {
 }
 
 class _CarePartState extends State<CarePart> {
-  @override
+  final CarouselSliderController _carouselController = CarouselSliderController();
+  int currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -95,67 +98,97 @@ class _CarePartState extends State<CarePart> {
               ...[
                 // 護理步驟動畫
                 if (report.isSwitch)
-                  //   Column(
-                  //     children: [
-                  //       Row(
-                  //         children: [
-                  //           IconButton(
-                  //               onPressed: () {},
-                  //               icon: Icon(
-                  //                 Icons.arrow_back_ios_new_rounded,
-                  //                 color: FrontUtil.textColor,
-                  //               )),
-                  //           Expanded(
-                  //             child: Container(
-                  //               margin: const EdgeInsets.only(
-                  //                   top: 10, bottom: 15, left: 5, right: 5),
-                  //               height: 280,
-                  //               color: Colors.grey,
-                  //             ),
-                  //           ),
-                  //           IconButton(
-                  //               onPressed: () {},
-                  //               icon: Icon(
-                  //                 Icons.arrow_forward_ios_rounded,
-                  //                 color: FrontUtil.textColor,
-                  //               )),
-                  //         ],
-                  //       ),
-                  //       Text(
-                  //         '測試',
-                  //         style: TextStyle(
-                  //             color: FrontUtil.textColor,
-                  //             fontSize: 16,
-                  //             fontWeight: FontWeight.bold),
-                  //       ),
-                  //       const SizedBox(
-                  //         height: 30,
-                  //       )
-                  //     ],
-                  //   )
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 10),
-                      Image.asset('images/doctor_bear.png', width: 160),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Text(
-                            '功能開發中...',
-                            style: TextStyle(
-                              color: FrontUtil.textColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                  SizedBox(
+                    height: 320,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            // 左箭頭
+                            IconButton(
+                              icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF589399)),
+                              onPressed: () {
+                                if (currentIndex > 0) {
+                                  _carouselController.previousPage(); // 用 controller 控制
+                                }
+                              },
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                    ],
+                            SizedBox(
+                              width: 250,
+                              height: 250,
+                              child: CarouselSlider.builder(
+                                carouselController: _carouselController, // 加上 controller
+                                itemCount: report.imageUrls.length,
+                                itemBuilder: (context, index, realIndex) {
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Image.network(
+                                      report.imageUrls[index],
+                                      fit: BoxFit.cover,
+                                      width: 250,
+                                      height: 250,
+                                    ),
+                                  );
+                                },
+                                options: CarouselOptions(
+                                  viewportFraction: 1.0,
+                                  enableInfiniteScroll: false,
+                                  height: 250,
+                                  onPageChanged: (index, reason) {
+                                    setState(() {
+                                      currentIndex = index;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+
+                            // 右箭頭
+                            IconButton(
+                              icon: const Icon(Icons.arrow_forward_ios, color: Color(0xFF589399)),
+                              onPressed: () {
+                                if (currentIndex < report.imageUrls.length - 1) {
+                                  _carouselController.nextPage(); // 用 controller 控制
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          report.steps.isNotEmpty
+                              ? report.steps[currentIndex]
+                              : "步驟 ${currentIndex + 1}",
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF589399)),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   )
+                // Column(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     const SizedBox(height: 10),
+                //     Image.asset('images/doctor_bear.png', width: 160),
+                //     const SizedBox(height: 8),
+                //     Wrap(
+                //       alignment: WrapAlignment.center,
+                //       crossAxisAlignment: WrapCrossAlignment.center,
+                //       children: [
+                //         Text(
+                //           '功能開發中...',
+                //           style: TextStyle(
+                //             color: FrontUtil.textColor,
+                //             fontWeight: FontWeight.bold,
+                //             fontSize: 16,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //     const SizedBox(height: 16),
+                //   ],
+                // )
                 else
                   ..._buildAllWoundSections(report.careSteps),
               ]
@@ -167,11 +200,6 @@ class _CarePartState extends State<CarePart> {
   }
 
   List<Widget> _buildAllWoundSections(Map<String, List<String>> steps) {
-    // return steps.entries.map((entry) {
-    //   final title = entry.key;
-    //   final details = entry.value;
-    //   return _buildWoundSection(title, details);
-    // }).toList();
     final widgets = steps.entries.map((entry) {
       return _buildWoundSection(entry.key, entry.value);
     }).toList();
@@ -204,14 +232,12 @@ class _CarePartState extends State<CarePart> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
                 IconButton(
                   onPressed: () {
                     setState(() => show = !show);
                   },
-                  icon:
-                      Icon(show ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+                  icon: Icon(show ? Icons.arrow_drop_up : Icons.arrow_drop_down),
                 ),
               ],
             ),
