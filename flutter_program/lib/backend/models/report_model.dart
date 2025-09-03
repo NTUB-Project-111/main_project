@@ -24,6 +24,8 @@ class Report extends ChangeNotifier {
   List<Map<String, dynamic>> hospitals = [];
   List<String> injuryParts = [];
   List<String> woundReactions = [];
+  List<String> imageUrls = [];
+  List<String> steps = [];
   bool open = false;
   String selfRecord = '';
   bool updateButton = false;
@@ -286,14 +288,21 @@ class Report extends ChangeNotifier {
     hospitals = hospitallist;
   }
 
+  Future<void> _generateImages() async {
+    steps = careSteps.entries.map((e) => e.key).toList();
+    RecordService recordService = RecordService();
+    imageUrls = await recordService.generateImages(steps);
+  }
+
   Future<void> loadData(String birthday, String disease, String freq, bool isExtra, String? oktime,
       String? date, String? woundType) async {
     debugPrint('$birthday\n$disease\n$freq');
     try {
       await Future.wait([
-        _fetchHospitals(),
-        _analyzeWoundImage(birthday, disease, freq, isExtra, oktime, date, woundType)
+        // _fetchHospitals(),
+        _analyzeWoundImage(birthday, disease, freq, isExtra, oktime, date, woundType),
       ]);
+      await _generateImages();
     } finally {
       isLoading = false;
       notifyListeners();
