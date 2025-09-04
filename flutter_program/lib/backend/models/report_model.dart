@@ -225,6 +225,61 @@ class Report extends ChangeNotifier {
     return reference;
   }
 
+  void getImages(bool isExtra) {
+    if (isExtra) {
+      switch (woundType) {
+        case '燒傷':
+        case '燙傷':
+          imageUrls = [];
+          break;
+        case '擦傷':
+        case '割傷':
+        case '刺傷':
+          imageUrls = [];
+          break;
+        case '瘀青':
+          imageUrls = [];
+          break;
+        case '手術傷口':
+          imageUrls = [];
+          break;
+        default:
+          imageUrls = [];
+      }
+    } else {
+      switch (woundType) {
+        case '燒傷':
+        case '燙傷':
+          imageUrls = [];
+          break;
+        case '擦傷':
+          imageUrls = [];
+          break;
+        case '割傷':
+          imageUrls = [
+            'images/cut1.png',
+            'images/cut2.png',
+            'images/cut3.png',
+            'images/cut4.png',
+            'images/cut5.png'
+          ];
+          steps = ['洗手','止血','清潔傷口','塗抹藥膏','包紮傷口'];
+          break;
+        case '刺傷':
+          imageUrls = [];
+          break;
+        case '瘀青':
+          imageUrls = [];
+          break;
+        case '手術傷口':
+          imageUrls = [];
+          break;
+        default:
+          imageUrls = [];
+      }
+    }
+  }
+
   Future<void> _analyzeWoundImage(String birthday, String disease, String freq, bool isExtra,
       String? healTime, String? date, String? wound) async {
     Map<String, dynamic>? response = {};
@@ -302,7 +357,8 @@ class Report extends ChangeNotifier {
         // _fetchHospitals(),
         _analyzeWoundImage(birthday, disease, freq, isExtra, oktime, date, woundType),
       ]);
-      await _generateImages();
+      // await _generateImages();
+      getImages(isExtra);
     } finally {
       isLoading = false;
       notifyListeners();
