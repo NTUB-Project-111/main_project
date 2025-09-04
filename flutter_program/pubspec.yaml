@@ -62,7 +62,6 @@ dependencies:
   flutter_local_notifications: ^18.0.1 #提醒器
   timezone: ^0.9.4 #系統通知比對時間(取得時區)
   flutter_timezone: ^4.1.0 #系統通知比對時間(取得時區)
-
   shared_preferences: ^2.2.2
   geolocator: ^13.0.2 #取得地理位置
   geolocator_android: 4.6.1
@@ -106,6 +105,11 @@ flutter:
     - images/gray_maker.png
     - images/red_maker.png
     - images/star_marker.png
+    - images/cut1.png
+    - images/cut2.png
+    - images/cut3.png
+    - images/cut4.png
+    - images/cut5.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

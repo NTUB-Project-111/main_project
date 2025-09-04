@@ -45,6 +45,8 @@ class _CarePartState extends State<CarePart> {
                         constraints: const BoxConstraints(),
                         onPressed: () {
                           report.toggleSwitch();
+                       
+
                         },
                         icon: const Stack(
                           alignment: Alignment.center,
@@ -122,7 +124,13 @@ class _CarePartState extends State<CarePart> {
                                 itemBuilder: (context, index, realIndex) {
                                   return ClipRRect(
                                     borderRadius: BorderRadius.circular(16),
-                                    child: Image.network(
+                                    // child: Image.network(
+                                    //   report.imageUrls[index],
+                                    //   fit: BoxFit.cover,
+                                    //   width: 250,
+                                    //   height: 250,
+                                    // ),
+                                    child: Image.asset(
                                       report.imageUrls[index],
                                       fit: BoxFit.cover,
                                       width: 250,
