@@ -49,9 +49,6 @@ dependencies:
   location: ^7.0.1 #定位使用者位置
   mime: ^2.0.0 #確定副檔名
   google_maps_flutter: ^2.10.1 #顯示google地圖
-
-  #geolocator: ^10.1.0 #取得地理位置
-
   google_maps_webservice: ^0.0.20-nullsafety.5  # Google Places & 距離計算
   flutter_dotenv: ^5.2.1 #使用.env檔案
   url_launcher: ^6.3.1 #跳轉至外部網站

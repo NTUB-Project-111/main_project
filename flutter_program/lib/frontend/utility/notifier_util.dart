@@ -108,3 +108,67 @@ class Notifier {
     await debugPrintAllScheduledReminders();
   }
 }
+
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:timezone/data/latest.dart' as tz;
+// import 'package:timezone/timezone.dart' as tz;
+
+class NotifierTool {
+  static final FlutterLocalNotificationsPlugin _notifyPlugin = FlutterLocalNotificationsPlugin();
+
+  /// 初始化通知 (要在 main() 裡呼叫)
+  static Future<void> init() async {
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initSettings = InitializationSettings(android: androidInit);
+
+    await _notifyPlugin.initialize(initSettings);
+
+    // Android 13+ 需要顯示通知權限
+    // await _notifyPlugin
+    //     .resolvePlatformSpecificImplementation<
+    //         AndroidFlutterLocalNotificationsPlugin>()
+    //     ?.requestPermission();
+
+    // 初始化時區資料
+    tz.initializeTimeZones();
+  }
+
+  /// 設定一個排程通知
+  static Future<void> scheduleReminder(int id, DateTime dateTime) async {
+    final scheduled = tz.TZDateTime.from(dateTime, tz.local);
+
+    await _notifyPlugin.zonedSchedule(
+      id,
+      '護理提醒',
+      '換藥時間到囉!',
+      scheduled,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'reminder_channel',
+          '提醒通知',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      payload: scheduled.toIso8601String(),
+    );
+  }
+
+  static Future<void> notifyNow() async {
+    await _notifyPlugin.show(
+      0,
+      '測試通知',
+      '這是一個立即顯示的通知',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'test_channel',
+          '測試通知',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+      ),
+    );
+  }
+}
