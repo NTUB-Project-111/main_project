@@ -109,7 +109,7 @@ class _CameraPageState extends State<CameraPage> {
       debugPrint("相機控制器初始化失敗：$e");
     }
   }
-
+  
   @override
   void dispose() {
     try {
@@ -119,6 +119,7 @@ class _CameraPageState extends State<CameraPage> {
     }
     super.dispose();
   }
+
 
   Future<void> _takePhoto() async {
     if (_controller == null || !_controller!.value.isInitialized) return;
