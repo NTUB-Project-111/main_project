@@ -356,8 +356,9 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
 
                   // 右上角：星星 + 營業狀態
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end, // 整組靠右
+
                     children: [
-                      const Spacer(),
                       IconButton(
                         tooltip: '收藏 / 取消收藏',
                         padding: EdgeInsets.zero,
@@ -366,18 +367,19 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                           mapService.isStarred(selected.id)
                               ? Icons.star_rounded
                               : Icons.star_border_rounded,
-                          size: 22,
-                          color: const Color(0xFF669FA5),
+                          size: 24,
+                          color: mapService.isStarred(selected.id)
+                              ? const Color.fromARGB(255, 255, 214, 93)
+                              : const Color(0xFF589399),
                         ),
                         onPressed: () {
                           mapService.toggleStar(selected.id);
                         },
                       ),
-                      const SizedBox(width: 8),
                       Text(
                         selected.openStatus ?? '未營業',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 14.5,
                           fontWeight: FontWeight.w700,
                           color: (selected.openStatus == '營業中')
                               ? Colors.red
