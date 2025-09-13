@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:drw/backend/models/records_model.dart';
+// import 'package:drw/backend/models/records_model.dart';
 import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -59,6 +60,32 @@ class RecordService {
     }
   }
 
+  // static Future<void> getRecords(BuildContext context, String userId) async {
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse('${ApiBase.baseUrl}/getRecords?id=$userId'),
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+  //       final List recordsJson = data['records'];
+  //       final List<UserRecord> records =
+  //           recordsJson.map((json) => UserRecord.fromJson(json)).toList();
+
+  //       Provider.of<Records>(context, listen: false).setRecords(records);
+  //       for (var record in records) {
+  //         debugPrint('==========新的一筆record===========');
+  //         debugPrint(record.recordId.toString());
+  //         debugPrint(record.groupId.toString());
+  //       }
+  //     } else {
+  //       debugPrint('取得紀錄失敗: ${response.statusCode}');
+  //       debugPrint('錯誤訊息: ${response.body}');
+  //     }
+  //   } catch (e) {
+  //     debugPrint('例外錯誤: $e');
+  //   }
+  // }
   static Future<void> getRecords(BuildContext context, String userId) async {
     try {
       final response = await http.get(
@@ -68,13 +95,13 @@ class RecordService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final List recordsJson = data['records'];
-        final List<UserRecord> records =
-            recordsJson.map((json) => UserRecord.fromJson(json)).toList();
+        final List<UserReport> records =
+            recordsJson.map((json) => UserReport.fromJson(json)).toList();
 
-        Provider.of<Records>(context, listen: false).setRecords(records);
+        Provider.of<ReportProvider>(context, listen: false).setReports(records);
         for (var record in records) {
           debugPrint('==========新的一筆record===========');
-          debugPrint(record.recordId.toString());
+          debugPrint(record.id.toString());
           debugPrint(record.groupId.toString());
         }
       } else {
@@ -87,18 +114,44 @@ class RecordService {
   }
 
   static Future<List<UserReport>> fetchReports(int userId) async {
-    final url = Uri.parse('${ApiBase.baseUrl}/getRecordRemind?id=$userId');
-    final response = await http.get(url);
+    try {
+      final url = Uri.parse('${ApiBase.baseUrl}/getRecordRemind?id=$userId');
+      final response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonData = json.decode(response.body);
-      final List<dynamic> reportsJson = jsonData['reports'];
+      print('status: ${response.statusCode}');
+      print('body: ${response.body}');
 
-      return reportsJson.map((r) => UserReport.fromJson(r)).toList();
-    } else {
-      throw Exception('Failed to load reports');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+
+        if (!jsonData.containsKey('reports') || jsonData['reports'] == null) {
+          throw Exception('Response has no reports field');
+        }
+
+        final List<dynamic> reportsJson = jsonData['reports'];
+        return reportsJson.map((r) => UserReport.fromJson(r)).toList();
+      } else {
+        throw Exception('Failed to load reports (status ${response.statusCode})');
+      }
+    } catch (e) {
+      print('fetchReports 錯誤: $e');
+      rethrow;
     }
   }
+
+  // static Future<List<UserReport>> fetchReports(int userId) async {
+  //   final url = Uri.parse('${ApiBase.baseUrl}/getRecordRemind?id=$userId');
+  //   final response = await http.get(url);
+
+  //   if (response.statusCode == 200) {
+  //     final Map<String, dynamic> jsonData = json.decode(response.body);
+  //     final List<dynamic> reportsJson = jsonData['reports'];
+
+  //     return reportsJson.map((r) => UserReport.fromJson(r)).toList();
+  //   } else {
+  //     throw Exception('Failed to load reports');
+  //   }
+  // }
 
   Future<List<int>> fetchGroup(String userId) async {
     final uri = Uri.parse('${ApiBase.baseUrl}/getGroup?userId=$userId');
