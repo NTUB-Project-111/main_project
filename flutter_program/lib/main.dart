@@ -1,4 +1,4 @@
-import 'package:drw/backend/models/report_model.dart';
+import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/remind_provider.dart'; //
 import 'package:drw/backend/provider/report_provider.dart'; //
 import 'package:drw/backend/provider/user_provider.dart'; //
@@ -95,3 +95,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

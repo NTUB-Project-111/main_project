@@ -1,5 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:drw/backend/models/home_remind.dart';
+import 'package:drw/backend/viewmodels/homeremind_view_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/pages/guestblock_page.dart';
