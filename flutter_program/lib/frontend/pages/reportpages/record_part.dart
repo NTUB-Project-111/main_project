@@ -1,4 +1,4 @@
-import 'package:drw/backend/models/report_model.dart';
+import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

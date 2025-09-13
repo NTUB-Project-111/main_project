@@ -101,7 +101,7 @@
 // }
 
 import 'dart:convert';
-import 'package:drw/backend/models/hospital_model.dart';
+import 'package:drw/backend/models/hospital.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';

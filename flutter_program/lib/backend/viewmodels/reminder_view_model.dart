@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'report.dart';
+import '../models/report.dart';
 
 class Reminder {
   final int userId;

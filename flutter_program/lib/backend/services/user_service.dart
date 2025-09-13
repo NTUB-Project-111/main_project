@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:drw/backend/models/user.dart';
+import 'package:drw/backend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -8,9 +9,25 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'apibase.dart';
-import '../models/user_model.dart';
+// import '../models/user_model.dart';
 
 class UserService {
+  // static Future<void> getUserInfo(BuildContext context, String accessToken) async {
+  //   final response = await http.get(
+  //     Uri.parse('${ApiBase.baseUrl}/getUserInfo'),
+  //     headers: {
+  //       'Authorization': 'Bearer $accessToken',
+  //     },
+  //   );
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body);
+  //     final userJson = data['user'];
+  //     Provider.of<User>(context, listen: false).getFromJson(userJson);
+  //   } else {
+  //     debugPrint('錯誤代碼: ${response.statusCode}');
+  //     debugPrint('錯誤訊息: ${response.body}');
+  //   }
+  // }
   static Future<void> getUserInfo(BuildContext context, String accessToken) async {
     final response = await http.get(
       Uri.parse('${ApiBase.baseUrl}/getUserInfo'),
@@ -21,7 +38,9 @@ class UserService {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final userJson = data['user'];
-      Provider.of<User>(context, listen: false).getFromJson(userJson);
+      final UserInfo userInfo = UserInfo.fromJson(userJson);
+      Provider.of<UserProvider>(context, listen: false).setUserInfo(userInfo);
+      // Provider.of<UserProvider>(context, listen: false).getFromJson(userJson);
     } else {
       debugPrint('錯誤代碼: ${response.statusCode}');
       debugPrint('錯誤訊息: ${response.body}');

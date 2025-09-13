@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:drw/backend/models/report_model.dart';
+import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';

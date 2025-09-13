@@ -1,4 +1,4 @@
-import 'package:drw/backend/models/profiles_model.dart';
+import 'package:drw/backend/viewmodels/profiles_view_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
