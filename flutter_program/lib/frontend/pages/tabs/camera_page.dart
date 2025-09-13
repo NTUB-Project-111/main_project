@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
-import 'package:drw/backend/models/report_model.dart';
+import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/frontend/pages/report_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';

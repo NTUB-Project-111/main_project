@@ -1,4 +1,4 @@
-import 'package:drw/backend/models/reminder_model.dart';
+import 'package:drw/backend/viewmodels/reminder_view_model.dart';
 import 'package:drw/backend/services/remind_service.dart';
 import 'package:drw/frontend/utility/remind_util.dart';
 

@@ -7,7 +7,6 @@ class Forget extends ChangeNotifier {
   String code = '';
   String newPassword = '';
   String rePassword = '';
-
   bool isSending = false;
   bool isReseting = false;
   bool showVerification = false;

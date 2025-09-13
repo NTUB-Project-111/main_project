@@ -1,6 +1,6 @@
 import 'package:drw/backend/models/remind.dart';
 import 'package:drw/backend/models/report.dart';
-import 'package:drw/backend/models/report_model.dart';
+import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/record_service.dart';

@@ -407,7 +407,7 @@
 
 import 'dart:convert';
 
-import 'package:drw/backend/models/hospital_model.dart';
+import 'package:drw/backend/models/hospital.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

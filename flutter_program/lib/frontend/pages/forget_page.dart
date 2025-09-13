@@ -2,7 +2,7 @@ import 'package:drw/frontend/headers/header2.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../backend/models/forget_model.dart';
+import '../../backend/viewmodels/forget_view_model.dart';
 import 'login_page.dart';
 
 class ForgetPage extends StatefulWidget {
