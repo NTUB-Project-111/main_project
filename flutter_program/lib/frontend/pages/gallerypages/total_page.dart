@@ -1,8 +1,7 @@
 import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/provider/report_provider.dart';
-import 'package:drw/frontend/headers/header3.dart';
+import 'package:drw/frontend/widgets/headers/header3.dart';
 import 'package:drw/frontend/pages/gallerypages/showreport_page.dart';
-import 'package:drw/frontend/utility/front_util.dart';
 import 'package:drw/frontend/pages/remind_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -137,34 +136,6 @@ class _TotalPageState extends State<TotalPage> {
       ],
     );
   }
-
-  // Widget _buildImage(UserReport userReport) {
-  //   return GestureDetector(
-  //     child: Container(
-  //       decoration: BoxDecoration(
-  //         color: Colors.grey,
-  //         borderRadius: BorderRadius.circular(10),
-  //       ),
-  //       child: ClipRRect(
-  //         borderRadius: BorderRadius.circular(10),
-  //         child: Image.network(
-  //           userReport.photo.toString(),
-  //           fit: BoxFit.cover,
-  //         ),
-  //       ),
-  //     ),
-  //     onTap: () {
-  //       final extra = isExtra(userReport);
-  //       Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //               builder: (context) => ShowReportPage(
-  //                     report: userReport,
-  //                     isExtra: extra,
-  //                   )));
-  //     },
-  //   );
-  // }
 
   Widget _buildImage(UserReport userReport) {
     return GestureDetector(

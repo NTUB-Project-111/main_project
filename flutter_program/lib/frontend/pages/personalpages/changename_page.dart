@@ -2,7 +2,7 @@ import 'package:drw/backend/viewmodels/profiles_view_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
-import 'package:drw/frontend/headers/header4.dart';
+import 'package:drw/frontend/widgets/headers/header4.dart';
 import 'package:provider/provider.dart';
 
 import 'profiles_page.dart';

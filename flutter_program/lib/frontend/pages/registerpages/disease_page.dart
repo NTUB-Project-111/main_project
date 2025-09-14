@@ -2,7 +2,7 @@ import 'package:drw/backend/viewmodels/register_view_model.dart';
 // import 'package:drw/frontend/headers/header6.dart';
 import 'package:drw/frontend/pages/login_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
-import 'package:drw/frontend/utility/bear_message.dart';
+import 'package:drw/frontend/widgets/bear_message.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

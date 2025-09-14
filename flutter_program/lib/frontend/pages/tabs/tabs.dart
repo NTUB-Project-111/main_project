@@ -1,5 +1,5 @@
 import 'package:drw/backend/provider/user_provider.dart';
-import 'package:drw/frontend/animation/wound_option_button.dart';
+import 'package:drw/frontend/widgets/wound_option_button.dart';
 import 'package:drw/frontend/pages/guestblock_page.dart';
 import 'package:drw/frontend/pages/selectimage_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
