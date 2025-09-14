@@ -1,4 +1,4 @@
-import 'package:drw/frontend/headers/header2.dart';
+import 'package:drw/frontend/widgets/headers/header2.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

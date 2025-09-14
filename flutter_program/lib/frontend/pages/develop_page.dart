@@ -1,8 +1,5 @@
-import 'package:drw/frontend/pages/login_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
-import 'registerpages/disclaimer_page.dart';
-
 class DevelopPage extends StatefulWidget {
   const DevelopPage({super.key});
 

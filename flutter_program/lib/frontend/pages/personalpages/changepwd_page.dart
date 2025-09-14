@@ -1,6 +1,6 @@
 import 'package:drw/backend/viewmodels/changepwd_view_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
-import 'package:drw/frontend/headers/header4.dart';
+import 'package:drw/frontend/widgets/headers/header4.dart';
 import 'package:drw/frontend/pages/tabs/personal_page.dart';
 import 'package:drw/frontend/pages/tabs/tabs.dart';
 import 'package:drw/frontend/utility/front_util.dart';

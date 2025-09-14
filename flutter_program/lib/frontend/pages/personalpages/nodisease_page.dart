@@ -1,4 +1,3 @@
-import 'package:drw/frontend/pages/personalpages/editdisease_page.dart';
 import 'package:drw/frontend/pages/personalpages/editdisease_page_fromno.dart';
 import 'package:flutter/material.dart';
 
