@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
@@ -19,6 +20,8 @@ class _CarePartState extends State<CarePart> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.read<UserProvider>();
+    final user = userProvider.user;
     return Container(
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: Color(0xFF589399), width: 2)),
@@ -45,8 +48,6 @@ class _CarePartState extends State<CarePart> {
                         constraints: const BoxConstraints(),
                         onPressed: () {
                           report.toggleSwitch();
-                       
-
                         },
                         icon: const Stack(
                           alignment: Alignment.center,
@@ -76,23 +77,25 @@ class _CarePartState extends State<CarePart> {
                         ),
                       ),
                       const SizedBox(width: 2),
-                      IconButton(
-                        onPressed: () {
-                          report.toggleNotify();
-                          if (report.notify) {
-                            FrontUtil.showRemindDialog(context, report);
-                          }
-                        },
-                        icon: report.notify
-                            ? const Icon(
-                                Icons.notifications_active,
-                                color: Colors.red,
-                              )
-                            : const Icon(
-                                Icons.notifications_off_sharp,
-                                color: Color(0xFF589399),
-                              ),
-                      ),
+                      user!.id != -1
+                          ? IconButton(
+                              onPressed: () {
+                                report.toggleNotify();
+                                if (report.notify) {
+                                  FrontUtil.showRemindDialog(context, report);
+                                }
+                              },
+                              icon: report.notify
+                                  ? const Icon(
+                                      Icons.notifications_active,
+                                      color: Colors.red,
+                                    )
+                                  : const Icon(
+                                      Icons.notifications_off_sharp,
+                                      color: Color(0xFF589399),
+                                    ),
+                            )
+                          : const SizedBox(),
                     ],
                   ),
                 ],
