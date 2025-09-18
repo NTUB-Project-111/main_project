@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../frontend/views/auth_view.dart';
+import '../../frontend/utility/auth_util.dart';
 import '../services/auth_service.dart';
 
 class Forget extends ChangeNotifier {

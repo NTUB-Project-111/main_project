@@ -3,7 +3,7 @@ import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/pages/confirm_wound_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
-import 'package:drw/frontend/views/gallery_view.dart';
+import 'package:drw/frontend/utility/gallery_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

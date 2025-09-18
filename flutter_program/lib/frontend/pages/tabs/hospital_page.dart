@@ -3,7 +3,7 @@ import 'package:drw/backend/services/google_map.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:drw/frontend/views/hospital_view.dart';
+import 'package:drw/frontend/utility/hospital_util.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';

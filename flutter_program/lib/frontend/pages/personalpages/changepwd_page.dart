@@ -4,7 +4,7 @@ import 'package:drw/frontend/widgets/headers/header4.dart';
 import 'package:drw/frontend/pages/tabs/personal_page.dart';
 import 'package:drw/frontend/pages/tabs/tabs.dart';
 import 'package:drw/frontend/utility/front_util.dart';
-import 'package:drw/frontend/views/auth_view.dart';
+import 'package:drw/frontend/utility/auth_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
