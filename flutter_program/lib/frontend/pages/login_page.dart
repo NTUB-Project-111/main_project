@@ -1,3 +1,4 @@
+import 'package:drw/backend/models/user.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
@@ -98,44 +99,44 @@ class _LoginPageState extends State<LoginPage> {
                           },
                           child: const Text("忘記密碼？", style: TextStyle(color: Color(0xFF669FA5))),
                         ),
-                        // TextButton(
-                        //   onPressed: () {
-                        //     final userProvider = Provider.of<UserProvider>(
-                        //         context,
-                        //         listen: false);
+                        TextButton(
+                          onPressed: () {
+                            final userProvider = Provider.of<UserProvider>(
+                                context,
+                                listen: false);
 
-                        //     userProvider.setUserInfo(UserInfo(
-                        //       id: -1,
-                        //       name: '訪客',
-                        //       gender: '未知',
-                        //       birthday: '2000',
-                        //       picture: '',
-                        //       email: '',
-                        //       disease: '無',
-                        //       freq: '每天',
-                        //       reports: [],
-                        //     ));
+                            userProvider.setUserInfo(UserInfo(
+                              id: -1,
+                              name: '訪客',
+                              gender: '',
+                              birthday: '2000',
+                              picture: '',
+                              email: '',
+                              disease: '無',
+                              freq: '每天',
+                              reports: [],
+                            ));
 
-                        //     // ✅ 新增：清空診斷報告與提醒
-                        //     Provider.of<ReportProvider>(context, listen: false)
-                        //         .setReports([]);
-                        //     Provider.of<RemindProvider>(context, listen: false)
-                        //         .setReminds([]);
+                            // ✅ 新增：清空診斷報告與提醒
+                            Provider.of<ReportProvider>(context, listen: false)
+                                .setReports([]);
+                            Provider.of<RemindProvider>(context, listen: false)
+                                .setReminds([]);
 
-                        //     Navigator.pushReplacement(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //           builder: (context) => const Tabs()),
-                        //     );
-                        //   },
-                        //   child: const Text(
-                        //     "訪客登入",
-                        //     style: TextStyle(
-                        //       color: Color(0xFF4C7488),
-                        //       fontWeight: FontWeight.bold,
-                        //     ),
-                        //   ),
-                        // )
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const Tabs()),
+                            );
+                          },
+                          child: const Text(
+                            "訪客登入",
+                            style: TextStyle(
+                              color: Color(0xFF4C7488),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
 
                         TextButton(
                           onPressed: () => Navigator.push(

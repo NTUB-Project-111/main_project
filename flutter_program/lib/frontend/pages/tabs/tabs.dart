@@ -41,6 +41,9 @@ class _TabsState extends State<Tabs> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.read<UserProvider>();
+    final user = userProvider.user;
+
     return Scaffold(
       resizeToAvoidBottomInset: false, //讓floatingactionbottun不受鍵盤影響位置
       backgroundColor: const Color(0xFFEBFEFF),
@@ -53,8 +56,7 @@ class _TabsState extends State<Tabs> {
         ),
         child: BottomNavigationBar(
           onTap: (index) {
-            final isGuest =
-                Provider.of<UserProvider>(context, listen: false).isGuest;
+            final isGuest = Provider.of<UserProvider>(context, listen: false).isGuest;
             final restrictedIndexes = [1, 2, 3, 4];
 
             if (isGuest && restrictedIndexes.contains(index)) {
@@ -66,8 +68,7 @@ class _TabsState extends State<Tabs> {
             }
 
             setState(() {
-              _currentIndex =
-                  index != 2 ? index : _currentIndex; //setState會重新跑build
+              _currentIndex = index != 2 ? index : _currentIndex; //setState會重新跑build
             });
           },
           selectedFontSize: 13,
@@ -120,19 +121,16 @@ class _TabsState extends State<Tabs> {
           onPressed: () {
             showDialog(
               context: context,
-              barrierColor:
-                  const Color.fromARGB(255, 154, 182, 187).withOpacity(0.4),
+              barrierColor: const Color.fromARGB(255, 154, 182, 187).withOpacity(0.4),
               builder: (BuildContext context) {
                 return Dialog(
                   backgroundColor: Colors.transparent,
                   elevation: 0,
-                  insetPadding:
-                      const EdgeInsets.symmetric(vertical: 250, horizontal: 40),
+                  insetPadding: const EdgeInsets.symmetric(vertical: 250, horizontal: 40),
                   child: Center(
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.8,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 25),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
@@ -164,20 +162,23 @@ class _TabsState extends State<Tabs> {
                                 child: WoundOptionButton(
                                   label: "舊傷口追蹤",
                                   imagePath: 'images/old_photo_icon.png',
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 242, 225, 217),
+                                  backgroundColor: const Color.fromARGB(255, 242, 225, 217),
                                   borderColor: Colors.transparent,
-                                  textColor:
-                                      const Color.fromARGB(255, 155, 109, 87),
+                                  textColor: const Color.fromARGB(255, 155, 109, 87),
                                   onPressed: () {
                                     Navigator.pop(context);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const SelectImagePage(),
-                                      ),
-                                    );
+                                    user!.id != -1
+                                        ? Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => const SelectImagePage(),
+                                            ),
+                                          )
+                                        : Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) => const GuestBlockPage()),
+                                          );
                                   },
                                 ),
                               ),
@@ -186,16 +187,14 @@ class _TabsState extends State<Tabs> {
                                 child: WoundOptionButton(
                                   label: "新傷口拍攝",
                                   imagePath: 'images/new_photo_icon.png',
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 92, 141, 147),
+                                  backgroundColor: const Color.fromARGB(255, 92, 141, 147),
                                   borderColor: Colors.transparent,
                                   onPressed: () {
                                     Navigator.pop(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            const CameraPage(isExtra: false),
+                                        builder: (context) => const CameraPage(isExtra: false),
                                       ),
                                     );
                                   },

@@ -53,6 +53,8 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.read<UserProvider>();
+    final user = userProvider.user;
     return Consumer<Report>(
       builder: (context, report, _) {
         if (report.isLoading) {
@@ -72,10 +74,12 @@ class _ReportPageState extends State<ReportPage> {
                   const WoundPart(),
                   report.woundType != '無異常' ? CarePart(isExtra: widget.isExtra) : const SizedBox(),
                   report.woundType != '無異常' ? const HospitalPart() : const SizedBox(),
-                  report.woundType != '無異常' ? const RecordPart() : const SizedBox(),
-                  report.woundType != '無異常'
-                      ? ButtonPart(isExtra: widget.isExtra, id: widget.id)
-                      : const SizedBox()
+                  report.woundType == '無異常' || user!.id == -1
+                      ? const SizedBox()
+                      : const RecordPart(),
+                  report.woundType == '無異常' || user!.id == -1
+                      ? const SizedBox()
+                      : ButtonPart(isExtra: widget.isExtra, id: widget.id)
                 ],
               ),
             )));
