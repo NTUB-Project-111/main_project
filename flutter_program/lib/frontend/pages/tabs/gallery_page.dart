@@ -5,7 +5,7 @@ import 'package:drw/frontend/widgets/headers/header3.dart';
 import 'package:drw/frontend/pages/gallerypages/showreport_page.dart';
 import 'package:drw/frontend/pages/gallerypages/total_page.dart';
 import 'package:drw/frontend/pages/remind_page.dart';
-import 'package:drw/frontend/views/gallery_view.dart';
+import 'package:drw/frontend/utility/gallery_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

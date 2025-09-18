@@ -1,5 +1,5 @@
 import 'package:drw/backend/services/auth_service.dart';
-import 'package:drw/frontend/views/auth_view.dart';
+import 'package:drw/frontend/utility/auth_util.dart';
 import 'package:flutter/material.dart';
 
 class Register extends ChangeNotifier {
