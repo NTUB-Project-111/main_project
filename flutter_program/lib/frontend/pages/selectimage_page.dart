@@ -350,6 +350,11 @@ class _SelectImagePageState extends State<SelectImagePage> {
               onPrimary: Colors.white,
               onSurface: Colors.black87,
             ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.black, // 這裡確保OK/Cancel按鈕使用指定顏色
+              ),
+            ),
             dialogBackgroundColor: Colors.white,
           ),
           child: child!,
