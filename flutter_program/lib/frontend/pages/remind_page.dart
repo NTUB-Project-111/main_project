@@ -38,7 +38,7 @@ class _RemindPageState extends State<RemindPage> {
         reminders
           ..clear()
           ..addAll(userInfo.reports
-                  .where((r) => r.ifcall == 'Y')
+                  .where((r) => r.ifcall == 'Y' && r.oktime != '傷口已痊癒')
                   .map((r) => Reminder.fromReport(r))
                   .whereType<Reminder>() // 過濾掉 null
               );
