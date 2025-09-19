@@ -88,9 +88,36 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
+  // Future<void> _setupCamera(int cameraIndex) async {
+  //   if (_controller != null) {
+  //     await _controller!.dispose();
+  //   }
+
+  //   final controller = CameraController(
+  //     _cameras[cameraIndex],
+  //     ResolutionPreset.high,
+  //   );
+
+  //   try {
+  //     await controller.initialize();
+  //     if (!mounted) return;
+  //     setState(() {
+  //       _controller = controller;
+  //       isCameraInitialized = true;
+  //     });
+  //   } catch (e) {
+  //     debugPrint("相機控制器初始化失敗：$e");
+  //   }
+  // }
   Future<void> _setupCamera(int cameraIndex) async {
-    if (_controller != null) {
-      await _controller!.dispose();
+    // 避免 build 使用到被 dispose 的 controller
+    final oldController = _controller;
+    setState(() {
+      _controller = null;
+      isCameraInitialized = false;
+    });
+    if (oldController != null) {
+      await oldController.dispose();
     }
 
     final controller = CameraController(
@@ -109,7 +136,7 @@ class _CameraPageState extends State<CameraPage> {
       debugPrint("相機控制器初始化失敗：$e");
     }
   }
-  
+
   @override
   void dispose() {
     try {
@@ -119,7 +146,6 @@ class _CameraPageState extends State<CameraPage> {
     }
     super.dispose();
   }
-
 
   Future<void> _takePhoto() async {
     if (_controller == null || !_controller!.value.isInitialized) return;
