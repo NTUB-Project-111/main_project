@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:drw/frontend/utility/hospital_util.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-// 你的新增套件
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -214,8 +213,9 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
               ],
             ),
             const SizedBox(height: 12),
-            _buildDropdownRow('縣市', '請選擇縣市', hospital.counties,
-                hospital.selectedCounty, (value) async {
+            _buildDropdownRow(
+                '縣市', '請選擇縣市', hospital.counties, hospital.selectedCounty,
+                (value) async {
               hospital.selectedCounty = value;
               hospital.selectedDistrict = null;
               hospital.selectedDepartment = null;
@@ -347,7 +347,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                   Container(
                     width: 80,
                     height: 5,
-                    margin: const EdgeInsets.only(bottom: 10),
+                    // margin: const EdgeInsets.only(bottom: 20),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(50, 88, 146, 153),
                       borderRadius: BorderRadius.circular(12.0),
@@ -356,8 +356,9 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
 
                   // 右上角：星星 + 營業狀態
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end, // 整組靠右
+
                     children: [
-                      const Spacer(),
                       IconButton(
                         tooltip: '收藏 / 取消收藏',
                         padding: EdgeInsets.zero,
@@ -366,8 +367,10 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                           mapService.isStarred(selected.id)
                               ? Icons.star_rounded
                               : Icons.star_border_rounded,
-                          size: 22,
-                          color: const Color(0xFF669FA5),
+                          size: 24,
+                          color: mapService.isStarred(selected.id)
+                              ? const Color.fromARGB(255, 255, 214, 93)
+                              : const Color(0xFF589399),
                         ),
                         onPressed: () {
                           mapService.toggleStar(selected.id);
@@ -384,6 +387,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                       //         : const Color(0xFF9AA7AD),
                       //   ),
                       // ),
+
                     ],
                   ),
 
@@ -433,46 +437,58 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                             ),
                             const SizedBox(height: 10),
 
-                            _buildInfoRow(Icons.location_on_outlined,
-                                selected.address,
+                            _buildInfoRow(
+                                Icons.location_on_outlined, selected.address,
                                 maxLines: 2),
                             const SizedBox(height: 6),
                             _buildInfoRow(
-                                Icons.phone_outlined, '電話：${selected.phone}'),
+                                Icons.phone_outlined, '${selected.phone}'),
                             const SizedBox(height: 6),
                             _buildInfoRow(Icons.directions_walk_outlined,
-                                '距離：${selected.distance}'),
+                                '${selected.distance}'),
                             const SizedBox(height: 6),
                             _buildInfoRow(Icons.access_time_outlined,
-                                '行走時間：${selected.walkTime} 分鐘'),
+                                '行走 ${selected.walkTime} 分鐘'),
                           ],
                         ),
                       ),
                     ],
                   ),
 
-                  // 導航按鈕
                   Align(
                     alignment: Alignment.centerRight,
-                    child: TextButton.icon(
-                      icon: const Icon(
-                        Icons.navigation_outlined,
-                        size: 18,
-                        color: Color.fromRGBO(88, 147, 153, 1),
-                      ),
-                      label: const Text(
-                        '開始導航',
-                        style: TextStyle(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0), // 和下方的距離
+                      child: ElevatedButton.icon(
+                        icon: const Icon(
+                          Icons.navigation_outlined,
+                          size: 17,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          '開始導航',
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Color.fromRGBO(88, 147, 153, 1)),
+                            color: Colors.white,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromRGBO(88, 147, 153, 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                        ),
+                        onPressed: () {
+                          Provider.of<GoogleMapService>(context, listen: false)
+                              .navigateToHospital(
+                            selected.latitude,
+                            selected.longitude,
+                          );
+                        },
                       ),
-                      onPressed: () {
-                        Provider.of<GoogleMapService>(context, listen: false)
-                            .navigateToHospital(
-                          selected.latitude,
-                          selected.longitude,
-                        );
-                      },
                     ),
                   ),
                 ],
@@ -538,7 +554,8 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
             decoration: BoxDecoration(
               border: Border.all(color: const Color(0xFF669FA5)),
               borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
+                  topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(20)),
               color: isDisabled ? Colors.grey.shade200 : Colors.white,
             ),
             padding: const EdgeInsets.only(right: 10),
@@ -555,7 +572,8 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                       .map((item) => DropdownMenuItem<String>(
                             alignment: Alignment.center,
                             value: item,
-                            child: Text(item, style: const TextStyle(fontSize: 14)),
+                            child: Text(item,
+                                style: const TextStyle(fontSize: 14)),
                           ))
                       .toList(),
                   onChanged: onChanged,
@@ -802,7 +820,8 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                                   onPressed: () {
                                     mapService.toggleStar(h.id);
                                     final left = hv.hospitals
-                                        .where((x) => mapService.isStarred(x.id))
+                                        .where(
+                                            (x) => mapService.isStarred(x.id))
                                         .length;
                                     if (left == 0 &&
                                         Navigator.of(context).canPop()) {
