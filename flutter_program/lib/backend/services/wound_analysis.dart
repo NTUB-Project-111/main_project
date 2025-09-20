@@ -48,18 +48,30 @@ class WoundAnalysis {
   //   }
   // }
   static Future<String> analyzeWound(File imageFile) async {
+    // Map<String, String> woundMap = {
+    //   'Abrasions': '擦傷',
+    //   'Bruise': '瘀青',
+    //   'Burn': '燒傷',
+    //   'Cut': '割傷',
+    //   '無異常': '無異常'
+    // };
     Map<String, String> woundMap = {
-      'Abrasions': '擦傷',
-      'Bruise': '瘀青',
-      'Burn': '燒傷',
-      'Cut': '割傷',
+      'slight_abrasion': '擦傷',
+      'slight_bruise': '瘀青',
+      'slight_burn': '燒傷',
+      'slight_cut': '割傷',
+      'slight_stab': '刺傷',
+      'slight_surgical': '手術傷口',
+      'serious': '嚴重',
       '無異常': '無異常'
     };
+
     try {
       final apiKey = dotenv.env['YOLO_API_KEY'];
       final String modelUrl =
-          // "https://detect.roboflow.com/wound-ebsdw/10?api_key=$apiKey";
-          "https://detect.roboflow.com/wound-no-blister-2/1?api_key=$apiKey";
+          // "https://detect.roboflow.com/wound-ebsdw/10?api_key=$apiKey"; //模型v1
+          // "https://detect.roboflow.com/wound-no-blister-2/1?api_key=$apiKey";  //模型v2
+          "https://detect.roboflow.com/wound-grading/3?api_key=$apiKey"; //模型v3
 
       final bytes = await imageFile.readAsBytes();
       final decoded = img.decodeImage(bytes);
