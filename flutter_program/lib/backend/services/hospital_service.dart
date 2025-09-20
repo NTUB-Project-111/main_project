@@ -198,6 +198,7 @@ class HospitalService {
       throw Exception('無法取得附近醫院資料 (HTTP ${res.statusCode})');
     }
   }
+
 }
 
 
