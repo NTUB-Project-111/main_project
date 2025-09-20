@@ -61,7 +61,7 @@ dependencies:
   flutter_timezone: ^4.1.0 #系統通知比對時間(取得時區)
   shared_preferences: ^2.2.2
   geolocator: ^13.0.2 #取得地理位置
-  geolocator_android: 4.6.1
+  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:
