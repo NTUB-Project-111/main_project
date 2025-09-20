@@ -104,9 +104,11 @@ class _CarePartState extends State<CarePart> {
                 // 護理步驟動畫
                 if (report.isSwitch)
                   SizedBox(
+                    
                     height: 320,
                     child: Column(
                       children: [
+                        const SizedBox(height: 10),
                         Row(
                           children: [
                             // 左箭頭
