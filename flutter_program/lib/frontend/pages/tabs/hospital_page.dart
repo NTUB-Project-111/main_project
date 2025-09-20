@@ -376,16 +376,18 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                           mapService.toggleStar(selected.id);
                         },
                       ),
-                      Text(
-                        selected.openStatus ?? '未營業',
-                        style: TextStyle(
-                          fontSize: 14.5,
-                          fontWeight: FontWeight.w700,
-                          color: (selected.openStatus == '營業中')
-                              ? Colors.red
-                              : const Color(0xFF9AA7AD),
-                        ),
-                      ),
+                      // const SizedBox(width: 8),
+                      // Text(
+                      //   selected.openStatus ?? '未營業',
+                      //   style: TextStyle(
+                      //     fontSize: 13,
+                      //     fontWeight: FontWeight.w700,
+                      //     color: (selected.openStatus == '營業中')
+                      //         ? Colors.red
+                      //         : const Color(0xFF9AA7AD),
+                      //   ),
+                      // ),
+
                     ],
                   ),
 
@@ -791,24 +793,24 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.info_outline,
-                                            size: 14, color: Color(0xFF9AA7AD)),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          h.openStatus ?? '狀態未知',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                            color: (h.openStatus == '營業中')
-                                                ? Colors.red
-                                                : const Color(0xFF9AA7AD),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    // const SizedBox(height: 4),
+                                    // Row(
+                                    //   children: [
+                                    //     const Icon(Icons.info_outline,
+                                    //         size: 14, color: Color(0xFF9AA7AD)),
+                                    //     const SizedBox(width: 6),
+                                    //     Text(
+                                    //       h.openStatus ?? '狀態未知',
+                                    //       style: TextStyle(
+                                    //         fontSize: 12,
+                                    //         fontWeight: FontWeight.w700,
+                                    //         color: (h.openStatus == '營業中')
+                                    //             ? Colors.red
+                                    //             : const Color(0xFF9AA7AD),
+                                    //       ),
+                                    //     ),
+                                    //   ],
+                                    // ),
                                   ],
                                 ),
                                 trailing: IconButton(
