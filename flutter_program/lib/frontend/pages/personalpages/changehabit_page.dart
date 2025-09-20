@@ -132,7 +132,7 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
 
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(50, 20, 50, 70),
+                padding: const EdgeInsets.fromLTRB(45, 20, 45, 70),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
