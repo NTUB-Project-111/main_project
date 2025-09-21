@@ -159,10 +159,10 @@ class GoogleMapService extends ChangeNotifier {
 
       // 收藏優先，其次營業狀態
       final starred = _starredHospitalIds.contains(h.id);
-      // final BitmapDescriptor icon =
-      //     starred ? (_iconStar ?? _iconRed!) : (isOpen ? _iconRed! : _iconGray!);
       final BitmapDescriptor icon =
-          starred ? (_iconStar ?? _iconRed!) : (isOpen ? _iconRed! : _iconRed!);
+          starred ? (_iconStar ?? _iconRed!) : (isOpen ? _iconRed! : _iconGray!);
+      // final BitmapDescriptor icon =
+      //     starred ? (_iconStar ?? _iconRed!) : (isOpen ? _iconRed! : _iconRed!);
 
       next.add(
         Marker(
