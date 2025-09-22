@@ -77,8 +77,9 @@ class _CarePartState extends State<CarePart> {
                         ),
                       ),
                       const SizedBox(width: 2),
-                      user!.id != -1
-                          ? IconButton(
+                      user!.id == -1 || widget.isExtra
+                          ? const SizedBox()
+                          : IconButton(
                               onPressed: () {
                                 report.toggleNotify();
                                 if (report.notify) {
@@ -94,8 +95,7 @@ class _CarePartState extends State<CarePart> {
                                       Icons.notifications_off_sharp,
                                       color: Color(0xFF589399),
                                     ),
-                            )
-                          : const SizedBox(),
+                            ),
                     ],
                   ),
                 ],
