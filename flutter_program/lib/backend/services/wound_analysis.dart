@@ -21,7 +21,7 @@ class WoundAnalysis {
       'slight_cut': '割傷',
       'slight_stab': '刺傷',
       'slight_surgical': '手術傷口',
-      'serious': '嚴重',
+      'serious': '嚴重傷口',
       '無異常': '無異常'
     };
 
