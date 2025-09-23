@@ -230,15 +230,38 @@ class Report extends ChangeNotifier {
       switch (woundType) {
         case '燒傷':
         case '燙傷':
-          imageUrls = [];
+          imageUrls = [
+            'images/burncare1.png',
+            'images/burncare2.png',
+            'images/burncare3.png',
+            'images/burncare4.png',
+            'images/burncare5.png',
+            'images/burncare6.png',
+            'images/burncare7.png'
+          ];
+          steps = ['洗手', '移除舊紗布', '觀察傷口', '清潔傷口', '擦乾傷口', '擦藥', '包紮傷口'];
           break;
         case '擦傷':
         case '割傷':
         case '刺傷':
-          imageUrls = [];
+          imageUrls = [
+            'images/woundcare1.png',
+            'images/woundcare2.png',
+            'images/woundcare3.png',
+            'images/woundcare4.png',
+            'images/woundcare5.png'
+          ];
+          steps = ['洗淨雙手', '拆除舊敷料', '擦拭傷口', '塗抹藥膏', '包紮傷口'];
           break;
         case '瘀青':
-          imageUrls = [];
+          imageUrls = [
+            'images/bruise1.jpg',
+            'images/bruise2.jpg',
+            'images/bruise3.jpg',
+            'images/bruise4.jpg',
+            'images/bruise5.jpg'
+          ];
+          steps = ['初期冷敷', '後期熱敷', '避免加壓或按摩', '抬高患肢', '若瘀傷部位出現腫脹'];
           break;
         case '手術傷口':
           imageUrls = [];
@@ -250,10 +273,23 @@ class Report extends ChangeNotifier {
       switch (woundType) {
         case '燒傷':
         case '燙傷':
-          imageUrls = [];
+          imageUrls = [
+            'images/burn1.png',
+            'images/burn2.png',
+            'images/burn3.png',
+            'images/burn4.png',
+            'images/burn5.png'
+          ];
+          steps = ['沖洗燒燙傷部位', '脫掉衣物飾品', '浸泡傷部', '塗抹乳液', '包紮傷口', '服用止痛藥(如有需要)'];
           break;
         case '擦傷':
-          imageUrls = [];
+          imageUrls = [
+            'images/abrasion1.png',
+            'images/abrasion2.png',
+            'images/abrasion3.png',
+            'images/abrasion4.png'
+          ];
+          steps = ['洗淨雙手', '清潔傷口', '擦藥', '包紮傷口'];
           break;
         case '割傷':
           imageUrls = [
@@ -263,13 +299,20 @@ class Report extends ChangeNotifier {
             'images/cut4.png',
             'images/cut5.png'
           ];
-          steps = ['洗手','止血','清潔傷口','塗抹藥膏','包紮傷口'];
+          steps = ['洗手', '止血', '清潔傷口', '塗抹藥膏', '包紮傷口'];
           break;
         case '刺傷':
           imageUrls = [];
           break;
         case '瘀青':
-          imageUrls = [];
+          imageUrls = [
+            'images/bruise1.jpg',
+            'images/bruise2.jpg',
+            'images/bruise3.jpg',
+            'images/bruise4.jpg',
+            'images/bruise5.jpg'
+          ];
+          steps = ['初期冷敷', '後期熱敷', '避免加壓或按摩', '抬高患肢', '若瘀傷部位出現腫脹'];
           break;
         case '手術傷口':
           imageUrls = [];
