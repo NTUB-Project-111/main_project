@@ -22,6 +22,7 @@ class _RemindPageState extends State<RemindPage> {
   final List<Reminder> reminders = [];
   bool _isInitialized = false;
   bool showDeleteButtons = false;
+  bool isSaving = false;
 
   @override
   void didChangeDependencies() {
@@ -91,17 +92,19 @@ class _RemindPageState extends State<RemindPage> {
           child: Container(height: 2.0, color: const Color(0xFF669FA5)),
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(15),
-        itemCount: reminders.length,
-        itemBuilder: (context, index) {
-          final reminder = reminders[index];
-          if (reminder.isDelete) {
-            return const SizedBox(); // 或 return Container()
-          }
-          return buildReminderCard(index);
-        },
-      ),
+      body: isSaving
+          ? Center(child: FrontUtil.loading())
+          : ListView.builder(
+              padding: const EdgeInsets.all(15),
+              itemCount: reminders.length,
+              itemBuilder: (context, index) {
+                final reminder = reminders[index];
+                if (reminder.isDelete) {
+                  return const SizedBox(); // 或 return Container()
+                }
+                return buildReminderCard(index);
+              },
+            ),
     );
   }
 
@@ -260,38 +263,51 @@ class _RemindPageState extends State<RemindPage> {
                   FrontUtil.showConfirmDialog(
                     context,
                     FrontUtil.textColor,
-                    '確定要刪除嗎？', // title
-                    null, // subTitle 可放 null 或字串
-                    '取消', // 取消按鈕文字
-                    '確定', // 確認按鈕文字
+                    '確定要刪除嗎？',
+                    null,
+                    '取消',
+                    '確定',
                     () async {
                       setState(() {
-                        reminders[index].isDelete = true;
-                        reminders[index].isModifiedFlag = true;
+                        isSaving = true;
                       });
 
-                      final remindViewModel = RemindViewModel();
-                      final success = await remindViewModel.updateRemind([reminders[index]]);
-                      if (success) {
-                        FrontUtil.showSuccess('提醒已刪除');
-                        // 重新從後端取得最新報告資料
-                        final userReport =
-                            await RecordService.fetchReports(reminders[index].userId);
+                      try {
+                        final remindViewModel = RemindViewModel();
+                        final success = await remindViewModel.updateRemind(
+                          [
+                            reminders[index]
+                              ..isDelete = true
+                              ..isModifiedFlag = true
+                          ],
+                        );
 
-                        // 更新 UserProvider 的 user 資料
-                        final userProvider = Provider.of<UserProvider>(context, listen: false);
-                        final user = userProvider.user;
-                        if (user != null) {
-                          user.reports = userReport;
-                          userProvider.setUserInfo(user);
+                        if (success) {
+                          FrontUtil.showSuccess('提醒已刪除');
+
+                          // 重新取得最新報告
+                          final userReport =
+                              await RecordService.fetchReports(reminders[index].userId);
+
+                          // 更新 UserProvider
+                          final userProvider = Provider.of<UserProvider>(context, listen: false);
+                          final user = userProvider.user;
+                          if (user != null) {
+                            userProvider.setUserInfo(user.copyWith(reports: userReport));
+                          }
+
+                          // 重新載入提醒
+                          await loadReminders();
+                          setState(() {}); // 如果 loadReminders 已更新狀態，可以省略這行
+                        } else {
+                          FrontUtil.showFail('刪除失敗，請稍後再試');
                         }
-
-                        // 重新載入 reminders 並刷新畫面
-                        await loadReminders();
-
-                        setState(() {}); // 強制刷新 UI
-                      } else {
-                        FrontUtil.showFail('刪除失敗，請稍後再試');
+                      } catch (e) {
+                        FrontUtil.showFail('刪除時發生錯誤: $e');
+                      } finally {
+                        setState(() {
+                          isSaving = false;
+                        });
                       }
                     },
                   );
@@ -346,30 +362,43 @@ class _RemindPageState extends State<RemindPage> {
                 backgroundColor: const Color(0xFF589399),
               ),
               onPressed: () async {
-                RemindViewModel remind = RemindViewModel();
-                final message = await remind.updateRemind(reminds);
-                if (message) {
-                  FrontUtil.showSuccess('儲存成功!');
+                final userProvider = Provider.of<UserProvider>(context, listen: false);
+                final reportProvider = Provider.of<ReportProvider>(context, listen: false);
+                final remindProvider = Provider.of<RemindProvider>(context, listen: false);
 
-                  final userReport = await RecordService.fetchReports(reminds[0].userId);
-                  final userProvider = Provider.of<UserProvider>(context, listen: false);
-                  final user = userProvider.user;
-                  if (user != null) {
-                    user.reports = userReport;
-                    userProvider.setUserInfo(user);
-                  }
+                Navigator.pop(context); // 關掉 dialog
+                if (!mounted) return;
+                setState(() => isSaving = true);
 
-                  if (mounted) {
-                    Provider.of<ReportProvider>(context, listen: false).setReports(userReport);
+                try {
+                  final remindViewModel = RemindViewModel();
+                  final message = await remindViewModel.updateRemind(reminds);
+
+                  if (message) {
+                    final userReport = await RecordService.fetchReports(reminds[0].userId);
+
+                    // 更新 provider
+                    final user = userProvider.user;
+                    if (user != null) {
+                      userProvider.setUserInfo(user.copyWith(reports: userReport));
+                    }
+                    reportProvider.setReports(userReport);
                     final allReminds = userReport.expand((r) => r.reminds).toList();
-                    Provider.of<RemindProvider>(context, listen: false).setReminds(allReminds);
-                    onConfirm();
-                    await loadReminders();
-                  }
+                    remindProvider.setReminds(allReminds);
 
-                  Navigator.pop(context);
-                } else {
-                  FrontUtil.showFail('儲存變更失敗，請稍後再試');
+                    if (!mounted) return;
+                    await loadReminders();
+
+                    FrontUtil.showSuccess('儲存成功!');
+
+                    // 回上一頁
+                    if (mounted) Navigator.pop(context);
+                  } else {
+                    if (!mounted) return;
+                    FrontUtil.showFail('儲存變更失敗，請稍後再試');
+                  }
+                } finally {
+                  setState(() => isSaving = false);
                 }
               },
               child: Text(confirm,
