@@ -60,32 +60,6 @@ class RecordService {
     }
   }
 
-  // static Future<void> getRecords(BuildContext context, String userId) async {
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse('${ApiBase.baseUrl}/getRecords?id=$userId'),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       final List recordsJson = data['records'];
-  //       final List<UserRecord> records =
-  //           recordsJson.map((json) => UserRecord.fromJson(json)).toList();
-
-  //       Provider.of<Records>(context, listen: false).setRecords(records);
-  //       for (var record in records) {
-  //         debugPrint('==========新的一筆record===========');
-  //         debugPrint(record.recordId.toString());
-  //         debugPrint(record.groupId.toString());
-  //       }
-  //     } else {
-  //       debugPrint('取得紀錄失敗: ${response.statusCode}');
-  //       debugPrint('錯誤訊息: ${response.body}');
-  //     }
-  //   } catch (e) {
-  //     debugPrint('例外錯誤: $e');
-  //   }
-  // }
   static Future<void> getRecords(BuildContext context, String userId) async {
     try {
       final response = await http.get(
@@ -138,20 +112,6 @@ class RecordService {
       rethrow;
     }
   }
-
-  // static Future<List<UserReport>> fetchReports(int userId) async {
-  //   final url = Uri.parse('${ApiBase.baseUrl}/getRecordRemind?id=$userId');
-  //   final response = await http.get(url);
-
-  //   if (response.statusCode == 200) {
-  //     final Map<String, dynamic> jsonData = json.decode(response.body);
-  //     final List<dynamic> reportsJson = jsonData['reports'];
-
-  //     return reportsJson.map((r) => UserReport.fromJson(r)).toList();
-  //   } else {
-  //     throw Exception('Failed to load reports');
-  //   }
-  // }
 
   Future<List<int>> fetchGroup(String userId) async {
     final uri = Uri.parse('${ApiBase.baseUrl}/getGroup?userId=$userId');
@@ -285,21 +245,15 @@ class RecordService {
   Future<bool> updateIfcall({
     required int userId,
     int? recordId,
-    int? groupId,
     required String ifcall,
   }) async {
     final url = Uri.parse("${ApiBase.baseUrl}/updateIfcall");
 
     final body = {
       "userId": userId,
+      "recordId": recordId,
       "ifcall": ifcall,
     };
-
-    if (groupId != null) {
-      body["groupId"] = groupId;
-    } else if (recordId != null) {
-      body["recordId"] = recordId;
-    }
 
     final response = await http.post(
       url,
