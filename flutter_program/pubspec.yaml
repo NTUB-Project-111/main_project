@@ -107,6 +107,32 @@ flutter:
     - images/cut3.png
     - images/cut4.png
     - images/cut5.png
+    - images/abrasion1.png
+    - images/abrasion2.png
+    - images/abrasion3.png
+    - images/abrasion4.png
+    - images/burn1.png
+    - images/burn2.png
+    - images/burn3.png
+    - images/burn4.png
+    - images/burn5.png
+    - images/burncare1.png
+    - images/burncare2.png
+    - images/burncare3.png
+    - images/burncare4.png
+    - images/burncare5.png
+    - images/burncare6.png
+    - images/burncare7.png
+    - images/bruise1.jpg
+    - images/bruise2.jpg
+    - images/bruise3.jpg
+    - images/bruise4.jpg
+    - images/bruise5.jpg
+    - images/woundcare1.png
+    - images/woundcare2.png
+    - images/woundcare3.png
+    - images/woundcare4.png
+    - images/woundcare5.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
