@@ -1,26 +1,28 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:drw/backend/services/google_map.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';// 下拉選單 UI
+import 'package:drw/backend/services/google_map.dart'; // Google 地圖服務
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:drw/frontend/utility/hospital_util.dart';
+import 'package:provider/provider.dart'; // 狀態管理
+import 'package:drw/frontend/utility/hospital_util.dart'; // 醫院相關工具
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+// 取得醫院照片 URL
 String getPhotoUrl(String? reference) {
   final key = dotenv.env['GOOGLE_MAPS_API_KEY'];
   if (reference == null || reference.isEmpty || key == null) return '';
   return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$reference&key=$key';
 }
 
+// 主頁面：附近醫院
 class HospitalPage extends StatelessWidget {
   const HospitalPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { // 用 Provider 管理 HospitalView 狀態
     return ChangeNotifierProvider(
       create: (_) => HospitalView(),
       child: const _HospitalPageView(),
@@ -28,6 +30,7 @@ class HospitalPage extends StatelessWidget {
   }
 }
 
+// 狀態管理用 StatefulWidget
 class _HospitalPageView extends StatefulWidget {
   const _HospitalPageView();
 
@@ -36,24 +39,27 @@ class _HospitalPageView extends StatefulWidget {
 }
 
 class _HospitalPageViewState extends State<_HospitalPageView> {
-  final GoogleMapService _mapService = GoogleMapService();
-  GoogleMapController? _mapController;
-  LatLng? _currentPosition;
+  final GoogleMapService _mapService = GoogleMapService(); // 地圖服務
+  GoogleMapController? _mapController; // 地圖控制器
+  LatLng? _currentPosition; // 使用者當前位置
 
-  // 新增狀態：照片 + 卡片高度
-  String? _selectedHospitalPhotoUrl;
-  double _infoCardHeight = 260;
+  // 顯示醫院資訊卡時的狀態 
+  String? _selectedHospitalPhotoUrl; // 醫院照片
+  double _infoCardHeight = 260; // 資訊卡高度
+
   final GlobalKey _infoCardKey = GlobalKey();
 
+// 透過 Google API 取得醫院照片
   Future<void> _fetchPhotoFor(String placeName) async {
     final key = dotenv.env['GOOGLE_MAPS_API_KEY'];
     if (key == null) return;
 
-    try {
-      final textUrl = Uri.parse(
+    try {  // 先用關鍵字搜尋地點
+      final textUrl = Uri.parse( 
           'https://maps.googleapis.com/maps/api/place/textsearch/json?query=${Uri.encodeComponent(placeName)}&key=$key');
       final tRes = await http.get(textUrl);
       final tJson = json.decode(tRes.body);
+       // 如果找到地點，再去拿照片資訊
       if (tJson['status'] == 'OK' && (tJson['results'] as List).isNotEmpty) {
         final placeId = tJson['results'][0]['place_id'];
         final detUrl = Uri.parse(
@@ -61,6 +67,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
         final dRes = await http.get(detUrl);
         final dJson = json.decode(dRes.body);
         final photos = dJson['result']?['photos'] as List?;
+         // 如果有照片，更新 UI
         if (photos != null && photos.isNotEmpty) {
           final ref = photos[0]['photo_reference'];
           setState(() {
@@ -71,6 +78,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
         }
       }
     } catch (_) {}
+    // 沒找到照片，設為空
     setState(() => _selectedHospitalPhotoUrl = null);
   }
 
@@ -78,12 +86,13 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
   void initState() {
     super.initState();
 
-    // 收藏初始化（可換成實際使用者 ID；先用 guest）
+    // 初始化收藏功能，預設 guest
     _mapService.initFavorites(userId: 'guest');
-
+// 取得使用者位置並載入地圖
     _initLocation();
   }
 
+ // 取得目前位置並顯示地圖與醫院
   Future<void> _initLocation() async {
     final latLng = await _mapService.getCurrentLocation();
     if (!mounted) return;
@@ -93,10 +102,10 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
 
       final hospitalView = Provider.of<HospitalView>(context, listen: false);
 
-      // 先抓附近醫院
+      // 取得附近醫院資料
       await hospitalView.fetchHospitalsByDistance(latLng);
 
-      // 畫 markers
+       // 在地圖上畫標記
       await _mapService.setMarkers(
         hospitalView.hospitals,
         (h) {
@@ -107,7 +116,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
         pinColor: BitmapDescriptor.hueRed,
       );
 
-      // 自動移鏡頭到最近一間
+      // 自動移鏡頭到最近的醫院
       if (hospitalView.hospitals.isNotEmpty) {
         final first = hospitalView.hospitals.first;
         _fetchPhotoFor(first.name);
@@ -123,6 +132,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
     }
   }
 
+ // 主要畫面：上方選單 + 地圖 + 資訊卡
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
@@ -180,7 +190,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
     );
   }
 
-  // ====== 保留 main 原本 Dropdown UI（加入 _fetchPhotoFor 呼叫）======
+  // 下拉選單 UI：控制縣市 / 地區 / 部門的選擇
   Widget _buildDropdownUI(HospitalView hospital) => Container(
         padding: const EdgeInsets.only(left: 15, right: 15, top: 30),
         decoration: const BoxDecoration(
@@ -193,6 +203,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            // 標題 + 關閉按鈕
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -209,19 +220,21 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                 ),
                 IconButton(
                     icon: const Icon(Icons.close_outlined),
-                    onPressed: hospital.toggleMode),
+                    onPressed: hospital.toggleMode), // 點擊關閉下拉表單
               ],
             ),
             const SizedBox(height: 12),
+            // 縣市下拉
             _buildDropdownRow(
                 '縣市', '請選擇縣市', hospital.counties, hospital.selectedCounty,
                 (value) async {
-              hospital.selectedCounty = value;
-              hospital.selectedDistrict = null;
-              hospital.selectedDepartment = null;
-              await hospital.loadDistricts(value!);
+              hospital.selectedCounty = value; // 選擇縣市
+              hospital.selectedDistrict = null; // 清空地區
+              hospital.selectedDepartment = null; // 清空部門
+              await hospital.loadDistricts(value!); // 載入地區
             }),
             const SizedBox(height: 12),
+            // 地區下拉
             _buildDropdownRow(
                 '地區',
                 '請選擇地區',
@@ -236,6 +249,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                       }
                     : null),
             const SizedBox(height: 12),
+            // 醫療部門下拉
             _buildDropdownRow(
                 '醫療部門',
                 '請選擇部門',
@@ -245,6 +259,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                     ? (value) => hospital.selectedDepartment = value
                     : null),
             const SizedBox(height: 10),
+             // 查詢按鈕
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF669FA5),
@@ -252,16 +267,16 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                 minimumSize: const Size(80, 38),
               ),
               onPressed: () async {
-                hospital.toggleMode();
-                hospital.toggleShowMode();
+                hospital.toggleMode();  // 關閉下拉表單
+                hospital.toggleShowMode(); // 顯示醫院資訊卡
                 final hospitalView =
                     Provider.of<HospitalView>(context, listen: false);
-                await hospitalView.fetchHospitals();
+                await hospitalView.fetchHospitals(); // 從後端載入醫院資料
                 _mapService.setMarkers(
                   hospitalView.hospitals,
                   (selectedHospital) {
-                    hospitalView.selectHospital(selectedHospital);
-                    _fetchPhotoFor(selectedHospital.name);
+                    hospitalView.selectHospital(selectedHospital); // 選取醫院
+                    _fetchPhotoFor(selectedHospital.name); // 載入醫院照片
                   },
                   _currentPosition!,
                   pinColor: BitmapDescriptor.hueRed,
@@ -274,7 +289,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
         ),
       );
 
-  // ====== 保留 main 原本 TopBar ======
+  // 頂部 Bar：顯示標題 + 搜尋按鈕
   Widget _buildTopBar(HospitalView hospital) => Container(
         padding: const EdgeInsets.only(left: 25, right: 12, top: 30),
         decoration: const BoxDecoration(
@@ -300,14 +315,14 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
         ),
       );
 
-  // ====== Hospital 卡片：保留 main 結構 + 新增星號收藏與照片 ======
+  // 醫院資訊卡：顯示地圖下方的醫院詳細資訊
   Widget _buildHospitalCard() {
     return Consumer2<HospitalView, GoogleMapService>(
       builder: (context, hospital, mapService, _) {
         final selected = hospital.selectedHospital;
-        if (selected == null) return const SizedBox();
+        if (selected == null) return const SizedBox(); // 如果沒有選取醫院，回傳空白
 
-        // 動態量測卡片高度（讓左下角 FAB 不會被蓋）
+        // 量測資訊卡高度，避免遮擋收藏按鈕
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final box =
               _infoCardKey.currentContext?.findRenderObject() as RenderBox?;
@@ -321,7 +336,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
           alignment: Alignment.bottomCenter,
           child: Dismissible(
             key: UniqueKey(),
-            direction: DismissDirection.down,
+            direction: DismissDirection.down, // 向下滑可以關閉卡片
             onDismissed: (_) => hospital.toggleShowMode(),
             child: Container(
               key: _infoCardKey,
@@ -343,18 +358,18 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // 上方拖把
+                   // 上方小橫條，表示可拖曳
                   Container(
                     width: 80,
                     height: 5,
-                    // margin: const EdgeInsets.only(bottom: 20),
+                   
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(50, 88, 146, 153),
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                   ),
 
-                  // 右上角：星星 + 營業狀態
+                  // 右上角：收藏按鈕 + 營業狀態
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end, // 整組靠右
 
@@ -373,7 +388,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                               : const Color(0xFF589399),
                         ),
                         onPressed: () {
-                          mapService.toggleStar(selected.id);
+                          mapService.toggleStar(selected.id); // 切換收藏狀態
                         },
                       ),
                       const SizedBox(width: 8),
@@ -391,7 +406,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                     ],
                   ),
 
-                  // 左圖 + 右資訊
+                  // 左側：醫院圖片 / 右側：詳細資訊
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -423,7 +438,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // 名稱
+                             // 醫院名稱
                             Text(
                               selected.name,
                               style: const TextStyle(
@@ -437,6 +452,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                             ),
                             const SizedBox(height: 10),
 
+                             // 地址、電話、距離、行走時間
                             _buildInfoRow(
                                 Icons.location_on_outlined, selected.address,
                                 maxLines: 2),
@@ -455,6 +471,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                     ],
                   ),
 
+ // 導航按鈕
                   Align(
                     alignment: Alignment.centerRight,
                     child: Padding(
@@ -500,18 +517,18 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
     );
   }
 
-  // ====== 保留 main 的 InfoRow ======
+// 顯示單行資訊，例如地址、電話、距離等
   Widget _buildInfoRow(IconData icon, String text, {int maxLines = 1}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 16, color: const Color(0xFF669FA5)),
+        Icon(icon, size: 16, color: const Color(0xFF669FA5)), // 左側小圖示
         const SizedBox(width: 6),
         Expanded(
           child: Text(
-            text,
+            text, // 顯示的文字
             style: const TextStyle(fontSize: 12, color: Color(0xFF669FA5)),
-            maxLines: maxLines,
+            maxLines: maxLines, // 最多顯示行數
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -519,18 +536,19 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
     );
   }
 
-  // ====== 保留 main 的 DropdownRow ======
+// 通用下拉選單元件，label 在左，選單在右
   Widget _buildDropdownRow(
-    String label,
-    String hint,
-    List<String> options,
-    String? selectedValue,
-    ValueChanged<String?>? onChanged,
+    String label,  // 左邊的標籤文字
+    String hint, // 下拉選單提示文字
+    List<String> options, // 下拉選項
+    String? selectedValue, // 已選擇的值
+    ValueChanged<String?>? onChanged, // 當選擇改變時觸發
   ) {
-    final isDisabled = onChanged == null;
+    final isDisabled = onChanged == null; // 如果 onChanged 為 null，代表此選單不可用
 
     return Row(
       children: [
+        // 左邊標籤
         Container(
           height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -549,6 +567,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
           ),
         ),
         const SizedBox(width: 10),
+        // 右邊下拉選單
         Expanded(
           child: Container(
             decoration: BoxDecoration(
@@ -560,15 +579,15 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
             ),
             padding: const EdgeInsets.only(right: 10),
             child: IgnorePointer(
-              ignoring: isDisabled,
+              ignoring: isDisabled, // 禁用時無法點擊
               child: DropdownButtonHideUnderline(
                 child: DropdownButton2<String>(
                   alignment: Alignment.center,
                   isExpanded: true,
                   hint: Text('----- $hint -----',
                       style: const TextStyle(fontSize: 14, color: Colors.grey)),
-                  value: selectedValue,
-                  items: options
+                  value: selectedValue, // 當前選中的值
+                  items: options // 將字串選項轉換成 DropdownMenuItem
                       .map((item) => DropdownMenuItem<String>(
                             alignment: Alignment.center,
                             value: item,
@@ -576,7 +595,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                                 style: const TextStyle(fontSize: 14)),
                           ))
                       .toList(),
-                  onChanged: onChanged,
+                  onChanged: onChanged, // 點擊選項時觸發的 callback
                   iconStyleData: const IconStyleData(
                     icon: Icon(Icons.arrow_drop_down, color: Color(0xFF669FA5)),
                     iconSize: 24,
@@ -604,17 +623,17 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
     );
   }
 
-  // ====== 收藏浮動按鈕 ======
+// 左下角的收藏按鈕，顯示收藏數量
   Widget _FavoritesFab({required VoidCallback onTap}) {
     return Consumer2<GoogleMapService, HospitalView>(
       builder: (context, mapService, hv, _) {
         final count =
-            hv.hospitals.where((h) => mapService.isStarred(h.id)).length;
+            hv.hospitals.where((h) => mapService.isStarred(h.id)).length; // 收藏數
 
         return Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: onTap,
+            onTap: onTap, // 點擊後打開收藏清單
             borderRadius: BorderRadius.circular(28),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -644,6 +663,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                     ),
                   ),
                   const SizedBox(width: 8),
+                  // 收藏數角標
                   Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -652,7 +672,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '$count',
+                      '$count', // 收藏數字
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
@@ -669,7 +689,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
     );
   }
 
-  // ====== 收藏清單（BottomSheet + 可拖拉高度） ======
+// 收藏清單：底部可拖拉視窗，顯示收藏的醫院列表
   Future<void> _openFavoritesSheet(BuildContext context) async {
     final mapService = context.read<GoogleMapService>();
     final hv = context.read<HospitalView>();
@@ -702,6 +722,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
               ),
               child: Column(
                 children: [
+                  // 上方拖曳條
                   const SizedBox(height: 10),
                   Container(
                     width: 40,
@@ -726,6 +747,7 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                     ),
                   ),
                   const Divider(height: 1),
+                   // 收藏列表內容
                   Expanded(
                     child: favorites.isEmpty
                         ? const Center(
@@ -825,9 +847,9 @@ class _HospitalPageViewState extends State<_HospitalPageView> {
                                         .length;
                                     if (left == 0 &&
                                         Navigator.of(context).canPop()) {
-                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop(); // 全部刪掉時自動關閉
                                     } else {
-                                      setState(() {}); // 更新角標數
+                                      setState(() {}); // 更新數字
                                     }
                                   },
                                 ),
