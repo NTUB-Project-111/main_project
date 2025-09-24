@@ -264,7 +264,15 @@ class Report extends ChangeNotifier {
           steps = ['初期冷敷', '後期熱敷', '避免加壓或按摩', '抬高患肢', '若瘀傷部位出現腫脹'];
           break;
         case '手術傷口':
-          imageUrls = [];
+          imageUrls = [
+            'images/surgical1.png',
+            'images/surgical2.png',
+            'images/surgical3.png',
+            'images/surgical4.png',
+            'images/surgical5.png',
+            'images/surgical1.png',
+          ];
+          steps = ['清潔雙手', '檢查傷口', '清潔傷口', '消毒傷口', '包紮傷口', '再次洗手'];
           break;
         default:
           imageUrls = [];
@@ -302,7 +310,14 @@ class Report extends ChangeNotifier {
           steps = ['洗手', '止血', '清潔傷口', '塗抹藥膏', '包紮傷口'];
           break;
         case '刺傷':
-          imageUrls = [];
+          imageUrls = [
+            'images/stab1.png',
+            'images/stab2.png',
+            'images/stab3.png',
+            'images/stab4.png',
+            'images/stab5.png'
+          ];
+          steps = ['洗手', '止血', '清潔傷口', '塗抹藥膏', '覆蓋傷口'];
           break;
         case '瘀青':
           imageUrls = [
@@ -315,7 +330,15 @@ class Report extends ChangeNotifier {
           steps = ['初期冷敷', '後期熱敷', '避免加壓或按摩', '抬高患肢', '若瘀傷部位出現腫脹'];
           break;
         case '手術傷口':
-          imageUrls = [];
+          imageUrls = [
+            'images/surgical1.png',
+            'images/surgical2.png',
+            'images/surgical3.png',
+            'images/surgical4.png',
+            'images/surgical5.png',
+            'images/surgical1.png',
+          ];
+          steps = ['清潔雙手', '檢查傷口', '清潔傷口', '消毒傷口', '包紮傷口', '再次洗手'];
           break;
         default:
           imageUrls = [];
