@@ -1,34 +1,36 @@
 import 'dart:convert';
-import 'package:drw/backend/models/hospital.dart';
+import 'package:drw/backend/models/hospital.dart'; // 醫院資料模型
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // 讀取 .env 裡的 API key
+import 'package:geolocator/geolocator.dart'; // 定位功能
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http; // HTTP 請求
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher.dart'; // 外部開啟 Google Map
 
-enum OpenMarkerStyle { red, gray, star }
+enum OpenMarkerStyle { red, gray, star } // 定義 Marker 樣式：紅色 / 灰色 / 星星
 
 class GoogleMapService extends ChangeNotifier {
-  // --- map state ---
+  // 地圖狀態
   final Set<Marker> _markers = {};
   Set<Marker> get markers => _markers;
 
   static const double walkingSpeedMetersPerSecond = 1.4;
 
-  // --- 收藏（移出 extension，放回 class，避免「Extensions can't declare instance fields」） ---
-  OpenMarkerStyle openMarkerStyle = OpenMarkerStyle.red;
-  final Set<int> _starredHospitalIds = {};
-  String _userId = 'guest';
-  String _favKey(String uid) => 'fav_hospitals_$uid';
+  // 收藏功能
+  OpenMarkerStyle openMarkerStyle = OpenMarkerStyle.red; // 預設標記樣式：紅色
+  final Set<int> _starredHospitalIds = {}; // 已收藏的醫院 ID
+  String _userId = 'guest'; // 當前使用者 ID
+  String _favKey(String uid) => 'fav_hospitals_$uid'; // 收藏儲存用 key
 
-  bool isStarred(int hospitalId) => _starredHospitalIds.contains(hospitalId);
-  Set<int> get starredIds => Set.unmodifiable(_starredHospitalIds);
+  bool isStarred(int hospitalId) => _starredHospitalIds.contains(hospitalId); // 判斷是否收藏
+  Set<int> get starredIds => Set.unmodifiable(_starredHospitalIds); // 回傳收藏清單
 
+// 從所有醫院中過濾出收藏的醫院
   List<Hospital> getStarredHospitals(List<Hospital> all) =>
       all.where((h) => _starredHospitalIds.contains(h.id)).toList();
 
+// 初始化收藏資料
   Future<void> initFavorites({required String userId}) async {
     _userId = (userId.isEmpty) ? 'guest' : userId;
     final prefs = await SharedPreferences.getInstance();
@@ -39,14 +41,16 @@ class GoogleMapService extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 收藏 / 取消收藏
   void toggleStar(int hospitalId) {
     if (!_starredHospitalIds.add(hospitalId)) {
       _starredHospitalIds.remove(hospitalId);
     }
-    _persistFavorites();
+    _persistFavorites(); // 更新
     notifyListeners();
   }
 
+// 儲存收藏清單到 SharedPreferences
   Future<void> _persistFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
@@ -55,13 +59,13 @@ class GoogleMapService extends ChangeNotifier {
     );
   }
 
-  // --- icon cache：載一次就好 ---
+  //  載入自訂標記圖示 
   BitmapDescriptor? _iconGray;
   BitmapDescriptor? _iconRed;
   BitmapDescriptor? _iconStar;
 
   Future<void> _ensureIcons() async {
-    if (_iconGray != null && _iconRed != null && _iconStar != null) return;
+    if (_iconGray != null && _iconRed != null && _iconStar != null) return; // 如果都已經載過就不重複載
     try {
       _iconGray ??= await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(devicePixelRatio: 1.5),
@@ -80,13 +84,15 @@ class GoogleMapService extends ChangeNotifier {
         'images/star_marker.png',
       );
     } catch (_) {}
+    // 如果圖片載入失敗，給預設顏色
     _iconRed ??= BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
     _iconGray ??= BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
   }
 
-  String? get _apiKey => dotenv.env['GOOGLE_MAPS_API_KEY'];
+// Google Places 查營業狀態 
+  String? get _apiKey => dotenv.env['GOOGLE_MAPS_API_KEY']; // 從 .env 讀取 API key
 
-  /// Google Places 查營業狀態
+  
   Future<String?> getBusinessStatus({
     required String placeName,
     required double lat,
@@ -123,7 +129,7 @@ class GoogleMapService extends ChangeNotifier {
     }
   }
 
-  /// 建立地圖標記（含營業狀態 + 收藏圖示）
+  //  在地圖上建立標記 
   Future<void> setMarkers(
     List<Hospital> hospitals,
     Function(Hospital) onMarkerTap,
@@ -137,7 +143,7 @@ class GoogleMapService extends ChangeNotifier {
     await Future.wait(hospitals.map((h) async {
       if (h.latitude == 0.0 || h.longitude == 0.0) return;
 
-      // 距離 / 時間
+     // 計算距離與步行時間
       h.distance = await calculateDistanceText(
         currentPosition: from,
         hospitalLat: h.latitude,
@@ -149,7 +155,7 @@ class GoogleMapService extends ChangeNotifier {
         hospitalLng: h.longitude,
       );
 
-      // 營業狀態
+       // 查詢營業狀態
       h.openStatus = await getBusinessStatus(
         placeName: h.name,
         lat: h.latitude,
@@ -161,8 +167,7 @@ class GoogleMapService extends ChangeNotifier {
       final starred = _starredHospitalIds.contains(h.id);
       final BitmapDescriptor icon =
           starred ? (_iconStar ?? _iconRed!) : (isOpen ? _iconRed! : _iconGray!);
-      // final BitmapDescriptor icon =
-      //     starred ? (_iconStar ?? _iconRed!) : (isOpen ? _iconRed! : _iconRed!);
+      
 
       next.add(
         Marker(
@@ -175,13 +180,14 @@ class GoogleMapService extends ChangeNotifier {
       );
     }));
 
+// 更新地圖標記
     _markers
       ..clear()
       ..addAll(next);
     notifyListeners();
   }
 
-  /// GoogleMap Widget
+   // 建立 GoogleMap Widget 
   Widget buildGoogleMap({
     required LatLng currentPosition,
     required Function(GoogleMapController) onMapCreated,
@@ -195,7 +201,7 @@ class GoogleMapService extends ChangeNotifier {
     );
   }
 
-  /// 定位
+ //  取得目前位置 
   Future<LatLng?> getCurrentLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
@@ -209,7 +215,7 @@ class GoogleMapService extends ChangeNotifier {
     return null;
   }
 
-  /// 距離（公尺）
+  // 計算距離 & 步行時間
   Future<double> calculateDistance({
     required LatLng currentPosition,
     required double hospitalLat,
@@ -223,7 +229,7 @@ class GoogleMapService extends ChangeNotifier {
     );
   }
 
-  /// 距離（文字）
+  
   Future<String> calculateDistanceText({
     required LatLng currentPosition,
     required double hospitalLat,
@@ -243,7 +249,7 @@ class GoogleMapService extends ChangeNotifier {
     }
   }
 
-  /// 步行時間（分鐘）
+  // 步行時間（分鐘）
   Future<int> calculateWalkingTime({
     required LatLng currentPosition,
     required double hospitalLat,
@@ -258,7 +264,7 @@ class GoogleMapService extends ChangeNotifier {
     return (timeSeconds / 60).round();
   }
 
-  /// 導航
+  // 導航
   Future<void> navigateToHospital(double latitude, double longitude) async {
     final url = Uri.parse(
       'https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude&travelmode=walking',
