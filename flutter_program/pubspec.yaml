@@ -133,6 +133,11 @@ flutter:
     - images/woundcare3.png
     - images/woundcare4.png
     - images/woundcare5.png
+    - images/surgical1.png
+    - images/surgical2.png
+    - images/surgical3.png
+    - images/surgical4.png
+    - images/surgical5.png
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
