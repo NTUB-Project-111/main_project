@@ -26,16 +26,14 @@ class _PersonalPageState extends State<PersonalPage> {
         children: [
           const Header3(
               title: "我的",
-              icon:
-                  Icon(Icons.notifications, size: 23, color: Color(0xFF589399)),
+              icon: Icon(Icons.notifications, size: 23, color: Color(0xFF589399)),
               targetPage: RemindPage()),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 26),
             child: Column(
               children: [
                 Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 46, vertical: 23),
+                    padding: const EdgeInsets.symmetric(horizontal: 46, vertical: 23),
                     margin: const EdgeInsets.fromLTRB(0, 40, 0, 30),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -47,8 +45,7 @@ class _PersonalPageState extends State<PersonalPage> {
                         ),
                       ],
                     ),
-                    child: Consumer<UserProvider>(
-                        builder: (context, userProvider, _) {
+                    child: Consumer<UserProvider>(builder: (context, userProvider, _) {
                       final user = userProvider.user;
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -66,28 +63,14 @@ class _PersonalPageState extends State<PersonalPage> {
                               // )
                             ),
                             child: ClipOval(
-                                child: user!.picture.isNotEmpty
-                                    ? Image.network(
-                                        Uri.parse(ApiBase.baseUrl)
-                                            .resolve(user.picture)
-                                            .toString(),
-                                        width: 80,
-                                        height: 80,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          return const Center(
-                                              child: Text("圖片載入失敗"));
-                                        },
-                                      )
-                                    : Image.asset(
-                                        "images/register_icon.png",
-                                        fit: BoxFit.contain,
-                                      )),
+                                child: Image.asset(
+                              "images/register_icon.png",
+                              fit: BoxFit.contain,
+                            )),
                           ),
                           Expanded(
                             child: Text(
-                              user.name,
+                              user!.name,
                               style: const TextStyle(
                                 color: Color(0xFF669FA5),
                                 fontSize: 26,
@@ -116,8 +99,7 @@ class _PersonalPageState extends State<PersonalPage> {
                   targetPage: const ChangePwdPage(),
                 ),
                 _buildDetailItem(
-                  const Icon(Icons.settings,
-                      color: Color(0xFF669FA5), size: 30),
+                  const Icon(Icons.settings, color: Color(0xFF669FA5), size: 30),
                   "更多設定",
                   targetPage: const DevelopPage(),
                 ),
@@ -136,8 +118,7 @@ class _PersonalPageState extends State<PersonalPage> {
                         context.read<UserProvider>().clearUser();
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginPage()),
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
                         );
                       },
                     );
@@ -151,8 +132,7 @@ class _PersonalPageState extends State<PersonalPage> {
     );
   }
 
-  Widget _buildDetailItem(Icon icon, String title,
-      {Widget? targetPage, VoidCallback? onPressed}) {
+  Widget _buildDetailItem(Icon icon, String title, {Widget? targetPage, VoidCallback? onPressed}) {
     return Container(
       margin: const EdgeInsets.only(top: 20),
       decoration: BoxDecoration(

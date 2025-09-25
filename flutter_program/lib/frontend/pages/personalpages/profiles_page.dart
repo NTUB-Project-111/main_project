@@ -29,35 +29,24 @@ class _ProfilesPageState extends State<ProfilesPage> {
               Consumer<UserProvider>(builder: (context, userProvider, _) {
                 final user = userProvider.user;
                 return Container(
-                  margin: const EdgeInsets.only(top: 30, bottom: 22),
-                  width: 110,
-                  height: 110,
-                  decoration: const BoxDecoration(
-                    // color: Colors.white,
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: Colors.black.withOpacity(0.35),
-                    //     blurRadius: 1,
-                    //   ),
-                    // ],
-                    shape: BoxShape.circle,
-                  ),
-                  child: ClipOval(
-                      child: user!.picture.isNotEmpty
-                          ? Image.network(
-                              Uri.parse(ApiBase.baseUrl).resolve(user.picture).toString(),
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Center(child: Text("圖片載入失敗"));
-                              },
-                            )
-                          : Image.asset(
-                              "images/register_icon.png",
-                              fit: BoxFit.contain,
-                            )),
-                );
+                    margin: const EdgeInsets.only(top: 30, bottom: 22),
+                    width: 110,
+                    height: 110,
+                    decoration: const BoxDecoration(
+                      // color: Colors.white,
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //     color: Colors.black.withOpacity(0.35),
+                      //     blurRadius: 1,
+                      //   ),
+                      // ],
+                      shape: BoxShape.circle,
+                    ),
+                    child: ClipOval(
+                        child: Image.asset(
+                      "images/register_icon.png",
+                      fit: BoxFit.contain,
+                    )));
               }),
 
               // // 更換頭像按鈕（無動作）

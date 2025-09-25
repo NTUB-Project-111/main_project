@@ -117,9 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                             userProvider.setUserInfo(UserInfo(
                               id: -1,
                               name: '訪客',
-                              gender: '',
                               birthday: '2000',
-                              picture: '',
                               email: '',
                               disease: '無',
                               freq: '每天',
