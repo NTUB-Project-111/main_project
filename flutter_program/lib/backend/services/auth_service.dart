@@ -51,52 +51,76 @@ class AuthService {
   }
 
   //註冊帳號
+  // Future<String?> register({
+  //   required String name,
+  //   required String birthday,
+  //   required String email,
+  //   required String password,
+  //   required String disease,
+  //   required String freq,
+  // }) async {
+  //   final uri = Uri.parse('${ApiBase.baseUrl}/register');
+
+  //   var request = http.MultipartRequest('POST', uri)
+  //     ..fields['name'] = name //..代表針對同一個物件(request)，連續呼叫多個方法或設定多個屬性
+  //     ..fields['birthday'] = birthday
+  //     ..fields['email'] = email
+  //     ..fields['password'] = password
+  //     ..fields['disease'] = disease
+  //     ..fields['freq'] = freq;
+
+  //   try {
+  //     final streamedResponse = await request.send();
+  //     final response = await http.Response.fromStream(streamedResponse);
+
+  //     if (response.statusCode == 201) {
+  //       return null;
+  //     } else {
+  //       final data = jsonDecode(response.body);
+  //       return data['message'] ?? '註冊失敗';
+  //     }
+  //   } catch (e) {
+  //     return ('錯誤：$e');
+  //   }
+  // }
   Future<String?> register({
     required String name,
-    required String gender,
     required String birthday,
     required String email,
     required String password,
-    required String disease,
-    required String freq,
-    File? imageFile,
+    String disease = '[無]',
+    String freq = '無、無、無',
   }) async {
     final uri = Uri.parse('${ApiBase.baseUrl}/register');
 
-    var request = http.MultipartRequest('POST', uri)
-      ..fields['name'] = name //..代表針對同一個物件(request)，連續呼叫多個方法或設定多個屬性
-      ..fields['gender'] = gender
-      ..fields['birthday'] = birthday
-      ..fields['email'] = email
-      ..fields['password'] = password
-      ..fields['disease'] = disease
-      ..fields['freq'] = freq;
-
-    if (imageFile != null) {
-      final fileName = path.basename(imageFile.path);
-      final mimeType = 'image/${path.extension(fileName).replaceAll('.', '')}';
-      debugPrint(mimeType);
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'picture',
-          imageFile.path,
-          contentType: MediaType.parse(mimeType),
-        ),
-      );
-    }
-
     try {
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json', // 告訴後端這是 JSON
+        },
+        body: jsonEncode({
+          'name': name,
+          'birthday': birthday,
+          'email': email,
+          'password': password,
+          'disease': disease,
+          'freq': freq,
+        }),
+      );
 
       if (response.statusCode == 201) {
-        return null;
+        return null; // 註冊成功
       } else {
-        final data = jsonDecode(response.body);
-        return data['message'] ?? '註冊失敗';
+        try {
+          final data = jsonDecode(response.body);
+          return data['message'] ?? '註冊失敗';
+        } catch (_) {
+          return '註冊失敗';
+        }
       }
     } catch (e) {
-      return ('錯誤：$e');
+      return '錯誤：$e';
     }
   }
 

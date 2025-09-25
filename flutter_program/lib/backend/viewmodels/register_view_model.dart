@@ -95,11 +95,9 @@ class Register extends ChangeNotifier {
   Future<String?> register() async {
     final error = await _authService.register(
         name: name,
-        gender: 'F',
         birthday: birthday.toString(),
         email: email,
         password: password,
-        imageFile: null,
         disease: diseases.toString(),
         freq: '$smokingFreq、$drinkingFreq、$betelNutFreq');
     return error;
