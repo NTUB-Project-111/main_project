@@ -4,7 +4,7 @@ import '../services/auth_service.dart';
 class Login extends ChangeNotifier {
   String email = '';
   String password = '';
-  bool isLoading = false;
+  // bool isLoading = false;
   String? _accessToken;
   bool get isLoggedIn => _accessToken != null;
   String? get accessToken => _accessToken;
@@ -25,8 +25,8 @@ class Login extends ChangeNotifier {
   }
 
   Future<bool> login(String email, String password) async {
-    isLoading = true;
-    notifyListeners(); // 通知 UI 開始 loading
+    // isLoading = true;
+    // notifyListeners();
     try {
       final token = await _authService.login(email, password);
       _accessToken = token;
@@ -35,8 +35,8 @@ class Login extends ChangeNotifier {
       debugPrint('❌ login 發生錯誤: $e');
       return false;
     } finally {
-      isLoading = false;
-      notifyListeners(); // 通知 UI 結束 loading
+      // isLoading = false;
+      // notifyListeners(); 
     }
   }
 
