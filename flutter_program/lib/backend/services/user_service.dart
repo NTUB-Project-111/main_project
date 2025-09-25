@@ -28,24 +28,44 @@ class UserService {
   //     debugPrint('錯誤訊息: ${response.body}');
   //   }
   // }
-  static Future<void> getUserInfo(BuildContext context, String accessToken) async {
-    final response = await http.get(
-      Uri.parse('${ApiBase.baseUrl}/getUserInfo'),
-      headers: {
-        'Authorization': 'Bearer $accessToken',
-      },
-    );
+
+  
+
+  // static Future<void> getUserInfo(BuildContext context, String accessToken) async {
+  //   final response = await http.get(
+  //     Uri.parse('${ApiBase.baseUrl}/getUserInfo'),
+  //     headers: {
+  //       'Authorization': 'Bearer $accessToken',
+  //     },
+  //   );
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body);
+  //     final userJson = data['user'];
+  //     final UserInfo userInfo = UserInfo.fromJson(userJson);
+  //     Provider.of<UserProvider>(context, listen: false).setUserInfo(userInfo);
+  //     // Provider.of<UserProvider>(context, listen: false).getFromJson(userJson);
+  //   } else {
+  //     debugPrint('錯誤代碼: ${response.statusCode}');
+  //     debugPrint('錯誤訊息: ${response.body}');
+  //   }
+  // }
+  Future<bool> wakeUpServer() async {
+  try {
+    final response = await http.get(Uri.parse('${ApiBase.baseUrl}/getUsers'));
+
+    // 只要伺服器有回應就算成功，不管 statusCode
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final userJson = data['user'];
-      final UserInfo userInfo = UserInfo.fromJson(userJson);
-      Provider.of<UserProvider>(context, listen: false).setUserInfo(userInfo);
-      // Provider.of<UserProvider>(context, listen: false).getFromJson(userJson);
+      return true;
     } else {
-      debugPrint('錯誤代碼: ${response.statusCode}');
-      debugPrint('錯誤訊息: ${response.body}');
+      // 即使不是 200，也代表伺服器醒了
+      return true;
     }
+  } catch (e) {
+    // 失敗才回 false
+    return false;
   }
+}
+
 
   Future<bool> updateUserName(String userId, String newName) async {
     final url = Uri.parse('${ApiBase.baseUrl}/updateName');

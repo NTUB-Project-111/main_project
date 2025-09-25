@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as path;
+
 import 'apibase.dart';
-import 'package:http_parser/http_parser.dart';
+
 
 class AuthService {
   //傳送驗證碼
