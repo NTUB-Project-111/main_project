@@ -67,7 +67,7 @@ class _RemindPageState extends State<RemindPage> {
                 "取消",
                 () {
                   Navigator.pop(context);
-                  Notifier.setRemind(context);
+                  // Notifier.setRemind(context);
                 },
                 modifiedList,
               );

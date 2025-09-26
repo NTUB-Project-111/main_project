@@ -19,6 +19,7 @@ class ButtonPart extends StatefulWidget {
 }
 
 class _ButtonPartState extends State<ButtonPart> {
+  Notifier notifier = Notifier();
   @override
   Widget build(BuildContext context) {
     return Consumer<Report>(
@@ -85,10 +86,14 @@ class _ButtonPartState extends State<ButtonPart> {
                                         userReports.expand((r) => r.reminds).toList();
                                     Provider.of<RemindProvider>(context, listen: false)
                                         .setReminds(allReminds);
+                                    notifier.scheduleReminders(allReminds);
+                                    notifier.getAllReminders();
                                   }
                                   // 可能額外需要觸發資料儲存/紀錄刷新
                                   await RecordService.getRecords(context, user.id.toString());
-                                  Notifier.setRemind(context);
+
+                                  // Notifier.setRemind(context);
+
                                   // 顯示成功訊息並跳頁
                                   FrontUtil.showSuccess('報告儲存成功!');
                                   // Navigator.pushReplacement(

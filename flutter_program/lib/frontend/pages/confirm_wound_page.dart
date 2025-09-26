@@ -127,7 +127,7 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                             .setReports(userReport);
                         debugPrint(userReport.reversed.first.oktime);
                       }
-                      Notifier.setRemind(context);
+                      // Notifier.setRemind(context);
                       Navigator.pop(context, true);
                     });
                   },

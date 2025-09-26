@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:drw/backend/models/user.dart';
-import 'package:drw/backend/provider/user_provider.dart';
+// import 'package:drw/backend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 import 'apibase.dart';
 // import '../models/user_model.dart';
 
