@@ -1,5 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:drw/backend/models/remind.dart';
 import 'package:drw/frontend/utility/notifier_util.dart';
+import 'package:flutter/material.dart';
+// import 'package:device_calendar/device_calendar.dart';
+// import 'package:timezone/timezone.dart' as tz;
 
 class TestPage extends StatefulWidget {
   const TestPage({super.key});
@@ -9,15 +12,16 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
-  void _showSystemReminder() async {
-    final now = DateTime.now();
-    final remindTime = now.add(const Duration(seconds: 5));
-    await Notifier.scheduleReminder(9999, remindTime);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('5秒後將發送系統提醒')),
-      );
-    }
+  Notifier notifier = Notifier();
+  late UserRemind remind;
+  late List<UserRemind> remindList;
+
+  @override
+  void initState() {
+    super.initState();
+    remind =
+        UserRemind(id: 0, recordId: 1, userId: 1, date: '2025-09-26', time: '22:59', freq: '每天');
+    remindList = [remind];
   }
 
   @override
@@ -25,9 +29,26 @@ class _TestPageState extends State<TestPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Test Page')),
       body: Center(
-        child: ElevatedButton(
-          onPressed: _showSystemReminder,
-          child: const Text('5秒後系統提醒'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                notifier.scheduleReminders(remindList);
+                // final remindTime = DateTime(2025, 9, 26, 19, 46);
+                // _addCalendarEvent(remindTime);
+              },
+              child: const Text('新增特定時間提醒'),
+            ),
+            // ElevatedButton(
+            //   onPressed: _viewAllEvents,
+            //   child: const Text('查看所有提醒'),
+            // ),
+            // ElevatedButton(
+            //   onPressed: _deleteAllEvents,
+            //   child: const Text('刪除所有提醒'),
+            // ),
+          ],
         ),
       ),
     );

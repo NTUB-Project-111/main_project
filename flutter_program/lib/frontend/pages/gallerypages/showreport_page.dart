@@ -139,7 +139,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                               }
                                             }
                                             // 更新通知排程
-                                            Notifier.setRemind(context);
+                                            // Notifier.setRemind(context);
                                           } catch (e) {
                                             success = false;
                                             debugPrint('提醒修改發生錯誤: $e');
@@ -399,7 +399,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                               .setReports(userReport);
                                           debugPrint(userReport.reversed.first.oktime);
                                         }
-                                        Notifier.setRemind(context);
+                                        // Notifier.setRemind(context);
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(
