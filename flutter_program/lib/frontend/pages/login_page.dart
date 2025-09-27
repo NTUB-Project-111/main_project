@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isLoading = false;
-
+  Notifier notifier = Notifier();
   @override
   void dispose() {
     _emailController.dispose();
@@ -166,6 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                                         userInfo.reports.expand((r) => r.reminds).toList();
                                     Provider.of<RemindProvider>(context, listen: false)
                                         .setReminds(allReminds);
+                                    notifier.setRemind(context);
                                     // Notifier.setRemind(context);
                                     // 打印診斷報告與每筆報告底下的提醒
                                     // debugPrint(userInfo.toString());
@@ -193,7 +194,6 @@ class _LoginPageState extends State<LoginPage> {
                                       myContext,
                                       MaterialPageRoute(builder: (context) => const Tabs()),
                                     );
-                                    
                                   } else {
                                     setState(() {
                                       isLoading = false;
