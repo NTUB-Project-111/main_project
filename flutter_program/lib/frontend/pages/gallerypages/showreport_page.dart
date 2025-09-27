@@ -31,6 +31,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
   RecordService recordService = RecordService();
   bool isSaving = false;
   bool success = true;
+  Notifier notifier = Notifier();
   @override
   void initState() {
     super.initState();
@@ -139,7 +140,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                               }
                                             }
                                             // 更新通知排程
-                                            // Notifier.setRemind(context);
+                                            notifier.setRemind(context);
                                           } catch (e) {
                                             success = false;
                                             debugPrint('提醒修改發生錯誤: $e');
@@ -399,7 +400,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                               .setReports(userReport);
                                           debugPrint(userReport.reversed.first.oktime);
                                         }
-                                        // Notifier.setRemind(context);
+                                        notifier.setRemind(context);
                                       });
                                     },
                                     style: ElevatedButton.styleFrom(

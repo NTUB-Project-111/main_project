@@ -23,6 +23,7 @@ class _RemindPageState extends State<RemindPage> {
   bool _isInitialized = false;
   bool showDeleteButtons = false;
   bool isSaving = false;
+  Notifier notifier = Notifier();
 
   @override
   void didChangeDependencies() {
@@ -67,7 +68,7 @@ class _RemindPageState extends State<RemindPage> {
                 "取消",
                 () {
                   Navigator.pop(context);
-                  // Notifier.setRemind(context);
+                  notifier.setRemind(context);
                 },
                 modifiedList,
               );

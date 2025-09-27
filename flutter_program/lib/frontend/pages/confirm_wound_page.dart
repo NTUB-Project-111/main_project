@@ -18,13 +18,14 @@ class ConfirmWoundPage extends StatefulWidget {
 }
 
 class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
+  Notifier notifier = Notifier();
   @override
   Widget build(BuildContext context) {
     final photoPath = widget.report.photo;
     final imageUrl = Uri.parse(ApiBase.baseUrl).resolve(photoPath).toString();
     RecordService recordService = RecordService();
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 217, 234, 236),
+      backgroundColor: const Color.fromARGB(255, 217, 234, 236),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -127,7 +128,7 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                             .setReports(userReport);
                         debugPrint(userReport.reversed.first.oktime);
                       }
-                      // Notifier.setRemind(context);
+                      notifier.setRemind(context);
                       Navigator.pop(context, true);
                     });
                   },
