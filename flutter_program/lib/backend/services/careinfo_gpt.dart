@@ -65,7 +65,6 @@ class CareInfo {
     String disease,
     String freq,
     bool isExtra,
-    String? oktime,
     String? date,
   ) async {
     try {

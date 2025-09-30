@@ -373,23 +373,19 @@ class Report extends ChangeNotifier {
     }
   }
 
-  Future<void> _analyzeWoundImage(String birthday, String disease, String freq, bool isExtra,
-      String? healTime, String? date, String? wound) async {
+  Future<void> _analyzeWoundImage(
+      String birthday, String disease, String freq, bool isExtra, UserReport? report) async {
     Map<String, dynamic>? response = {};
 
     try {
       if (isExtra) {
-        name = '$wound診斷報告'.replaceAll(RegExp(r'\s+'), '');
-        if (healTime == null) throw Exception('oktime 不應為 null');
-
+        name = '${report!.type}診斷報告'.replaceAll(RegExp(r'\s+'), '');
         DateTime today = DateTime.now();
         int days = 0;
-        if (date != null) {
-          DateTime injuryDate = DateTime.parse(date);
-          days = today.difference(injuryDate).inDays;
-        }
+        DateTime injuryDate = DateTime.parse(date);
+        days = today.difference(injuryDate).inDays;
 
-        List<String> oktimeList = healTime.split('~');
+        List<String> oktimeList = report.oktime.split('~');
         if (oktimeList.length < 2) throw Exception('oktime 格式錯誤，預期為 "7~14天"');
 
         // 僅擷取數字
@@ -404,17 +400,15 @@ class Report extends ChangeNotifier {
         intOktimeList = intOktimeList.map((d) => d < 0 ? 0 : d).toList();
 
         oktime = '${intOktimeList[0]}~${intOktimeList[1]}天';
-        woundType = wound ?? '未知傷口';
+        woundType = report.type;
 
-        response =
-            (await CareInfo.getCareSteps(wound!, birthday, disease, freq, isExtra, healTime, date));
+        response = (await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, date));
       } else {
         final wound = await WoundAnalysis.analyzeWound(image!);
         woundType = wound;
         name = '$woundType診斷報告'.replaceAll(RegExp(r'\s+'), '');
         if (woundType != '無異常') {
-          response = await CareInfo.getCareSteps(
-              woundType, birthday, disease, freq, isExtra, oktime, date);
+          response = await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, date);
           // debugPrint(response.toString());
           oktime = response != null ? (response['healingTime'] ?? '0') : '0';
         } else if (woundType == '無異常') {
@@ -443,13 +437,13 @@ class Report extends ChangeNotifier {
   }
 
   Future<void> loadData(int userId, String birthday, String disease, String freq, bool isExtra,
-      String? oktime, String? date, String? woundType) async {
+      UserReport? report) async {
     // debugPrint('$birthday\n$disease\n$freq');
     this.userId = userId;
     try {
       await Future.wait([
         // _fetchHospitals(),
-        _analyzeWoundImage(birthday, disease, freq, isExtra, oktime, date, woundType),
+        _analyzeWoundImage(birthday, disease, freq, isExtra, report),
       ]);
       // await _generateImages();
       getImages(isExtra);
@@ -513,7 +507,7 @@ class Report extends ChangeNotifier {
     return result;
   }
 
-  Future<bool> _addGroup(int id) async {
+  Future<bool> _addGroup(int id, UserReport report) async {
     bool result = true;
     final grouplist = await _record.fetchGroup(userId.toString());
     // debugPrint(grouplist.toString());
@@ -521,6 +515,7 @@ class Report extends ChangeNotifier {
       //先顯查此使用者有沒有任何的group
       //沒有的話設定groupId為1
       groupId = 1;
+      report.copyWith(groupId: 1);
       result = await _record.updateGroupId(userId, recordId, id, 1);
     } else {
       //有的話檢查選擇的照片有沒有設定群組
@@ -528,17 +523,19 @@ class Report extends ChangeNotifier {
       if (groupId != null) {
         //若已經有設定群組則沿用groupId
         this.groupId = groupId;
+        report.copyWith(groupId: this.groupId);
         result = await _record.updateGroupId(userId, recordId, id, groupId);
       } else {
         final groupId = grouplist.reduce((a, b) => a > b ? a : b);
         result = await _record.updateGroupId(userId, recordId, id, groupId + 1);
         this.groupId = groupId + 1;
+        report.copyWith(groupId: this.groupId);
       }
     }
     return result;
   }
 
-  Future<bool> uploadData(String userId, bool isExtra, int id) async {
+  Future<bool> uploadData(String userId, bool isExtra, int id, UserReport? report) async {
     isSaving = true;
     notifyListeners();
     bool recordResult = true;
@@ -548,7 +545,7 @@ class Report extends ChangeNotifier {
     if (notify) remindResult = await addRemind(userId);
     if (isExtra) {
       //建立群組
-      groupResult = await _addGroup(id);
+      groupResult = await _addGroup(id, report!);
     }
     // isSaving = false;
     // woundType = '';

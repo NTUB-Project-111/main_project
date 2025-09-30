@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/frontend/pages/report_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
@@ -11,11 +12,9 @@ import 'package:file_picker/file_picker.dart';
 class CameraPage extends StatefulWidget {
   final bool isExtra;
   final int? id;
-  final String? oktime;
-  final String? date;
-  final String? woundType;
+  final UserReport? report;
   const CameraPage(
-      {super.key, required this.isExtra, this.id, this.oktime, this.date, this.woundType});
+      {super.key, required this.isExtra, this.id, this.report});
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -62,9 +61,7 @@ class _CameraPageState extends State<CameraPage> {
           ReportPage(
             isExtra: widget.isExtra,
             id: widget.id,
-            oktime: widget.oktime,
-            date: widget.date,
-            woundType: widget.woundType,
+            report:widget.report
           ),
         );
       } else {
@@ -163,9 +160,7 @@ class _CameraPageState extends State<CameraPage> {
         ReportPage(
           isExtra: widget.isExtra,
           id: widget.id,
-          oktime: widget.oktime,
-          date: widget.date,
-          woundType: widget.woundType,
+          report: widget.report,
         ),
       );
     } catch (e) {

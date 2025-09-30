@@ -190,7 +190,11 @@ class Notifier {
     );
 
     final events = eventsResult.data ?? [];
-    return events.where((e) => e.title == '護理提醒').toList();
+    final nursingEvents = events.where((e) => e.title == '護理提醒').toList();
+    for (final e in nursingEvents) {
+      debugPrint('護理提醒: 標題=${e.title}, 開始=${e.start}, 結束=${e.end}, ID=${e.eventId}');
+    }
+    return nursingEvents;
   }
 
   /// 刪除所有護理提醒

@@ -25,7 +25,7 @@ class _LoadingPageState extends State<LoadingPage> {
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       }
-      FrontUtil.showSuccess("伺服器連線成功");
+      // FrontUtil.showSuccess("伺服器連線成功");
     } else {
       FrontUtil.showFail("伺服器連線失敗，請稍後再試");
     }

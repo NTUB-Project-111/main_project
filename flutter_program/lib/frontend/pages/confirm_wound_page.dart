@@ -146,9 +146,7 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                               builder: (_) => CameraPage(
                                     isExtra: true,
                                     id: widget.report.id,
-                                    oktime: widget.report.oktime,
-                                    date: widget.report.date,
-                                    woundType: widget.report.type,
+                                    report:widget.report
                                   )));
                     });
                   },
