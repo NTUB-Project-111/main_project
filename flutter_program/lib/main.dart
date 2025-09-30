@@ -1,3 +1,4 @@
+import 'package:drw/backend/services/google_map.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/remind_provider.dart'; //
 import 'package:drw/backend/provider/report_provider.dart'; //
@@ -7,10 +8,12 @@ import 'package:drw/frontend/pages/loading_page.dart';
 import 'package:drw/frontend/pages/login_page.dart';
 import 'package:drw/frontend/pages/test_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
+import 'package:drw/frontend/utility/hospital_util.dart';
 import 'package:drw/frontend/utility/notifier_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+      
 
 Future<void> main() async {
   // 初始化 .env 檔案
@@ -29,7 +32,9 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ReportProvider()),
         ChangeNotifierProvider(create: (_) => RemindProvider()),
         ChangeNotifierProvider(create: (_) => Register()),
-        // ChangeNotifierProvider(create: (_) => ReportAnalyzer()),
+        ChangeNotifierProvider(create: (_) => HospitalView()),//新增的
+        ChangeNotifierProvider(create: (_) => GoogleMapService()),//新增的
+                // ChangeNotifierProvider(create: (_) => ReportAnalyzer()),
       ],
       child: const MyApp(),
     ),

@@ -63,6 +63,7 @@ dependencies:
   geolocator: ^13.0.2 #取得地理位置
   collection: ^1.18.0
   device_calendar: ^4.3.3 #行事曆(設定護理提醒用)
+  geolocator_android: 4.6.1
 
 dev_dependencies:
   flutter_test:
