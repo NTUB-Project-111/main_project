@@ -46,7 +46,7 @@ class _ReportPageState extends State<ReportPage> {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final user = userProvider.user;
       report.isLoading = true; // <-- 這行很關鍵！每次都要先設為 loading
-      await report.loadData(user!.birthday, user.disease, user.freq, widget.isExtra, widget.oktime,
+      await report.loadData(user!.id,user.birthday, user.disease, user.freq, widget.isExtra, widget.oktime,
           widget.date, widget.woundType); // 這樣 Consumer 才會觸發 CircularProgressIndicator
     });
   }

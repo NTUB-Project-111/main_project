@@ -16,6 +16,11 @@ class RemindProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addReminds(List<UserRemind> reminds) {
+    _reminds.addAll(reminds);
+    notifyListeners();
+  }
+
   void removeRemind(int remindId) {
     _reminds.removeWhere((r) => r.id == remindId);
     notifyListeners();

@@ -13,7 +13,7 @@ import 'apibase.dart';
 
 class RecordService {
   /// 新增診斷紀錄
-  Future<int?> addRecord(
+  Future<Map<String,dynamic>?> addRecord(
     String fkUserid,
     String date,
     String type,
@@ -53,7 +53,10 @@ class RecordService {
       final Map<String, dynamic> responseBody = json.decode(responseData.body);
       final int recordId = responseBody['id_record'];
       debugPrint('上傳成功，record_id: $recordId');
-      return recordId;
+      return {
+        'recordId': recordId,
+        'imageUrl': responseBody['photoPath'], // 假設後端也回傳 groupId
+      };
     } else {
       debugPrint('上傳失敗: HTTP ${response.statusCode}');
       return null;
@@ -92,8 +95,8 @@ class RecordService {
       final url = Uri.parse('${ApiBase.baseUrl}/getRecordRemind?id=$userId');
       final response = await http.get(url);
 
-      print('status: ${response.statusCode}');
-      print('body: ${response.body}');
+      debugPrint('status: ${response.statusCode}');
+      debugPrint('body: ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = json.decode(response.body);
@@ -108,7 +111,7 @@ class RecordService {
         throw Exception('Failed to load reports (status ${response.statusCode})');
       }
     } catch (e) {
-      print('fetchReports 錯誤: $e');
+      debugPrint('fetchReports 錯誤: $e');
       rethrow;
     }
   }
