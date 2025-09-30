@@ -1,10 +1,11 @@
+// import 'package:drw/backend/models/report.dart';
+// import 'package:drw/backend/models/user.dart';
 import 'package:drw/backend/models/report.dart';
-import 'package:drw/backend/models/user.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
-import 'package:drw/backend/provider/user_provider.dart';
-import 'package:drw/backend/services/record_service.dart';
+// import 'package:drw/backend/provider/user_provider.dart';
+// import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/frontend/pages/tabs/tabs.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:drw/frontend/utility/notifier_util.dart';
@@ -14,7 +15,8 @@ import 'package:provider/provider.dart';
 class ButtonPart extends StatefulWidget {
   final bool isExtra;
   final int? id;
-  const ButtonPart({super.key, required this.isExtra, this.id});
+  final UserReport? report;
+  const ButtonPart({super.key, required this.isExtra, this.id, this.report});
 
   @override
   State<ButtonPart> createState() => _ButtonPartState();
@@ -75,7 +77,7 @@ class _ButtonPartState extends State<ButtonPart> {
                                   isSaving = true;
                                 });
                                 final result = await report.uploadData(
-                                    report.userId.toString(), widget.isExtra, widget.id ?? 0);
+                                    report.userId.toString(), widget.isExtra, widget.id ?? 0,widget.report);
                                 if (result) {
                                   if (reminds.isNotEmpty) {
                                     reportProvider

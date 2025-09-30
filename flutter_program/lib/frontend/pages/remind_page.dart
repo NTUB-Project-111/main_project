@@ -52,59 +52,85 @@ class _RemindPageState extends State<RemindPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFEBFEFF),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF669FA5)),
-          onPressed: () {
-            final modifiedList = reminders.where((r) => r.isModified).toList();
-            debugPrint('$modifiedList');
-            if (modifiedList.isNotEmpty) {
-              debugPrint('被修改的筆數：${modifiedList.length}');
-              showConfirmDialog(
-                context,
-                "是否儲存變更?",
-                "確定",
-                "取消",
-                () {
-                  Navigator.pop(context);
-                  notifier.setRemind(context);
-                },
-                modifiedList,
-              );
-            } else {
-              Navigator.pop(context);
-            }
-          },
-        ),
-        title: const Text('護理提醒',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 18, height: 2.5, color: Color(0xFF669FA5))),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_rounded, color: Color(0xFF669FA5)),
-            onPressed: () => setState(() {
-              showDeleteButtons = !showDeleteButtons;
-            }),
-          ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(2.0),
-          child: Container(height: 2.0, color: const Color(0xFF669FA5)),
-        ),
-      ),
       body: isSaving
           ? Center(child: FrontUtil.loading())
-          : ListView.builder(
-              padding: const EdgeInsets.all(15),
-              itemCount: reminders.length,
-              itemBuilder: (context, index) {
-                final reminder = reminders[index];
-                if (reminder.isDelete) {
-                  return const SizedBox(); // 或 return Container()
-                }
-                return buildReminderCard(index);
-              },
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.only(top: 36, left: 8, right: 8, bottom: 0),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      bottom: BorderSide(color: Color(0xFF589399), width: 2),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(children: [
+                            IconButton(
+                              icon: const Icon(Icons.arrow_back, color: Color(0xFF669FA5)),
+                              onPressed: () {
+                                final modifiedList = reminders.where((r) => r.isModified).toList();
+                                debugPrint('$modifiedList');
+                                if (modifiedList.isNotEmpty) {
+                                  debugPrint('被修改的筆數：${modifiedList.length}');
+                                  showConfirmDialog(
+                                    context,
+                                    "是否儲存變更?",
+                                    "確定",
+                                    "取消",
+                                    () {
+                                      Navigator.pop(context);
+                                      notifier.setRemind(context);
+                                    },
+                                    modifiedList,
+                                  );
+                                } else {
+                                  Navigator.pop(context);
+                                }
+                              },
+                            ),
+                            const Text(
+                              '護理提醒',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                height: 2.5,
+                                color: Color(0xFF669FA5),
+                              ),
+                            ),
+                          ]),
+                          IconButton(
+                            icon: const Icon(Icons.delete_rounded, color: Color(0xFF669FA5)),
+                            onPressed: () => setState(() {
+                              showDeleteButtons = !showDeleteButtons;
+                            }),
+                          ),
+                        ],
+                      ),
+                      // Container(height: 2.0, color: const Color(0xFF669FA5)),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(15),
+                    itemCount: reminders.length,
+                    itemBuilder: (context, index) {
+                      final reminder = reminders[index];
+                      if (reminder.isDelete) {
+                        return const SizedBox();
+                      }
+                      return buildReminderCard(index);
+                    },
+                  ),
+                ),
+              ],
             ),
     );
   }
