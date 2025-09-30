@@ -5,21 +5,16 @@ import 'package:flutter/material.dart';
 import 'login_page.dart';
 
 class LoadingPage extends StatefulWidget {
-  const LoadingPage({super.key});
+  final String title;
+  final bool isFromEntrance;
+  const LoadingPage({super.key, required this.title,required this.isFromEntrance});
 
   @override
   State<LoadingPage> createState() => _LoadingPageState();
 }
 
 class _LoadingPageState extends State<LoadingPage> {
-  String status = "正在連線伺服器...";
   UserService userService = UserService();
-
-  @override
-  void initState() {
-    super.initState();
-    _warmUpServer();
-  }
 
   Future<void> _warmUpServer() async {
     final message = await userService.wakeUpServer();
@@ -37,6 +32,16 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _warmUpServer();
+    // if(widget.isFromEntrance){
+    //   _warmUpServer();
+    // // _warmUpServer();
+    // }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: FrontUtil.bkColor,
@@ -46,7 +51,10 @@ class _LoadingPageState extends State<LoadingPage> {
           children: [
             FrontUtil.loading(),
             const SizedBox(height: 20),
-            Text(status),
+            Text(
+              widget.title,
+              style: TextStyle(fontSize: 16, color: FrontUtil.textColor),
+            )
           ],
         ),
       ),

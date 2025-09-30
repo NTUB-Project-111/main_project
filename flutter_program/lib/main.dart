@@ -96,7 +96,7 @@ class MyApp extends StatelessWidget {
           ),
           fontFamily: 'NotoSansTC',
         ),
-        home: const LoadingPage()
+        home: const LoadingPage(title: '正在連線伺服器...',isFromEntrance: true,)
         // home: const LoginPage(),
         // home: const TestPage(),
         );

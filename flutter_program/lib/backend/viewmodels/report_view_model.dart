@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:drw/backend/models/remind.dart';
+import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/services/hospital_search.dart';
 import 'package:drw/backend/services/careinfo_gpt.dart';
 import 'package:drw/backend/services/record_service.dart';
@@ -8,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Report extends ChangeNotifier {
+  int userId = 0;
   int recordId = 0;
   String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
   File? image;
@@ -34,7 +37,11 @@ class Report extends ChangeNotifier {
   bool isSaving = false;
   bool isSwitch = false;
   String name = '';
+  String imageUrl = '';
+  String tags = '';
+  int groupId = 0;
   List<Map<String, dynamic>> remindList = [];
+  List<UserRemind> reminds = [];
 
   final RecordService _record = RecordService();
   final RemindService _remind = RemindService();
@@ -97,9 +104,9 @@ class Report extends ChangeNotifier {
   }
 
   void _createRemindList() {
-    debugPrint(oktime);
-    debugPrint(remindFreq);
-    debugPrint(remindTime);
+    // debugPrint(oktime);
+    // debugPrint(remindFreq);
+    // debugPrint(remindTime);
     remindList.clear();
     oktime = oktime
         .replaceAll(RegExp(r'\s+'), '') // 移除所有空白（空格、換行等）
@@ -133,7 +140,7 @@ class Report extends ChangeNotifier {
       remindList.add({"day": remindDay, "time": remindTime});
       remindDate = remindDate.add(Duration(days: freqDays));
     }
-    debugPrint(remindList.toString());
+    // debugPrint(remindList.toString());
   }
 
   List<String> getReference(bool isExtra) {
@@ -408,7 +415,7 @@ class Report extends ChangeNotifier {
         if (woundType != '無異常') {
           response = await CareInfo.getCareSteps(
               woundType, birthday, disease, freq, isExtra, oktime, date);
-          debugPrint(response.toString());
+          // debugPrint(response.toString());
           oktime = response != null ? (response['healingTime'] ?? '0') : '0';
         } else if (woundType == '無異常') {
           return;
@@ -435,9 +442,10 @@ class Report extends ChangeNotifier {
     imageUrls = await recordService.generateImages(steps);
   }
 
-  Future<void> loadData(String birthday, String disease, String freq, bool isExtra, String? oktime,
-      String? date, String? woundType) async {
-    debugPrint('$birthday\n$disease\n$freq');
+  Future<void> loadData(int userId, String birthday, String disease, String freq, bool isExtra,
+      String? oktime, String? date, String? woundType) async {
+    // debugPrint('$birthday\n$disease\n$freq');
+    this.userId = userId;
     try {
       await Future.wait([
         // _fetchHospitals(),
@@ -465,12 +473,12 @@ class Report extends ChangeNotifier {
     }
   }
 
-  Future<bool> addRecord(String userId) async {
+  Future<bool> addRecord() async {
     final details = [
       injuryParts.toString(),
       woundReactions.toString(),
     ].toList();
-    final tags = details
+    tags = details
         .join(', ')
         .trim()
         .replaceAll(RegExp(r'^,|,$'), '')
@@ -479,8 +487,10 @@ class Report extends ChangeNotifier {
         .trim()
         .replaceFirst(RegExp(r',$'), '');
     name == '' ? '$woundType診斷報告' : name;
-    int? id = await _record.addRecord(userId, date, woundType, oktime, gptResult,
+    final result = await _record.addRecord(userId.toString(), date, woundType, oktime, gptResult,
         notify ? 'Y' : 'N', tags, selfRecord, name, image!);
+    int? id = result?['recordId'];
+    imageUrl = result?['imageUrl'] ?? '';
     if (id != null) {
       recordId = id;
       return true;
@@ -503,23 +513,26 @@ class Report extends ChangeNotifier {
     return result;
   }
 
-  Future<bool> _addGroup(String userId, int id) async {
+  Future<bool> _addGroup(int id) async {
     bool result = true;
-    final grouplist = await _record.fetchGroup(userId);
-    debugPrint(grouplist.toString());
+    final grouplist = await _record.fetchGroup(userId.toString());
+    // debugPrint(grouplist.toString());
     if (grouplist.length == 1 && grouplist.first == 0) {
       //先顯查此使用者有沒有任何的group
       //沒有的話設定groupId為1
-      result = await _record.updateGroupId(int.parse(userId), recordId, id, 1);
+      groupId = 1;
+      result = await _record.updateGroupId(userId, recordId, id, 1);
     } else {
       //有的話檢查選擇的照片有沒有設定群組
-      final groupId = await _record.fetchGroupId(int.parse(userId), id);
+      final groupId = await _record.fetchGroupId(userId, id);
       if (groupId != null) {
         //若已經有設定群組則沿用groupId
-        result = await _record.updateGroupId(int.parse(userId), recordId, id, groupId);
+        this.groupId = groupId;
+        result = await _record.updateGroupId(userId, recordId, id, groupId);
       } else {
         final groupId = grouplist.reduce((a, b) => a > b ? a : b);
-        result = await _record.updateGroupId(int.parse(userId), recordId, id, groupId + 1);
+        result = await _record.updateGroupId(userId, recordId, id, groupId + 1);
+        this.groupId = groupId + 1;
       }
     }
     return result;
@@ -531,29 +544,92 @@ class Report extends ChangeNotifier {
     bool recordResult = true;
     bool remindResult = true;
     bool groupResult = true;
-    recordResult = await addRecord(userId);
+    recordResult = await addRecord();
     if (notify) remindResult = await addRemind(userId);
     if (isExtra) {
       //建立群組
-      groupResult = await _addGroup(userId, id);
+      groupResult = await _addGroup(id);
     }
-    isSaving = false;
-    woundType = '';
-    careSteps = {};
-    oktime = '';
-    hospitals = [];
-    injuryParts = [];
-    woundReactions = [];
-    selfRecord = '';
-    updateButton = false;
-    newOktime = '';
-    remindList = [];
-    image = null;
-    gptResult = '';
-    name = '';
-    notifyListeners();
+    // isSaving = false;
+    // woundType = '';
+    // careSteps = {};
+    // oktime = '';
+    // hospitals = [];
+    // injuryParts = [];
+    // woundReactions = [];
+    // selfRecord = '';
+    // updateButton = false;
+    // newOktime = '';
+    // remindList = [];
+    // image = null;
+    // gptResult = '';
+    // name = '';
+    // notifyListeners();
     return recordResult && remindResult && groupResult;
   }
+
+  UserReport toUserReport(int remindId) {
+    reminds.clear();
+    for (int i = 0; i < remindList.length; i++) {
+      reminds.add(UserRemind(
+          id: remindId + i,
+          recordId: recordId,
+          userId: userId,
+          date: remindList[i]['day'],
+          time: remindList[i]['time'],
+          freq: remindFreq));
+    }
+    return UserReport(
+        userId: userId,
+        id: recordId,
+        date: date,
+        type: woundType,
+        photo: imageUrl,
+        oktime: oktime,
+        caremode: gptResult,
+        ifcall: notify ? 'Y' : 'N',
+        choosekind: tags,
+        recording: selfRecord,
+        name: name,
+        groupId: groupId,
+        reminds: reminds);
+  }
+
+  /// 清空所有變數
+  // void clearAll() {
+  //   userId = 0;
+  //   recordId = 0;
+  //   date = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  //   image = null;
+  //   woundType = '';
+  //   careSteps = {};
+  //   gptResult = '';
+  //   oktime = '';
+  //   isLoading = true;
+  //   notify = false;
+  //   remindFreq = '每天';
+  //   remindTime =
+  //       "${TimeOfDay.now().hour.toString().padLeft(2, '0')}:${TimeOfDay.now().minute.toString().padLeft(2, '0')}";
+  //   hospitals = [];
+  //   injuryParts = [];
+  //   woundReactions = [];
+  //   imageUrls = [];
+  //   steps = [];
+  //   open = false;
+  //   selfRecord = '';
+  //   updateButton = false;
+  //   isUpdating = false;
+  //   newOktime = '';
+  //   isSaving = false;
+  //   isSwitch = false;
+  //   name = '';
+  //   imageUrl = '';
+  //   tags = '';
+  //   groupId = 0;
+  //   remindList = [];
+  //   reminds = [];
+  //   notifyListeners();
+  // }
 
   @override
   String toString() {
