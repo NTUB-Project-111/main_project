@@ -274,6 +274,16 @@ class Report extends ChangeNotifier {
           ];
           steps = ['清潔雙手', '檢查傷口', '清潔傷口', '消毒傷口', '包紮傷口', '再次洗手'];
           break;
+        case '嚴重傷口':
+          imageUrls = [
+            'images/serious1.png',
+            'images/serious2.png',
+            'images/serious3.png',
+            'images/serious4.png',
+            'images/serious5.png',
+          ];
+          steps = ['盡快送醫', '立刻加壓止血', '抬高患部', '避免進食與飲水', '保持溫暖、防休克'];
+          break;
         default:
           imageUrls = [];
       }
@@ -339,6 +349,16 @@ class Report extends ChangeNotifier {
             'images/surgical1.png',
           ];
           steps = ['清潔雙手', '檢查傷口', '清潔傷口', '消毒傷口', '包紮傷口', '再次洗手'];
+          break;
+        case '嚴重傷口':
+          imageUrls = [
+            'images/serious1.png',
+            'images/serious2.png',
+            'images/serious3.png',
+            'images/serious4.png',
+            'images/serious5.png',
+          ];
+          steps = ['盡快送醫', '立刻加壓止血', '抬高患部', '避免進食與飲水', '保持溫暖、防休克'];
           break;
         default:
           imageUrls = [];

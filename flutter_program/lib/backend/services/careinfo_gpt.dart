@@ -69,17 +69,27 @@ class CareInfo {
     String? date,
   ) async {
     try {
+      // 計算年齡
       int age = 0;
       if (birthday != '') {
         int year = DateTime.now().year;
         age = year - int.parse(birthday);
       }
 
+      // 處理疾病與習慣字串
       String diseases = disease.replaceAll('[', '').replaceAll(']', '');
       final freqs = freq.split('、');
       final smoke = freqs.isNotEmpty ? freqs[0] : '沒有';
       final drink = freqs.length > 1 ? freqs[1] : '沒有';
       final betel = freqs.length > 2 ? freqs[2] : '沒有';
+
+      //計算受傷距今天數
+      DateTime today = DateTime.now();
+      int? days;
+      if (date != null) {
+        DateTime injuryDate = DateTime.parse(date);
+        days = today.difference(injuryDate).inDays;
+      }
 
       // 對應參考資料
       String referenceText = '';
@@ -127,13 +137,6 @@ class CareInfo {
           default:
             referenceText = '';
         }
-      }
-
-      DateTime today = DateTime.now();
-      int? days;
-      if (date != null) {
-        DateTime injuryDate = DateTime.parse(date);
-        days = today.difference(injuryDate).inDays;
       }
 
       String userMessageContent = isExtra
