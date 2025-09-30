@@ -92,8 +92,6 @@ class _ButtonPartState extends State<ButtonPart> {
                                   // 可能額外需要觸發資料儲存/紀錄刷新
                                   await RecordService.getRecords(context, user.id.toString());
 
-                                  // Notifier.setRemind(context);
-
                                   // 顯示成功訊息並跳頁
                                   FrontUtil.showSuccess('報告儲存成功!');
                                   // Navigator.pushReplacement(
