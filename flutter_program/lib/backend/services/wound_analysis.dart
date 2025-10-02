@@ -161,16 +161,13 @@ class WoundAnalysis {
       debugPrint("Response Body: $responseData");
       debugPrint("Predictions: ${jsonEncode(results["predictions"])}");
 
-      // // 如果有辨識到傷口，就取第一個結果；否則回傳「無異常」
-      // final String woundType = detectedWoundTypes.isNotEmpty ? detectedWoundTypes.first : "無異常";
-      // 回傳信心值最高的傷口種類
+      // 取信心值最高的那一筆
       String woundType = "無異常";
       if (results["predictions"] is List && results["predictions"].isNotEmpty) {
         // 依 confidence 由大到小排序
         var sorted = List<Map<String, dynamic>>.from(results["predictions"]);
         sorted.sort((a, b) => (b["confidence"] as num).compareTo(a["confidence"] as num));
 
-        // 取信心值最高的那一筆
         var best = sorted.first;
         if (best["class"] is String) {
           woundType = best["class"];
