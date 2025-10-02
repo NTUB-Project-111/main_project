@@ -77,8 +77,6 @@
 //   }
 // }
 
-
-
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -150,22 +148,28 @@ class WoundAnalysis {
 
       // 建立集合，用來儲存辨識到的傷口種類
       Set<String> detectedWoundTypes = {};
-      for (var obj in results["predictions"]) {
-        if (obj["class"] != null) detectedWoundTypes.add(obj["class"]);
+      if (results["predictions"] is List) {
+        for (var obj in results["predictions"]) {
+          if (obj is Map && obj["class"] != null) {
+            detectedWoundTypes.add(obj["class"]);
+          }
+        }
       }
 
       // 除錯輸出 API 回傳狀態與內容
       debugPrint("Status Code: ${response.statusCode}");
       debugPrint("Response Body: $responseData");
+      debugPrint("Predictions: ${jsonEncode(results["predictions"])}");
 
       // 如果有辨識到傷口，就取第一個結果；否則回傳「無異常」
-      final String woundType =
-          detectedWoundTypes.isNotEmpty ? detectedWoundTypes.first : "無異常";
+      final String woundType = detectedWoundTypes.isNotEmpty ? detectedWoundTypes.first : "無異常";
 
       // 將英文類別轉成對應的中文描述
       return woundMap[woundType] ?? '無異常';
-    } catch (e) {
+    } catch (e, s) {
       // 如果中途發生錯誤，回傳「分析失敗」
+      debugPrint("分析失敗原因: $e");
+      debugPrint("Stack: $s");
       return "分析失敗";
     }
   }
