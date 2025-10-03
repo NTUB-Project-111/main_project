@@ -1,6 +1,7 @@
 // import 'package:drw/backend/models/report.dart';
 // import 'package:drw/backend/models/user.dart';
 import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/services/record_service.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
@@ -76,17 +77,24 @@ class _ButtonPartState extends State<ButtonPart> {
                                 setState(() {
                                   isSaving = true;
                                 });
-                                final result = await report.uploadData(
-                                    report.userId.toString(), widget.isExtra, widget.id ?? 0,widget.report);
+                                final result = await report.uploadData(report.userId.toString(),
+                                    widget.isExtra, widget.id ?? 0, widget.report);
                                 if (result) {
                                   if (reminds.isNotEmpty) {
                                     reportProvider
                                         .addReport(report.toUserReport(reminds.last.id + 1));
+                                    // if (widget.isExtra) {
+                                    //   context.read<ReportProvider>().updateReportGroup(
+                                    //       widget.report!.id, resultMap['newGroupId']);
+                                    // }
                                   } else {
                                     reportProvider.addReport(report.toUserReport(1));
                                   }
-
+                                  final userReports =
+                                      await RecordService.fetchReports(report.userId);
                                   remindProvider.addReminds(report.reminds);
+                                  Provider.of<ReportProvider>(context, listen: false)
+                                      .setReports(userReports);
                                   notifier.scheduleReminders(remindProvider.reminds);
                                   notifier.getAllReminders();
                                   FrontUtil.showSuccess('報告儲存成功!');
@@ -95,6 +103,8 @@ class _ButtonPartState extends State<ButtonPart> {
                                     (route) => false,
                                   );
                                   // report.clearAll();
+                                  debugPrint('舊報告groupID${widget.report!.groupId.toString()}');
+                                  debugPrint('新報告groupID${report.groupId.toString()}');
                                 } else {
                                   FrontUtil.showFail('報告儲存失敗');
                                 }

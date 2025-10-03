@@ -510,30 +510,58 @@ class Report extends ChangeNotifier {
   Future<bool> _addGroup(int id, UserReport report) async {
     bool result = true;
     final grouplist = await _record.fetchGroup(userId.toString());
+    // debugPrint("===========grouplist=============");
     // debugPrint(grouplist.toString());
     if (grouplist.length == 1 && grouplist.first == 0) {
       //先顯查此使用者有沒有任何的group
       //沒有的話設定groupId為1
       groupId = 1;
-      report.copyWith(groupId: 1);
+      report = report.copyWith(groupId: groupId);
       result = await _record.updateGroupId(userId, recordId, id, 1);
+      // debugPrint('舊報告groupID${report.groupId.toString()}');
+      // debugPrint('新報告groupID${report.groupId.toString()}');
     } else {
       //有的話檢查選擇的照片有沒有設定群組
       final groupId = await _record.fetchGroupId(userId, id);
       if (groupId != null) {
         //若已經有設定群組則沿用groupId
         this.groupId = groupId;
-        report.copyWith(groupId: this.groupId);
+        report = report.copyWith(groupId: this.groupId);
         result = await _record.updateGroupId(userId, recordId, id, groupId);
       } else {
         final groupId = grouplist.reduce((a, b) => a > b ? a : b);
         result = await _record.updateGroupId(userId, recordId, id, groupId + 1);
         this.groupId = groupId + 1;
-        report.copyWith(groupId: this.groupId);
+        report = report.copyWith(groupId: this.groupId);
       }
     }
     return result;
   }
+  // Future<Map<String, dynamic>> _addGroup(int id, UserReport report) async {
+  //   final grouplist = await _record.fetchGroup(userId.toString());
+
+  //   int newGroupId = 0;
+  //   bool result = true;
+  //   if (grouplist.length == 1 && grouplist.first == 0) {
+  //     newGroupId = 1;
+  //     groupId = 1;
+  //     result = await _record.updateGroupId(userId, recordId, id, 1);
+  //   } else {
+  //     final groupId = await _record.fetchGroupId(userId, id);
+  //     if (groupId != null) {
+  //       newGroupId = groupId;
+  //       this.groupId = groupId;
+  //       result = await _record.updateGroupId(userId, recordId, id, groupId);
+  //     } else {
+  //       final groupId = grouplist.reduce((a, b) => a > b ? a : b);
+  //       newGroupId = groupId + 1;
+  //       this.groupId = groupId + 1;
+  //       result = await _record.updateGroupId(userId, recordId, id, newGroupId);
+  //     }
+  //   }
+  //   debugPrint('新報告groupID: $newGroupId');
+  //   return {'result': result, 'newGroupId': newGroupId};
+  // }
 
   Future<bool> uploadData(String userId, bool isExtra, int id, UserReport? report) async {
     isSaving = true;
@@ -564,6 +592,29 @@ class Report extends ChangeNotifier {
     // notifyListeners();
     return recordResult && remindResult && groupResult;
   }
+  // Future<Map<String, dynamic>> uploadData(
+  //   String userId,
+  //   bool isExtra,
+  //   int id,
+  //   UserReport? report,
+  // ) async {
+  //   isSaving = true;
+  //   notifyListeners();
+
+  //   bool recordResult = await addRecord();
+  //   bool remindResult = notify ? await addRemind(userId) : true;
+  //   bool groupResult = true;
+  //   Map<String, dynamic> resultMap = {};
+  //   if (isExtra && report != null) {
+  //     resultMap = await _addGroup(id, report);
+  //     groupResult = resultMap['result'];
+  //   }
+
+  //   return {
+  //     'result': recordResult && remindResult && groupResult,
+  //     'newGroupId': resultMap['newGroupId'] ?? 0
+  //   };
+  // }
 
   UserReport toUserReport(int remindId) {
     reminds.clear();

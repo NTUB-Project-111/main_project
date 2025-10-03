@@ -29,6 +29,14 @@ class ReportProvider extends ChangeNotifier {
     }
   }
 
+  void updateReportGroup(int reportId, int newGroupId) {
+    final index = _reports.indexWhere((r) => r.id == reportId);
+    if (index != -1) {
+      _reports[index] = _reports[index].copyWith(groupId: newGroupId);
+      notifyListeners();
+    }
+  }
+
   void removeReport(int reportId) {
     _reports.removeWhere((r) => r.id == reportId);
     notifyListeners();
