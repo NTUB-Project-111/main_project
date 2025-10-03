@@ -382,7 +382,7 @@ class Report extends ChangeNotifier {
         name = '${report!.type}診斷報告'.replaceAll(RegExp(r'\s+'), '');
         DateTime today = DateTime.now();
         int days = 0;
-        DateTime injuryDate = DateTime.parse(date);
+        DateTime injuryDate = DateTime.parse(report.date);
         days = today.difference(injuryDate).inDays;
 
         List<String> oktimeList = report.oktime.split('~');
@@ -402,13 +402,13 @@ class Report extends ChangeNotifier {
         oktime = '${intOktimeList[0]}~${intOktimeList[1]}天';
         woundType = report.type;
 
-        response = (await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, date));
+        response = (await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, days));
       } else {
         final wound = await WoundAnalysis.analyzeWound(image!);
         woundType = wound;
         name = '$woundType診斷報告'.replaceAll(RegExp(r'\s+'), '');
         if (woundType != '無異常') {
-          response = await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, date);
+          response = await CareInfo.getCareSteps(woundType, birthday, disease, freq, isExtra, 0);
           // debugPrint(response.toString());
           oktime = response != null ? (response['healingTime'] ?? '0') : '0';
         } else if (woundType == '無異常') {

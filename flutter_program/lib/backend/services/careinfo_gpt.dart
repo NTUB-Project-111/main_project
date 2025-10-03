@@ -65,7 +65,7 @@ class CareInfo {
     String disease,
     String freq,
     bool isExtra,
-    String? date,
+    int days,
   ) async {
     try {
       // 計算年齡
@@ -78,17 +78,9 @@ class CareInfo {
       // 處理疾病與習慣字串
       String diseases = disease.replaceAll('[', '').replaceAll(']', '');
       final freqs = freq.split('、');
-      final smoke = freqs.isNotEmpty ? freqs[0] : '沒有';
-      final drink = freqs.length > 1 ? freqs[1] : '沒有';
-      final betel = freqs.length > 2 ? freqs[2] : '沒有';
-
-      //計算受傷距今天數
-      DateTime today = DateTime.now();
-      int? days;
-      if (date != null) {
-        DateTime injuryDate = DateTime.parse(date);
-        days = today.difference(injuryDate).inDays;
-      }
+      final smoke = freqs[0] != '無' ? freqs[0] : '沒有';
+      final drink = freqs[1] != '無' ? freqs[1] : '沒有';
+      final betel = freqs[2] != '無' ? freqs[2] : '沒有';
 
       // 對應參考資料
       String referenceText = '';
@@ -143,9 +135,9 @@ class CareInfo {
           傷口類型: $woundType，
           描述: 
             我的年齡為$age歲，
-            我有$diseases，
+            ${diseases == '無' ? '我沒有任何疾病，' : '我有$diseases，'}
             並且$smoke抽菸、$drink喝酒、$betel嚼檳榔，
-            距離上次受傷已經過${days ?? '未知'}天，
+            距離上次受傷已經過$days天，
           請提供傷口的護理建議，不需要估算癒合時間。
           請參考網站內容作為依據：
             $referenceText
@@ -155,7 +147,7 @@ class CareInfo {
           傷口類型: $woundType，
           描述: 
             我的年齡為$age歲，
-            我有$diseases，
+            ${diseases == '無' ? '我沒有任何疾病，' : '我有$diseases，'}
             並且$smoke抽菸、$drink喝酒、$betel嚼檳榔，
           請提供傷口的護理建議及預估癒合時間。
           請參考以下網站內容作為依據：
