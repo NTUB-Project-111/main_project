@@ -103,8 +103,8 @@ class _ButtonPartState extends State<ButtonPart> {
                                     (route) => false,
                                   );
                                   // report.clearAll();
-                                  debugPrint('舊報告groupID${widget.report!.groupId.toString()}');
-                                  debugPrint('新報告groupID${report.groupId.toString()}');
+                                  // debugPrint('舊報告groupID${widget.report!.groupId.toString()}');
+                                  // debugPrint('新報告groupID${report.groupId.toString()}');
                                 } else {
                                   FrontUtil.showFail('報告儲存失敗');
                                 }

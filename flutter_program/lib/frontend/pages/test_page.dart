@@ -34,20 +34,19 @@ class _TestPageState extends State<TestPage> {
           children: [
             ElevatedButton(
               onPressed: () {
-                notifier.scheduleReminders(remindList);
-                // final remindTime = DateTime(2025, 9, 26, 19, 46);
-                // _addCalendarEvent(remindTime);
+                final remindTime = DateTime(2025, 10, 4, 14, 05);
+                notifier.addReminder(remindTime);
               },
               child: const Text('新增特定時間提醒'),
             ),
-            // ElevatedButton(
-            //   onPressed: _viewAllEvents,
-            //   child: const Text('查看所有提醒'),
-            // ),
-            // ElevatedButton(
-            //   onPressed: _deleteAllEvents,
-            //   child: const Text('刪除所有提醒'),
-            // ),
+            ElevatedButton(
+              onPressed: notifier.getAllReminders,
+              child: const Text('查看所有提醒'),
+            ),
+            ElevatedButton(
+              onPressed: notifier.deleteAllReminders,
+              child: const Text('刪除所有提醒'),
+            ),
           ],
         ),
       ),
