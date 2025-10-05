@@ -29,7 +29,7 @@ class _WoundPartState extends State<WoundPart> {
             padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.file(report.image!, width: 180, height: 230, fit: BoxFit.cover),
+              child: Image.file(report.image!, width: 170, height: 250, fit: BoxFit.cover),
             ),
           ),
           // const SizedBox(width: 16),
@@ -56,7 +56,7 @@ class _WoundPartState extends State<WoundPart> {
                 report.woundType,
                 style: const TextStyle(
                   color: Color(0xFF589399),
-                  fontSize: 48,
+                  fontSize: 40,
                 ),
               ),
               report.oktime != ""
