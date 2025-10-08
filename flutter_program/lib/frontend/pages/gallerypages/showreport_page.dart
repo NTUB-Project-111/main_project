@@ -352,8 +352,8 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                       borderRadius: BorderRadius.circular(10),
                                       child: Image.network(
                                         widget.report.photo.toString(),
-                                        height: 200,
-                                        width: 180,
+                                        height: 250,
+                                        width: 175,
                                         fit: BoxFit.cover,
                                       )),
                                 ),
@@ -382,7 +382,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                       widget.report.type,
                                       style: const TextStyle(
                                         color: Color(0xFF589399),
-                                        fontSize: 48,
+                                        fontSize: 40,
                                       ),
                                     ),
                                     SizedBox(
