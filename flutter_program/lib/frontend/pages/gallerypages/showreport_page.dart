@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drw/backend/models/remind.dart';
 import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
@@ -32,6 +33,10 @@ class _ShowReportPageState extends State<ShowReportPage> {
   bool isSaving = false;
   bool success = true;
   Notifier notifier = Notifier();
+  final CarouselSliderController _carouselController = CarouselSliderController();
+  int currentIndex = 0;
+  List<String> imageUrls = [];
+  List<String> imageSteps = [];
   @override
   void initState() {
     super.initState();
@@ -53,6 +58,144 @@ class _ShowReportPageState extends State<ShowReportPage> {
       if (r.recordId == widget.report.id) {
         remind = r;
         break;
+      }
+    }
+    if (widget.isExtra) {
+      switch (widget.report.type) {
+        case '燒傷':
+        case '燙傷':
+          imageUrls = [
+            'images/burncare1.png',
+            'images/burncare2.png',
+            'images/burncare3.png',
+            'images/burncare4.png',
+            'images/burncare5.png',
+            'images/burncare6.png',
+            'images/burncare7.png'
+          ];
+          imageSteps = ['洗手', '移除舊紗布', '觀察傷口', '清潔傷口', '擦乾傷口', '擦藥', '包紮傷口'];
+          break;
+        case '擦傷':
+        case '割傷':
+        case '刺傷':
+          imageUrls = [
+            'images/woundcare1.png',
+            'images/woundcare2.png',
+            'images/woundcare3.png',
+            'images/woundcare4.png',
+            'images/woundcare5.png'
+          ];
+          imageSteps = ['洗淨雙手', '拆除舊敷料', '擦拭傷口', '塗抹藥膏', '包紮傷口'];
+          break;
+        case '瘀青':
+          imageUrls = [
+            'images/bruise1.jpg',
+            'images/bruise2.jpg',
+            'images/bruise3.jpg',
+            'images/bruise4.jpg',
+            'images/bruise5.jpg'
+          ];
+          imageSteps = ['初期冷敷', '後期熱敷', '避免加壓或按摩', '抬高患肢', '若瘀傷部位出現腫脹'];
+          break;
+        case '手術傷口':
+          imageUrls = [
+            'images/surgical1.png',
+            'images/surgical2.png',
+            'images/surgical3.png',
+            'images/surgical4.png',
+            'images/surgical5.png',
+            'images/surgical1.png',
+          ];
+          imageSteps = ['清潔雙手', '檢查傷口', '清潔傷口', '消毒傷口', '包紮傷口', '再次洗手'];
+          break;
+        case '嚴重傷口':
+          imageUrls = [
+            'images/serious1.png',
+            'images/serious2.png',
+            'images/serious3.png',
+            'images/serious4.png',
+            'images/serious5.png',
+          ];
+          imageSteps = ['盡快送醫', '立刻加壓止血', '抬高患部', '避免進食與飲水', '保持溫暖、防休克'];
+          break;
+        default:
+          imageUrls = [];
+      }
+    } else {
+      switch (widget.report.type) {
+        case '燒傷':
+        case '燙傷':
+          imageUrls = [
+            'images/burn1.png',
+            'images/burn2.png',
+            'images/burn3.png',
+            'images/burn4.png',
+            'images/burn5.png'
+          ];
+          imageSteps = ['沖洗燒燙傷部位', '脫掉衣物飾品', '浸泡傷部', '塗抹乳液', '包紮傷口', '服用止痛藥(如有需要)'];
+          break;
+        case '擦傷':
+          imageUrls = [
+            'images/abrasion1.png',
+            'images/abrasion2.png',
+            'images/abrasion3.png',
+            'images/abrasion4.png'
+          ];
+          imageSteps = ['洗淨雙手', '清潔傷口', '擦藥', '包紮傷口'];
+          break;
+        case '割傷':
+          imageUrls = [
+            'images/cut1.png',
+            'images/cut2.png',
+            'images/cut3.png',
+            'images/cut4.png',
+            'images/cut5.png'
+          ];
+          imageSteps = ['洗手', '止血', '清潔傷口', '塗抹藥膏', '包紮傷口'];
+          break;
+        case '刺傷':
+          imageUrls = [
+            'images/stab1.png',
+            'images/stab2.png',
+            'images/stab3.png',
+            'images/stab4.png',
+            'images/stab5.png'
+          ];
+          imageSteps = ['洗手', '止血', '清潔傷口', '塗抹藥膏', '覆蓋傷口'];
+          break;
+        case '瘀青':
+          imageUrls = [
+            'images/bruise1.jpg',
+            'images/bruise2.jpg',
+            'images/bruise3.jpg',
+            'images/bruise4.jpg',
+            'images/bruise5.jpg'
+          ];
+          imageSteps = ['初期冷敷', '後期熱敷', '避免加壓或按摩', '抬高患肢', '若瘀傷部位出現腫脹'];
+          break;
+        case '手術傷口':
+          imageUrls = [
+            'images/surgical1.png',
+            'images/surgical2.png',
+            'images/surgical3.png',
+            'images/surgical4.png',
+            'images/surgical5.png',
+            'images/surgical1.png',
+          ];
+          imageSteps = ['清潔雙手', '檢查傷口', '清潔傷口', '消毒傷口', '包紮傷口', '再次洗手'];
+          break;
+        case '嚴重傷口':
+          imageUrls = [
+            'images/serious1.png',
+            'images/serious2.png',
+            'images/serious3.png',
+            'images/serious4.png',
+            'images/serious5.png',
+          ];
+          imageSteps = ['盡快送醫', '立刻加壓止血', '抬高患部', '避免進食與飲水', '保持溫暖、防休克'];
+          break;
+        default:
+          imageUrls = [];
       }
     }
   }
@@ -535,28 +678,79 @@ class _ShowReportPageState extends State<ShowReportPage> {
                   ),
                   ...[
                     if (isSwitch)
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 10),
-                          Image.asset('images/doctor_bear.png', width: 160),
-                          const SizedBox(height: 8),
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              Text(
-                                '功能開發中...',
-                                style: TextStyle(
-                                  color: FrontUtil.textColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                      SizedBox(
+                        width: double.infinity,
+                        height: 320,
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // 左箭頭
+                                IconButton(
+                                  icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF589399)),
+                                  onPressed: () {
+                                    if (currentIndex > 0) {
+                                      _carouselController.previousPage();
+                                      currentIndex = currentIndex - 1; // 用 controller 控制
+                                    }
+                                  },
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
+                                SizedBox(
+                                  width: 250,
+                                  height: 250,
+                                  child: CarouselSlider.builder(
+                                    carouselController: _carouselController, // 加上 controller
+                                    itemCount: imageUrls.length,
+                                    itemBuilder: (context, index, realIndex) {
+                                      return ClipRRect(
+                                        borderRadius: BorderRadius.circular(16),
+                                        child: Image.asset(
+                                          imageUrls[index],
+                                          fit: BoxFit.cover,
+                                          width: 250,
+                                          height: 250,
+                                        ),
+                                      );
+                                    },
+                                    options: CarouselOptions(
+                                      viewportFraction: 1.0,
+                                      enableInfiniteScroll: false,
+                                      height: 250,
+                                      onPageChanged: (index, reason) {
+                                        setState(() {
+                                          currentIndex = index;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+
+                                // 右箭頭
+                                IconButton(
+                                  icon:
+                                      const Icon(Icons.arrow_forward_ios, color: Color(0xFF589399)),
+                                  onPressed: () {
+                                    if (currentIndex < imageUrls.length - 1) {
+                                      _carouselController.nextPage();
+                                      currentIndex = currentIndex + 1; // 用 controller 控制
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              imageSteps.isNotEmpty ? imageSteps[currentIndex] : "步驟 ${currentIndex + 1}",
+                              style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF589399)),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
                       )
                     else
                       ..._buildAllWoundSections(careSteps),
