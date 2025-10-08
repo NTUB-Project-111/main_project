@@ -101,6 +101,9 @@ class CareInfo {
           case '刺傷':
             referenceText = CareStepsReference.woundCare;
             break;
+          case '嚴重傷口':
+            referenceText = CareStepsReference.serious;
+            break;
           default:
             referenceText = '';
         }
@@ -124,6 +127,9 @@ class CareInfo {
             break;
           case '刺傷':
             referenceText = '刺傷:\n${CareStepsReference.stab}';
+            break;
+          case '嚴重傷口':
+            referenceText = CareStepsReference.serious;
             break;
           default:
             referenceText = '';
