@@ -22,7 +22,7 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 8, vsync: this);
   }
 
   @override
@@ -31,6 +31,9 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
     List<UserReport> abrasions = [];
     List<UserReport> bruises = [];
     List<UserReport> burns = [];
+    List<UserReport> stabs = [];
+    List<UserReport> surgicals = [];
+    List<UserReport> seriours = [];
 
     final reportProvider = context.watch<ReportProvider>();
     final reports = reportProvider.reports;
@@ -47,7 +50,18 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
             bruises.add(report);
             break;
           case '燒傷':
+          case '燙傷':
+          case '燒燙傷':
             burns.add(report);
+            break;
+          case '刺傷':
+            stabs.add(report);
+            break;
+          case '手術傷口':
+            surgicals.add(report);
+            break;
+          case '嚴重傷口':
+            seriours.add(report);
             break;
         }
       }
@@ -68,9 +82,11 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
             Container(
               color: const Color(0xFFCBF0F4),
               child: TabBar(
+                isScrollable: true,
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 labelColor: const Color(0xFF04555D),
                 unselectedLabelColor: Colors.blueGrey,
+                tabAlignment: TabAlignment.start,
                 controller: _tabController,
                 indicatorColor: const Color(0xFF04555D),
                 dividerColor: Colors.transparent,
@@ -82,7 +98,10 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                   Tab(text: ("割傷")),
                   Tab(text: ("擦傷")),
                   Tab(text: ("瘀青")),
-                  Tab(text: ("燒傷")),
+                  Tab(text: ("燒燙傷")),
+                  Tab(text: ("刺傷")),
+                  Tab(text: ("手術")),
+                  Tab(text: ("嚴重")),
                 ],
               ),
             ),
@@ -96,6 +115,9 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                   _buildImagePage(abrasions.reversed.toList()),
                   _buildImagePage(bruises.reversed.toList()),
                   _buildImagePage(burns.reversed.toList()),
+                  _buildImagePage(stabs.reversed.toList()),
+                  _buildImagePage(surgicals.reversed.toList()),
+                  _buildImagePage(seriours.reversed.toList()),
                 ],
               ),
             ),
