@@ -104,12 +104,12 @@ class _CarePartState extends State<CarePart> {
                 // 護理步驟動畫
                 if (report.isSwitch)
                   SizedBox(
-                    
                     height: 320,
                     child: Column(
                       children: [
                         const SizedBox(height: 10),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             // 左箭頭
                             IconButton(
@@ -129,12 +129,6 @@ class _CarePartState extends State<CarePart> {
                                 itemBuilder: (context, index, realIndex) {
                                   return ClipRRect(
                                     borderRadius: BorderRadius.circular(16),
-                                    // child: Image.network(
-                                    //   report.imageUrls[index],
-                                    //   fit: BoxFit.cover,
-                                    //   width: 250,
-                                    //   height: 250,
-                                    // ),
                                     child: Image.asset(
                                       report.imageUrls[index],
                                       fit: BoxFit.cover,
@@ -179,29 +173,7 @@ class _CarePartState extends State<CarePart> {
                       ],
                     ),
                   )
-                // Column(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: [
-                //     const SizedBox(height: 10),
-                //     Image.asset('images/doctor_bear.png', width: 160),
-                //     const SizedBox(height: 8),
-                //     Wrap(
-                //       alignment: WrapAlignment.center,
-                //       crossAxisAlignment: WrapCrossAlignment.center,
-                //       children: [
-                //         Text(
-                //           '功能開發中...',
-                //           style: TextStyle(
-                //             color: FrontUtil.textColor,
-                //             fontWeight: FontWeight.bold,
-                //             fontSize: 16,
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //     const SizedBox(height: 16),
-                //   ],
-                // )
+              
                 else
                   ..._buildAllWoundSections(report.careSteps),
               ]

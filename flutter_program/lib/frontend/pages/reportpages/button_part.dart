@@ -113,6 +113,20 @@ class _ButtonPartState extends State<ButtonPart> {
                                   isSaving = false;
                                 });
                               },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: isSaving ? Colors.grey : const Color(0xFF589399),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          isSaving ? '儲存中...' : '儲存報告',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
                         // onPressed: report.isSaving
                         //     ? null
                         //     : () async {
@@ -158,20 +172,20 @@ class _ButtonPartState extends State<ButtonPart> {
                         //           FrontUtil.showFail('報告儲存失敗');
                         //         }
                         //       },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          backgroundColor: report.isSaving ? Colors.grey : const Color(0xFF589399),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text(
-                          report.isSaving ? '儲存中...' : '儲存報告',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
+                        // style: ElevatedButton.styleFrom(
+                        //   padding: const EdgeInsets.symmetric(vertical: 12),
+                        //   backgroundColor: report.isSaving ? Colors.grey : const Color(0xFF589399),
+                        //   shape: RoundedRectangleBorder(
+                        //     borderRadius: BorderRadius.circular(10),
+                        //   ),
+                        // ),
+                        // child: Text(
+                        //   report.isSaving ? '儲存中...' : '儲存報告',
+                        //   style: const TextStyle(
+                        //     color: Colors.white,
+                        //     fontSize: 16,
+                        //   ),
+                        // ),
                       ),
                     ),
                   ],

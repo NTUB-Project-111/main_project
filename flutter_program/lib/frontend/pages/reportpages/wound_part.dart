@@ -29,7 +29,7 @@ class _WoundPartState extends State<WoundPart> {
             padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.file(report.image!, width: 170, height: 250, fit: BoxFit.cover),
+              child: Image.file(report.image!, width: 175, height: 250, fit: BoxFit.cover),
             ),
           ),
           // const SizedBox(width: 16),
