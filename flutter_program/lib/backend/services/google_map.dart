@@ -8,11 +8,15 @@ import 'package:http/http.dart' as http; // HTTP 請求
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart'; // 外部開啟 Google Map
 
+
+//負責所有與「地圖」與「收藏」有關的邏輯，包括：標記顯示 ,收藏儲存 ,距離/時間計算 ,導航開啟 Google Maps
+
+
 enum OpenMarkerStyle { red, gray, star } // 定義 Marker 樣式：紅色 / 灰色 / 星星
 
 class GoogleMapService extends ChangeNotifier {
   // 地圖狀態
-  final Set<Marker> _markers = {};
+  final Set<Marker> _markers = {};   // 儲存目前地圖上的所有標記 
   Set<Marker> get markers => _markers;
 
   static const double walkingSpeedMetersPerSecond = 1.4;
@@ -135,7 +139,9 @@ class GoogleMapService extends ChangeNotifier {
     Function(Hospital) onMarkerTap,
     LatLng from, {
     required double pinColor, // 保留參數，不影響既有呼叫
-  }) async {
+  }) async {   
+    // 為每間醫院建立圖釘
+    // 包含距離、步行時間、營業狀態、收藏圖示
     await _ensureIcons();
 
     final Set<Marker> next = {};
@@ -201,7 +207,7 @@ class GoogleMapService extends ChangeNotifier {
     );
   }
 
- //  取得目前位置 
+  // 取得目前使用者位置
   Future<LatLng?> getCurrentLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
