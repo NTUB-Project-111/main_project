@@ -9,6 +9,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+//主畫面（UI層）
+
+
 // 取得醫院照片 URL
 String getPhotoUrl(String? reference) {
   final key = dotenv.env['GOOGLE_MAPS_API_KEY'];
