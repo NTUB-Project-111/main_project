@@ -6,7 +6,7 @@
 import argparse
 import os
 import numpy as np
-from tensorflow.keras.preprocessing.image import (
+from tensorflow.keras.preprocessing.image import (   #TensorFlow 的影像處理模組
     ImageDataGenerator,
     load_img,
     img_to_array,
@@ -23,13 +23,13 @@ def augment_image(img_path: str, out_dir: str, n: int = 10) -> None:
 
     # 建立擴增器
     datagen = ImageDataGenerator(
-        rotation_range=40,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True,
-        fill_mode="nearest",
+        rotation_range=40,          # 隨機旋轉圖片的角度範圍（±40度內）
+        width_shift_range=0.2,      # 隨機水平平移圖片，範圍是圖片寬度的 20%
+        height_shift_range=0.2,     # 隨機垂直平移圖片，範圍是圖片高度的 20%
+        shear_range=0.2,            # 隨機剪切變換（shear transformation）強度
+        zoom_range=0.2,             # 隨機縮放圖片（放大或縮小 20%）
+        horizontal_flip=True,       # 隨機水平翻轉圖片（像鏡像效果）
+        fill_mode="nearest",        # 旋轉或平移後產生空白像素時，用最接近的像素值填補
     )
 
     # 產生並寫檔
