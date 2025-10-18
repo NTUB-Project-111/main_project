@@ -1,0 +1,136 @@
+import 'package:drw/frontend/pages/familypages/report_part.dart';
+import 'package:drw/frontend/utility/front_util.dart';
+import 'package:flutter/material.dart';
+
+class FamilyPage extends StatefulWidget {
+  const FamilyPage({super.key});
+
+  @override
+  State<FamilyPage> createState() => _FamilyPageState();
+}
+
+class _FamilyPageState extends State<FamilyPage> {
+  int _selectedTopIndex = -1;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: FrontUtil.textColor),
+          onPressed: () {},
+        ),
+        title: Text(
+          '家庭群組',
+          style: TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: Icon(Icons.notifications_none, color: Colors.black87),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // 頂部卡片
+            Container(
+              padding: const EdgeInsets.fromLTRB(20, 40, 20, 10),
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  // colors: [Color(0xFF7EC2CA), Color(0xFFB8E6EB),Color(0xFFF4FEFF)],
+                  colors: [Color(0xFFB8E6EB), Color(0xFFF4FEFF), Colors.white],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      // 小熊圖示
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('images/icon.png'),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      // 家庭名稱與人數
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '我滴家 🏠',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                height: 2,
+                                color: Color(0xFF589399)),
+                          ),
+                          Text(
+                            '家庭人數：4',
+                            style: TextStyle(color: FrontUtil.textColor),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      Icon(Icons.groups_rounded, color: FrontUtil.textColor),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildTopButton('報告集', 0),
+                      _buildTopButton('已開啟提醒報告', 1),
+                      _buildTopButton('已癒合', 2),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: ReportImagePart(),
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopButton(String text, int index) {
+    final isSelected = _selectedTopIndex == index;
+
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          _selectedTopIndex = index;
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isSelected ? const Color(0xFF9FC3C6) : Colors.white,
+        foregroundColor: isSelected ? Colors.white : FrontUtil.textColor,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: FrontUtil.textColor),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        textStyle: const TextStyle(fontSize: 14),
+      ),
+      child: Text(text),
+    );
+  }
+}

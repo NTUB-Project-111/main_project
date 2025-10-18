@@ -1,5 +1,5 @@
 import 'package:drw/backend/provider/user_provider.dart';
-import 'package:drw/backend/services/apibase.dart';
+// import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/widgets/headers/header4.dart';
 import 'package:drw/frontend/pages/personalpages/changehabit_page.dart';
 import 'package:drw/frontend/pages/personalpages/showdisease_page.dart';
@@ -27,7 +27,7 @@ class _ProfilesPageState extends State<ProfilesPage> {
             children: [
               // 使用者頭像（靜態）
               Consumer<UserProvider>(builder: (context, userProvider, _) {
-                final user = userProvider.user;
+                // final user = userProvider.user;
                 return Container(
                     margin: const EdgeInsets.only(top: 30, bottom: 22),
                     width: 110,
