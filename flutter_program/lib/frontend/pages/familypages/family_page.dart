@@ -10,7 +10,7 @@ class FamilyPage extends StatefulWidget {
 }
 
 class _FamilyPageState extends State<FamilyPage> {
-  int _selectedTopIndex = -1;
+  int _selectedTopIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,15 +22,22 @@ class _FamilyPageState extends State<FamilyPage> {
         ),
         title: Text(
           '家庭群組',
-          style: TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold),
+          style: TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold, fontSize: 20),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
-        actions: const [
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(2.0),
+          child: Container(
+            height: 2.0,
+            color: FrontUtil.textColor,
+          ),
+        ),
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.notifications_none, color: Colors.black87),
+            padding: const EdgeInsets.only(right: 16),
+            child: Icon(Icons.notifications_none, color: FrontUtil.textColor),
           ),
         ],
       ),
@@ -84,7 +91,9 @@ class _FamilyPageState extends State<FamilyPage> {
                         ],
                       ),
                       const Spacer(),
-                      Icon(Icons.groups_rounded, color: FrontUtil.textColor),
+                      IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.groups_rounded, color: FrontUtil.textColor)),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -99,10 +108,13 @@ class _FamilyPageState extends State<FamilyPage> {
                 ],
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: ReportImagePart(),
-            ),
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _selectedTopIndex == 0
+                    ? const ReportImagePart()
+                    : _selectedTopIndex == 1
+                        ? const ReportImagePart()
+                        : const ReportImagePart()),
             const SizedBox(height: 10),
           ],
         ),
