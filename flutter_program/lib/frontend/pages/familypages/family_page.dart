@@ -1,3 +1,6 @@
+import 'package:drw/frontend/pages/familypages/family_dialog.dart';
+import 'package:drw/frontend/pages/familypages/healed_part.dart';
+import 'package:drw/frontend/pages/familypages/remind_part.dart';
 import 'package:drw/frontend/pages/familypages/report_part.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -92,7 +95,12 @@ class _FamilyPageState extends State<FamilyPage> {
                       ),
                       const Spacer(),
                       IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => const FamilyDialog(),
+                            );
+                          },
                           icon: Icon(Icons.groups_rounded, color: FrontUtil.textColor)),
                     ],
                   ),
@@ -109,12 +117,14 @@ class _FamilyPageState extends State<FamilyPage> {
               ),
             ),
             Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _selectedTopIndex == 0
-                    ? const ReportImagePart()
-                    : _selectedTopIndex == 1
-                        ? const ReportImagePart()
-                        : const ReportImagePart()),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _selectedTopIndex == 0
+                  ? const ReportImagePart()
+                  : _selectedTopIndex == 1
+                      ? const RemindPart()
+                      : const HealedPart(),
+              // child:const HealedPart()
+            ),
             const SizedBox(height: 10),
           ],
         ),
