@@ -32,6 +32,7 @@ class _ReportImagePartState extends State<ReportImagePart> {
       padding: const EdgeInsets.fromLTRB(16, 20, 10, 0),
       child: Row(
         children: [
+          const SizedBox(height: 15,),
           Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const Spacer(),
           TextButton(
