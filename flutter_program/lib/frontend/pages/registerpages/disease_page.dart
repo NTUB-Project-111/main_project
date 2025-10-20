@@ -31,60 +31,6 @@ class _DiseasePageState extends State<DiseasePage> {
     "周邊動脈阻塞"
   ];
   List<String> selectedSymptoms = [];
-
-  // void _showMultiSelect() {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     backgroundColor: Colors.white,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-  //     ),
-  //     builder: (context) {
-  //       // final register = context.read<Register>();
-  //       return StatefulBuilder(builder: (context, setModalState) {
-  //         return Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             const SizedBox(height: 12),
-  //             const Text(
-  //               '選擇症狀',
-  //               style: TextStyle(
-  //                   fontSize: 16,
-  //                   fontWeight: FontWeight.bold,
-  //                   color: Color(0xFF5E9CA0)),
-  //             ),
-  //             const Divider(
-  //               color: Color(0xFF5E9CA0),
-  //             ),
-  //             ...symptoms.map((symptom) {
-  //               return CheckboxListTile(
-  //                 title: Text(
-  //                   symptom,
-  //                   style: const TextStyle(color: Color(0xFF5E9CA0)),
-  //                 ),
-  //                 activeColor: const Color(0xFF5E9CA0),
-  //                 value: selectedSymptoms.contains(symptom),
-  //                 onChanged: (bool? value) {
-  //                   setModalState(() {
-  //                     if (value == true) {
-  //                       selectedSymptoms.add(symptom);
-  //                     } else {
-  //                       selectedSymptoms.remove(symptom);
-  //                     }
-  //                   });
-
-  //                   setState(() {}); // 更新主畫面顯示
-  //                 },
-  //               );
-  //             }),
-  //             const SizedBox(height: 10),
-  //           ],
-  //         );
-  //       });
-  //     },
-  //   );
-  // }
-
   void _showMultiSelect() {
     showModalBottomSheet(
       context: context,

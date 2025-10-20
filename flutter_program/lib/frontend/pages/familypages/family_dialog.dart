@@ -1,3 +1,4 @@
+import 'package:drw/frontend/pages/registerpages/birthday_year_selector_part.dart';
 import 'package:flutter/material.dart';
 
 class FamilyDialog extends StatefulWidget {
@@ -8,6 +9,24 @@ class FamilyDialog extends StatefulWidget {
 }
 
 class _FamilyDialogState extends State<FamilyDialog> {
+  int selectedYear = DateTime.now().year;
+  final List<String> symptoms = [
+    "高血壓",
+    "高血脂",
+    "糖尿病",
+    "愛滋病",
+    "壞血病",
+    "白血病",
+    "敗血病",
+    "血友病",
+    "貧血",
+    "肝病",
+    "腎病",
+    "癌症",
+    "靜脈功能不全",
+    "周邊動脈阻塞"
+  ];
+  List<String> selectedSymptoms = [];
   @override
   Widget build(BuildContext context) {
     final members = [
@@ -182,7 +201,11 @@ class _FamilyDialogState extends State<FamilyDialog> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                _editableRow(label: "出生年份", value: "2025", icon: Icons.calendar_today),
+                _editableRow(
+                    label: "出生年份",
+                    value: "2025",
+                    icon: Icons.calendar_today,
+                    onTap: () => _selectYear()),
                 const Divider(color: Color(0xFF669FA5)),
                 const SizedBox(height: 10),
                 _editableRow(
@@ -192,7 +215,8 @@ class _FamilyDialogState extends State<FamilyDialog> {
                     onTap: () => _showHabitDialog(context)),
                 const Divider(color: Color(0xFF669FA5)),
                 const SizedBox(height: 10),
-                _editableRow(label: "特殊疾病", value: "未填寫", icon: Icons.edit),
+                _editableRow(
+                    label: "特殊疾病", value: "未填寫", icon: Icons.edit, onTap: () => _showMultiSelect()),
                 const Divider(color: Color(0xFF669FA5)),
                 // const SizedBox(height: 12),
                 IconButton(
@@ -212,19 +236,18 @@ class _FamilyDialogState extends State<FamilyDialog> {
 
   Widget _editableRow(
       {required String label, required String value, required IconData icon, VoidCallback? onTap}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Text(label,
-            style: const TextStyle(
-                fontSize: 14, color: Color(0xFF2E6D74), fontWeight: FontWeight.bold)),
-        Text(value, style: TextStyle(fontSize: 14, color: Colors.grey[500])),
-        InkWell(
-          onTap: onTap ?? () {},
-          child: Icon(icon, size: 18, color: const Color(0xFF2E6D74)),
-        )
-      ],
-    );
+    return InkWell(
+        onTap: onTap ?? () {},
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(label,
+                style: const TextStyle(
+                    fontSize: 14, color: Color(0xFF2E6D74), fontWeight: FontWeight.bold)),
+            Text(value, style: TextStyle(fontSize: 14, color: Colors.grey[500])),
+            Icon(icon, size: 18, color: const Color(0xFF2E6D74)),
+          ],
+        ));
   }
 
   void _showHabitDialog(BuildContext context) {
@@ -312,27 +335,109 @@ class _FamilyDialogState extends State<FamilyDialog> {
                 buildHabitRow("喝酒", ["無", "偶爾(每月1～3次)", "經常"]),
                 buildHabitRow("嚼檳榔", ["無", "偶爾(每月1～5次)", "經常"]),
                 const SizedBox(height: 10),
-                // ElevatedButton(
-                //   onPressed: () {
-                //     debugPrint("個人習慣選擇：$habits");
-                //     Navigator.pop(context);
-                //   },
-                //   style: ElevatedButton.styleFrom(
-                //     backgroundColor: const Color(0xFF5A7C7C),
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(10),
-                //     ),
-                //     minimumSize: const Size(100, 40),
-                //   ),
-                //   child: const Text(
-                //     "完成",
-                //     style: TextStyle(color: Colors.white, fontSize: 16),
-                //   ),
-                // ),
               ],
             ),
           ),
         );
+      },
+    );
+  }
+
+  Future<void> _selectYear() async {
+    final picked = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: YearSelectorDialog(
+          selectedYear: selectedYear,
+          maxYear: DateTime.now().year,
+          minYear: 1900,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      ),
+    );
+
+    if (picked != null && picked != selectedYear) {
+      setState(() {
+        selectedYear = picked;
+      });
+    }
+  }
+
+  void _showMultiSelect() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setModalState) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24), // ⬅️ 外框 padding
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // drag handle
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const Text(
+                  '選擇症狀',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF5E9CA0),
+                  ),
+                ),
+                const SizedBox(height: 16), // ⬅️ 標題和 chips 間距
+                Wrap(
+                  spacing: 8, // ⬅️ chips 左右間距
+                  runSpacing: 8, // ⬅️ chips 上下間距
+                  children: symptoms.map((symptom) {
+                    final isSelected = selectedSymptoms.contains(symptom);
+                    return FilterChip(
+                      label: Text(symptom),
+                      selected: isSelected,
+                      selectedColor: const Color(0xFFE5F8F8),
+                      checkmarkColor: const Color(0xFF5E9CA0),
+                      labelStyle: TextStyle(
+                        color: isSelected ? const Color(0xFF5E9CA0) : Colors.grey[700],
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                      shape: StadiumBorder(
+                        side: BorderSide(
+                          color: isSelected ? const Color(0xFF5E9CA0) : Colors.grey[400]!,
+                        ),
+                      ),
+                      onSelected: (bool value) {
+                        setModalState(() {
+                          if (value) {
+                            selectedSymptoms.add(symptom);
+                          } else {
+                            selectedSymptoms.remove(symptom);
+                          }
+                        });
+                        setState(() {});
+                      },
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 24), // ⬅️ chips 和底部間距
+              ],
+            ),
+          );
+        });
       },
     );
   }
