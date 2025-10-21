@@ -37,12 +37,12 @@ class _FamilyPageState extends State<FamilyPage> {
             color: FrontUtil.textColor,
           ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Icon(Icons.notifications_none, color: FrontUtil.textColor),
-          ),
-        ],
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 16),
+        //     child: Icon(Icons.notifications_none, color: FrontUtil.textColor),
+        //   ),
+        // ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -69,7 +69,7 @@ class _FamilyPageState extends State<FamilyPage> {
                         height: 60,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage('images/icon.png'),
+                            image: AssetImage('images/register_icon.png'),
                             fit: BoxFit.contain,
                           ),
                         ),
