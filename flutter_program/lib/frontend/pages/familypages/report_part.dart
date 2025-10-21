@@ -1,3 +1,4 @@
+import 'package:drw/frontend/pages/familypages/family_images.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 
@@ -15,12 +16,24 @@ class _ReportImagePartState extends State<ReportImagePart> {
         child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('最新報告', () {
-          // 點擊更多按鈕的處理
+        _buildSectionTitle('本週診斷報告', () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const FamilyImagesPage(
+                      title: '本週診斷報告',
+                    )),
+          );
         }),
         _buildImageSection([]),
-        _buildSectionTitle('歷史報告', () {
-          // 點擊更多按鈕的處理
+        _buildSectionTitle('割傷', () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const FamilyImagesPage(
+                      title: '割傷診斷報告',
+                    )),
+          );
         }),
         _buildImageSection([]),
       ],
@@ -32,11 +45,13 @@ class _ReportImagePartState extends State<ReportImagePart> {
       padding: const EdgeInsets.fromLTRB(16, 20, 10, 0),
       child: Row(
         children: [
-          const SizedBox(height: 15,),
+          const SizedBox(
+            height: 15,
+          ),
           Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const Spacer(),
           TextButton(
-              onPressed: () {},
+              onPressed: onMorePressed,
               child: Row(
                 children: [
                   Text('更多', style: TextStyle(color: FrontUtil.textColor)),

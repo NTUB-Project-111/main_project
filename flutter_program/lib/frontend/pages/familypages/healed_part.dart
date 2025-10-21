@@ -1,3 +1,4 @@
+import 'package:drw/frontend/pages/familypages/family_images.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 
@@ -17,11 +18,23 @@ class _HealedPartState extends State<HealedPart> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionTitle('2025年 9月', () {
-          // 點擊更多按鈕的處理
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const FamilyImagesPage(
+                      title: '2025年9月_已癒合',
+                    )),
+          );
         }),
         _buildImageSection([]),
         _buildSectionTitle('2025年 8月', () {
-          // 點擊更多按鈕的處理
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const FamilyImagesPage(
+                      title: '2025年8月_已癒合',
+                    )),
+          );
         }),
         _buildImageSection([]),
       ],
@@ -33,13 +46,13 @@ class _HealedPartState extends State<HealedPart> {
       padding: const EdgeInsets.fromLTRB(16, 20, 10, 0),
       child: Row(
         children: [
-          const SizedBox(
-            height: 15,
-          ),
+          // const SizedBox(
+          //   height: 15,
+          // ),
           Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const Spacer(),
           TextButton(
-              onPressed: () {},
+              onPressed: onMorePressed,
               child: Row(
                 children: [
                   Text('更多', style: TextStyle(color: FrontUtil.textColor)),
