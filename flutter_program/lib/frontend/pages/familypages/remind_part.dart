@@ -19,19 +19,22 @@ class _RemindPartState extends State<RemindPart> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: List.generate(
-        4,
-        (index) => Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: _buildRemindSection(
-            index: index,
-            imageUrl: 'https://i.imgur.com/0vYJq8K.jpg',
-            date: '2025/10/20',
-            type: '擦傷',
-            time: '2025/10/21 18:30',
+      children: [
+        const SizedBox(height: 20),
+        ...List.generate(
+          4,
+          (index) => Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: _buildRemindSection(
+              index: index,
+              imageUrl: 'https://i.imgur.com/0vYJq8K.jpg',
+              date: '2025/10/20',
+              type: '擦傷',
+              time: '2025/10/21 18:30',
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 
