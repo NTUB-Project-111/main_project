@@ -40,9 +40,9 @@ class _FamilyDialogState extends State<FamilyDialog> {
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 25),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+        padding: const EdgeInsets.fromLTRB(30, 25, 30, 25),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -57,15 +57,15 @@ class _FamilyDialogState extends State<FamilyDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              '請選擇要切換的角色',
-              style: TextStyle(
-                fontSize: 18,
-                color: Color(0xFF326A6A),
-                fontWeight: FontWeight.bold,
+              const Text(
+                '請選擇要查看的家人',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Color(0xFF326A6A),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
 
             // 家庭成員方格
             GridView.builder(
@@ -98,7 +98,8 @@ class _FamilyDialogState extends State<FamilyDialog> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         if (member['isMain'] == true)
-                          const Icon(Icons.home, size: 14, color: Color(0xFF589399)),
+                          const Icon(Icons.home,
+                              size: 14, color: Color(0xFF589399)),
                         if (member['isMain'] == true) const SizedBox(width: 3),
                         Text(
                           member['name'] as String,
@@ -155,9 +156,10 @@ class _FamilyDialogState extends State<FamilyDialog> {
       context: context,
       builder: (context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(50, 30, 50, 20),
+            padding: const EdgeInsets.fromLTRB(0, 20, 5, 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -196,7 +198,8 @@ class _FamilyDialogState extends State<FamilyDialog> {
                         ),
                       ),
                       const SizedBox(width: 4),
-                      const Icon(Icons.edit, size: 18, color: Color(0xFF2E6D74)),
+                      const Icon(Icons.edit,
+                          size: 18, color: Color(0xFF2E6D74)),
                     ],
                   ),
                 ),
@@ -216,7 +219,10 @@ class _FamilyDialogState extends State<FamilyDialog> {
                 const Divider(color: Color(0xFF669FA5)),
                 const SizedBox(height: 10),
                 _editableRow(
-                    label: "特殊疾病", value: "未填寫", icon: Icons.edit, onTap: () => _showMultiSelect()),
+                    label: "特殊疾病",
+                    value: "未填寫",
+                    icon: Icons.edit,
+                    onTap: () => _showMultiSelect()),
                 const Divider(color: Color(0xFF669FA5)),
                 // const SizedBox(height: 12),
                 IconButton(
@@ -224,7 +230,8 @@ class _FamilyDialogState extends State<FamilyDialog> {
                     debugPrint('新成員名稱：${nameController.text}');
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.check_circle, color: Color(0xFF2E6D74), size: 30),
+                  icon: const Icon(Icons.check_circle,
+                      color: Color(0xFF2E6D74), size: 30),
                 ),
               ],
             ),
@@ -235,7 +242,10 @@ class _FamilyDialogState extends State<FamilyDialog> {
   }
 
   Widget _editableRow(
-      {required String label, required String value, required IconData icon, VoidCallback? onTap}) {
+      {required String label,
+      required String value,
+      required IconData icon,
+      VoidCallback? onTap}) {
     return InkWell(
         onTap: onTap ?? () {},
         child: Row(
@@ -243,8 +253,11 @@ class _FamilyDialogState extends State<FamilyDialog> {
           children: [
             Text(label,
                 style: const TextStyle(
-                    fontSize: 14, color: Color(0xFF2E6D74), fontWeight: FontWeight.bold)),
-            Text(value, style: TextStyle(fontSize: 14, color: Colors.grey[500])),
+                    fontSize: 14,
+                    color: Color(0xFF2E6D74),
+                    fontWeight: FontWeight.bold)),
+            Text(value,
+                style: TextStyle(fontSize: 14, color: Colors.grey[500])),
             Icon(icon, size: 18, color: const Color(0xFF2E6D74)),
           ],
         ));
@@ -286,9 +299,10 @@ class _FamilyDialogState extends State<FamilyDialog> {
                             value: option,
                             groupValue: habits[title],
                             activeColor: const Color(0xFF2E6D74),
-                            visualDensity:
-                                const VisualDensity(horizontal: -4, vertical: -4), // 減少 Radio 佔據的空間
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, // 去除多餘空白點擊範圍
+                            visualDensity: const VisualDensity(
+                                horizontal: -4, vertical: -4), // 減少 Radio 佔據的空間
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap, // 去除多餘空白點擊範圍
                             onChanged: (value) {
                               habits[title] = value!;
                               (context as Element).markNeedsBuild();
@@ -314,7 +328,8 @@ class _FamilyDialogState extends State<FamilyDialog> {
         }
 
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 25),
             child: Column(
@@ -375,7 +390,8 @@ class _FamilyDialogState extends State<FamilyDialog> {
       builder: (context) {
         return StatefulBuilder(builder: (context, setModalState) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24), // ⬅️ 外框 padding
+            padding: const EdgeInsets.symmetric(
+                horizontal: 24, vertical: 24), // ⬅️ 外框 padding
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,12 +428,17 @@ class _FamilyDialogState extends State<FamilyDialog> {
                       selectedColor: const Color(0xFFE5F8F8),
                       checkmarkColor: const Color(0xFF5E9CA0),
                       labelStyle: TextStyle(
-                        color: isSelected ? const Color(0xFF5E9CA0) : Colors.grey[700],
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected
+                            ? const Color(0xFF5E9CA0)
+                            : Colors.grey[700],
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
                       ),
                       shape: StadiumBorder(
                         side: BorderSide(
-                          color: isSelected ? const Color(0xFF5E9CA0) : Colors.grey[400]!,
+                          color: isSelected
+                              ? const Color(0xFF5E9CA0)
+                              : Colors.grey[400]!,
                         ),
                       ),
                       onSelected: (bool value) {
