@@ -40,7 +40,7 @@ class _FamilyDialogState extends State<FamilyDialog> {
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 25),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         padding: const EdgeInsets.fromLTRB(30, 25, 30, 25),
         decoration: BoxDecoration(
@@ -57,14 +57,14 @@ class _FamilyDialogState extends State<FamilyDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-              const Text(
-                '請選擇要查看的家人',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Color(0xFF326A6A),
-                  fontWeight: FontWeight.bold,
-                ),
+            const Text(
+              '請選擇要查看的家人',
+              style: TextStyle(
+                fontSize: 18,
+                color: Color(0xFF326A6A),
+                fontWeight: FontWeight.bold,
               ),
+            ),
             const SizedBox(height: 40),
 
             // 家庭成員方格
