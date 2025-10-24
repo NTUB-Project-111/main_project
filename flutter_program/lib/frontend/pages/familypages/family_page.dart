@@ -27,7 +27,10 @@ class _FamilyPageState extends State<FamilyPage> {
         ),
         title: Text(
           '家庭群組',
-          style: TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold, fontSize: 20),
+          style: TextStyle(
+              color: FrontUtil.textColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 20),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -45,7 +48,7 @@ class _FamilyPageState extends State<FamilyPage> {
           children: [
             // 頂部卡片
             Container(
-              padding: const EdgeInsets.fromLTRB(20, 40, 20, 10),
+              padding: const EdgeInsets.fromLTRB(23, 20, 23, 35),
               width: double.infinity,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -61,8 +64,8 @@ class _FamilyPageState extends State<FamilyPage> {
                     children: [
                       // 小熊圖示
                       Container(
-                        width: 60,
-                        height: 60,
+                        width: 68,
+                        height: 68,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('images/register_icon.png'),
@@ -70,7 +73,7 @@ class _FamilyPageState extends State<FamilyPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 16),
                       // 家庭名稱與人數
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,13 +81,13 @@ class _FamilyPageState extends State<FamilyPage> {
                           const Text(
                             '我滴家 🏠',
                             style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 height: 2,
                                 color: Color(0xFF589399)),
                           ),
                           Text(
-                            '家庭人數：4',
+                            '家庭人數：4', //這裡之後要改成變數呦
                             style: TextStyle(color: FrontUtil.textColor),
                           ),
                         ],
@@ -97,7 +100,8 @@ class _FamilyPageState extends State<FamilyPage> {
                               builder: (context) => const FamilyDialog(),
                             );
                           },
-                          icon: Icon(Icons.groups_rounded, color: FrontUtil.textColor)),
+                          icon: Icon(Icons.groups_rounded,
+                              color: FrontUtil.textColor)),
                     ],
                   ),
                   const SizedBox(height: 12),
