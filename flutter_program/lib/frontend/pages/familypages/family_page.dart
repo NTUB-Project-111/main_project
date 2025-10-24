@@ -21,7 +21,9 @@ class _FamilyPageState extends State<FamilyPage> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: FrontUtil.textColor),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         title: Text(
           '家庭群組',
@@ -37,12 +39,6 @@ class _FamilyPageState extends State<FamilyPage> {
             color: FrontUtil.textColor,
           ),
         ),
-        // actions: [
-        //   Padding(
-        //     padding: const EdgeInsets.only(right: 16),
-        //     child: Icon(Icons.notifications_none, color: FrontUtil.textColor),
-        //   ),
-        // ],
       ),
       body: SingleChildScrollView(
         child: Column(

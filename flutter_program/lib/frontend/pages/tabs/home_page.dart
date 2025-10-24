@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drw/backend/viewmodels/homeremind_view_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
+import 'package:drw/frontend/pages/familypages/family_page.dart';
 import 'package:drw/frontend/pages/guestblock_page.dart';
 import 'package:drw/frontend/pages/remind_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
@@ -93,10 +94,27 @@ class _HomePageState extends State<HomePage> {
             ),
             actions: [
               IconButton(
+                icon: Icon(Icons.group, color: FrontUtil.textColor),
+                onPressed: () async {
+                  final isGuest = Provider.of<UserProvider>(context, listen: false).isGuest;
+
+                  if (isGuest) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const GuestBlockPage()),
+                    );
+                    return;
+                  }
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FamilyPage()),
+                  );
+                },
+              ),
+              IconButton(
                 icon: Icon(Icons.notifications, color: FrontUtil.textColor),
                 onPressed: () async {
-                  final isGuest =
-                      Provider.of<UserProvider>(context, listen: false).isGuest;
+                  final isGuest = Provider.of<UserProvider>(context, listen: false).isGuest;
 
                   if (isGuest) {
                     Navigator.push(
@@ -136,8 +154,7 @@ class _HomePageState extends State<HomePage> {
                     onTap: () => _launchUrl(links[index]),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(url,
-                          fit: BoxFit.cover, width: double.infinity),
+                      child: Image.asset(url, fit: BoxFit.cover, width: double.infinity),
                     ),
                   );
                 },
@@ -165,8 +182,7 @@ class _HomePageState extends State<HomePage> {
                       padding: EdgeInsets.fromLTRB(3, 0, 5, 3),
                       child: Text(
                         '換藥提醒',
-                        style:
-                            TextStyle(fontSize: 15, color: Color(0xFF669FA5)),
+                        style: TextStyle(fontSize: 15, color: Color(0xFF669FA5)),
                       ),
                     ),
                     Expanded(
@@ -199,8 +215,8 @@ class _HomePageState extends State<HomePage> {
       return []; // 或回傳 [Text("今日無提醒")]
     }
     return reminds
-        .map((remind) => remindeTile(
-            remind.time, "換藥", remind.woundType, remind.imagePath)) // 生成 widget
+        .map((remind) =>
+            remindeTile(remind.time, "換藥", remind.woundType, remind.imagePath)) // 生成 widget
         .toList(); // 轉換為 List<Widget>
   }
 
