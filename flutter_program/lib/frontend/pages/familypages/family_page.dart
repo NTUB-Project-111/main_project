@@ -66,7 +66,7 @@ class _FamilyPageState extends State<FamilyPage> {
           children: [
             // 頂部卡片
             Container(
-              padding: const EdgeInsets.fromLTRB(23, 20, 23, 35),
+              padding: const EdgeInsets.fromLTRB(23, 20, 23, 0),
               width: double.infinity,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -122,53 +122,102 @@ class _FamilyPageState extends State<FamilyPage> {
                               color: FrontUtil.textColor)),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildTopButton('報告集', 0),
-                      _buildTopButton('已開啟提醒報告', 1),
-                      _buildTopButton('已癒合', 2),
-                    ],
-                  ),
+                  const SizedBox(height: 5),
+
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //   children: [
+                  //     _buildTopButton('報告集', 0),
+                  //     _buildTopButton('已開啟提醒報告', 1),
+                  //     _buildTopButton('已癒合', 2),
+                  //   ],
+                  // ),
                 ],
               ),
             ),
+
             // 將報告集區塊包在固定高度的 Container 中
             Container(
-              height: 550, // 想依照手機高度進行調整（用比例的，未用。
+              height: 600,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _selectedTopIndex == 0
-                  ? GridView.builder(
-                      physics:
-                          const AlwaysScrollableScrollPhysics(), // 這裡 GridView 可以滑動
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        childAspectRatio: 0.72,
-                      ),
-                      itemCount: reportList.length,
-                      itemBuilder: (context, index) {
-                        final report = reportList[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                              top: 8, right: 6), // ✅ 給每個卡片上方空間
-                          child: FamilyRecordCard(
-                            imageUrl: report['imageUrl'] ?? '',
-                            date: report['date'] ?? '',
-                            woundType: report['woundType'] ?? '',
-                            role: report['role'] ?? '',
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8), // 左右與上下內距
+                          child: Row(
+                            children: [
+                              // 左側分隔線
+                              Expanded(
+                                child: Container(
+                                  height: 1.5, // 線條粗細
+                                  color: Color(0xFF669FA5),
+                                ),
+                              ),
+                              const SizedBox(width: 25), // 線和文字間距
+                              // 標題文字
+                              const Text(
+                                '診斷報告集',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF669FA5),
+                                  shadows: [
+                                    Shadow(
+                                      offset: Offset(1, 1),
+                                      blurRadius: 2,
+                                      color: Colors.black26,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
+                        ),
+                        Expanded(
+                          child: GridView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              childAspectRatio: 0.72,
+                            ),
+                            itemCount: reportList.length,
+                            itemBuilder: (context, index) {
+                              final report = reportList[index];
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 8, right: 6),
+                                child: FamilyRecordCard(
+                                  imageUrl: report['imageUrl'] ?? '',
+                                  date: report['date'] ?? '',
+                                  woundType: report['woundType'] ?? '',
+                                  role: report['role'] ?? '',
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     )
                   : _selectedTopIndex == 1
                       ? const RemindPart()
                       : const HealedPart(),
             ),
-            const SizedBox(height: 10),
+
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildTopButton('報告', 0),
+                _buildTopButton('提醒', 1),
+                _buildTopButton('癒合', 2),
+              ],
+            ),
           ],
         ),
       ),
