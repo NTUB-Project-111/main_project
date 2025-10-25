@@ -2,6 +2,7 @@ import 'package:drw/frontend/pages/familypages/family_dialog.dart';
 import 'package:drw/frontend/pages/familypages/healed_part.dart';
 import 'package:drw/frontend/pages/familypages/remind_part.dart';
 import 'package:drw/frontend/pages/familypages/report_part.dart';
+import 'package:drw/frontend/utility/family_record_util.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,23 @@ class FamilyPage extends StatefulWidget {
   State<FamilyPage> createState() => _FamilyPageState();
 }
 
+//--------------假資料 (之後記得刪掉------------------------
+final List<Map<String, String>> reportList = [
+  {'imageUrl': '', 'date': '10.25', 'woundType': '割傷', 'role': '媽'},
+  {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
+  {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
+  {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
+  {'imageUrl': '', 'date': '10.25', 'woundType': '割傷', 'role': '媽'},
+  {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
+  {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
+  {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
+  {'imageUrl': '', 'date': '10.25', 'woundType': '割傷', 'role': '媽'},
+  {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
+  {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
+  {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
+];
+
+//----------------------------------------
 class _FamilyPageState extends State<FamilyPage> {
   int _selectedTopIndex = 0;
   @override
@@ -116,14 +134,35 @@ class _FamilyPageState extends State<FamilyPage> {
                 ],
               ),
             ),
-            Padding(
+            // 將報告集區塊包在固定高度的 Container 中
+            Container(
+              height: 550, // 根據實際需求調整高度
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _selectedTopIndex == 0
-                  ? const ReportImagePart()
+                  ? GridView.builder(
+                      physics:
+                          const AlwaysScrollableScrollPhysics(), // 這裡 GridView 可以滑動
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: 0.7,
+                      ),
+                      itemCount: reportList.length,
+                      itemBuilder: (context, index) {
+                        final report = reportList[index];
+                        return FamilyRecordCard(
+                          imageUrl: report['imageUrl'] ?? '',
+                          date: report['date'] ?? '',
+                          woundType: report['woundType'] ?? '',
+                          role: report['role'] ?? '',
+                        );
+                      },
+                    )
                   : _selectedTopIndex == 1
                       ? const RemindPart()
                       : const HealedPart(),
-              // child:const HealedPart()
             ),
             const SizedBox(height: 10),
           ],
