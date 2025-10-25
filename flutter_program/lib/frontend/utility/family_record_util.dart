@@ -8,12 +8,12 @@ class FamilyRecordCard extends StatelessWidget {
   final String role; // 角色分類文字
 
   const FamilyRecordCard({
-    Key? key,
+    super.key,
     required this.imageUrl,
     required this.date,
     required this.woundType,
     required this.role,
-  }) : super(key: key);
+  });
 
   // 根據角色決定顏色
   Color _getRoleColor(String role) {
@@ -58,7 +58,7 @@ class FamilyRecordCard extends StatelessWidget {
               ],
             ),
             child: Card(
-              elevation: 0, // ⚠️ 關掉預設陰影，不然會疊加
+              elevation: 0,
               color: const Color.fromARGB(255, 248, 254, 255),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -66,6 +66,7 @@ class FamilyRecordCard extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
+                  // mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ClipRRect(
@@ -85,17 +86,23 @@ class FamilyRecordCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
+                    // 改為不使用 Flexible（在未被限制的 Column 中可能會導致 overflow）
                     Text(
                       '拍攝日：$date',
-                      style:
-                          TextStyle(fontSize: 12, color: FrontUtil.textColor),
+                      style: TextStyle(fontSize: 12, color: FrontUtil.textColor),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       '類型：$woundType',
-                      style:
-                          TextStyle(fontSize: 12, color: FrontUtil.textColor),
+                      style: TextStyle(fontSize: 12, color: FrontUtil.textColor),
                     ),
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   mainAxisSize: MainAxisSize.min,
+                    //   children: [
+
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
@@ -111,8 +118,7 @@ class FamilyRecordCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color.fromARGB(255, 163, 193, 209)
-                        .withOpacity(0.4),
+                    color: const Color.fromARGB(255, 163, 193, 209).withOpacity(0.4),
                     blurRadius: 4,
                     offset: const Offset(1, 2),
                   ),

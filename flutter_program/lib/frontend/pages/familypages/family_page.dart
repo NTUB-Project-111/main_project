@@ -1,7 +1,7 @@
 import 'package:drw/frontend/pages/familypages/family_dialog.dart';
 import 'package:drw/frontend/pages/familypages/healed_part.dart';
 import 'package:drw/frontend/pages/familypages/remind_part.dart';
-import 'package:drw/frontend/pages/familypages/report_part.dart';
+// import 'package:drw/frontend/pages/familypages/report_part.dart';
 import 'package:drw/frontend/utility/family_record_util.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -45,10 +45,7 @@ class _FamilyPageState extends State<FamilyPage> {
         ),
         title: Text(
           '家庭群組',
-          style: TextStyle(
-              color: FrontUtil.textColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 20),
+          style: TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold, fontSize: 20),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -61,165 +58,88 @@ class _FamilyPageState extends State<FamilyPage> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // 頂部卡片
-            Container(
-              padding: const EdgeInsets.fromLTRB(23, 20, 23, 0),
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  // colors: [Color(0xFF7EC2CA), Color(0xFFB8E6EB),Color(0xFFF4FEFF)],
-                  colors: [Color(0xFFB8E6EB), Color(0xFFF4FEFF), Colors.white],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      // 小熊圖示
-                      Container(
-                        width: 68,
-                        height: 68,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('images/register_icon.png'),
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      // 家庭名稱與人數
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            '我滴家 🏠',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                height: 2,
-                                color: Color(0xFF589399)),
-                          ),
-                          Text(
-                            '家庭人數：4', //這裡之後要改成變數呦
-                            style: TextStyle(color: FrontUtil.textColor),
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      IconButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => const FamilyDialog(),
-                            );
-                          },
-                          icon: Icon(Icons.groups_rounded,
-                              color: FrontUtil.textColor)),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  //   children: [
-                  //     _buildTopButton('報告集', 0),
-                  //     _buildTopButton('已開啟提醒報告', 1),
-                  //     _buildTopButton('已癒合', 2),
-                  //   ],
-                  // ),
-                ],
+      body: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(23, 20, 23, 0),
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                // colors: [Color(0xFF7EC2CA), Color(0xFFB8E6EB),Color(0xFFF4FEFF)],
+                colors: [Color(0xFFB8E6EB), Color(0xFFF4FEFF), Colors.white],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
-
-            // 將報告集區塊包在固定高度的 Container 中
-            Container(
-              height: 600,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _selectedTopIndex == 0
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8), // 左右與上下內距
-                          child: Row(
-                            children: [
-                              // 左側分隔線
-                              Expanded(
-                                child: Container(
-                                  height: 1.5, // 線條粗細
-                                  color: Color(0xFF669FA5),
-                                ),
-                              ),
-                              const SizedBox(width: 25), // 線和文字間距
-                              // 標題文字
-                              const Text(
-                                '診斷報告集',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF669FA5),
-                                  shadows: [
-                                    Shadow(
-                                      offset: Offset(1, 1),
-                                      blurRadius: 2,
-                                      color: Colors.black26,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    // 小熊圖示
+                    Container(
+                      width: 68,
+                      height: 68,
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('images/register_icon.png'),
+                          fit: BoxFit.contain,
                         ),
-                        Expanded(
-                          child: GridView.builder(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              mainAxisSpacing: 10,
-                              crossAxisSpacing: 10,
-                              childAspectRatio: 0.72,
-                            ),
-                            itemCount: reportList.length,
-                            itemBuilder: (context, index) {
-                              final report = reportList[index];
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 8, right: 6),
-                                child: FamilyRecordCard(
-                                  imageUrl: report['imageUrl'] ?? '',
-                                  date: report['date'] ?? '',
-                                  woundType: report['woundType'] ?? '',
-                                  role: report['role'] ?? '',
-                                ),
-                              );
-                            },
-                          ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // 家庭名稱與人數
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '我滴家 🏠',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              height: 2,
+                              color: Color(0xFF589399)),
+                        ),
+                        Text(
+                          '家庭人數：4', //這裡之後要改成變數呦
+                          style: TextStyle(color: FrontUtil.textColor),
                         ),
                       ],
-                    )
-                  : _selectedTopIndex == 1
-                      ? const RemindPart()
-                      : const HealedPart(),
-            ),
-
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildTopButton('報告', 0),
-                _buildTopButton('提醒', 1),
-                _buildTopButton('癒合', 2),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => const FamilyDialog(),
+                          );
+                        },
+                        icon: Icon(Icons.groups_rounded, color: FrontUtil.textColor)),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
+          ),
+          // _buildTopHeader(context), // 上方的家庭資訊
+          Container(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildTopButton('報告集', 0),
+                  _buildTopButton('已開啟提醒報告', 1),
+                  _buildTopButton('已癒合', 2),
+                ],
+              )),
+          Expanded(
+            // ✅ 讓 GridView 自動撐滿剩餘空間
+            child: _selectedTopIndex == 0
+                ? _buildReportGrid()
+                : _selectedTopIndex == 1
+                    ? const RemindPart()
+                    : const HealedPart(),
+          ),
+          // const SizedBox(height: 15),
+        ],
       ),
     );
   }
@@ -245,6 +165,28 @@ class _FamilyPageState extends State<FamilyPage> {
         textStyle: const TextStyle(fontSize: 14),
       ),
       child: Text(text),
+    );
+  }
+
+  Widget _buildReportGrid() {
+    return GridView.builder(
+      padding: const EdgeInsets.only(top: 8, left: 20, right: 20, bottom: 25),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: 0.72,
+      ),
+      itemCount: reportList.length,
+      itemBuilder: (context, index) {
+        final report = reportList[index];
+        return FamilyRecordCard(
+          imageUrl: report['imageUrl'] ?? '',
+          date: report['date'] ?? '',
+          woundType: report['woundType'] ?? '',
+          role: report['role'] ?? '',
+        );
+      },
     );
   }
 }
