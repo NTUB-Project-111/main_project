@@ -15,7 +15,7 @@ class FamilyPage extends StatefulWidget {
 
 //--------------假資料 (之後記得刪掉------------------------
 final List<Map<String, String>> reportList = [
-  {'imageUrl': '', 'date': '10.25', 'woundType': '割傷', 'role': '媽'},
+  {'imageUrl': '', 'date': '10.25', 'woundType': '手術傷口', 'role': '媽'},
   {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
   {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
   {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
@@ -136,7 +136,7 @@ class _FamilyPageState extends State<FamilyPage> {
             ),
             // 將報告集區塊包在固定高度的 Container 中
             Container(
-              height: 550, // 根據實際需求調整高度
+              height: 550, // 想依照手機高度進行調整（用比例的，未用。
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _selectedTopIndex == 0
                   ? GridView.builder(
@@ -147,16 +147,20 @@ class _FamilyPageState extends State<FamilyPage> {
                         crossAxisCount: 3,
                         mainAxisSpacing: 10,
                         crossAxisSpacing: 10,
-                        childAspectRatio: 0.7,
+                        childAspectRatio: 0.72,
                       ),
                       itemCount: reportList.length,
                       itemBuilder: (context, index) {
                         final report = reportList[index];
-                        return FamilyRecordCard(
-                          imageUrl: report['imageUrl'] ?? '',
-                          date: report['date'] ?? '',
-                          woundType: report['woundType'] ?? '',
-                          role: report['role'] ?? '',
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                              top: 8, right: 6), // ✅ 給每個卡片上方空間
+                          child: FamilyRecordCard(
+                            imageUrl: report['imageUrl'] ?? '',
+                            date: report['date'] ?? '',
+                            woundType: report['woundType'] ?? '',
+                            role: report['role'] ?? '',
+                          ),
                         );
                       },
                     )

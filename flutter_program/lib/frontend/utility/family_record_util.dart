@@ -41,8 +41,9 @@ class FamilyRecordCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 120, // 固定寬度
+      width: 120,
       child: Stack(
+        clipBehavior: Clip.none, // ✅ 允許超出邊界
         children: [
           Card(
             elevation: 4,
@@ -58,12 +59,9 @@ class FamilyRecordCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: AspectRatio(
-                      aspectRatio: 1, // 圖片方形
+                      aspectRatio: 1,
                       child: imageUrl.isNotEmpty
-                          ? Image.network(
-                              imageUrl,
-                              fit: BoxFit.cover,
-                            )
+                          ? Image.network(imageUrl, fit: BoxFit.cover)
                           : Container(
                               color: Colors.grey[400],
                               child: const Icon(
@@ -81,16 +79,18 @@ class FamilyRecordCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '傷口類型：$woundType',
+                    '類型：$woundType',
                     style: const TextStyle(fontSize: 12, color: Colors.black),
                   ),
                 ],
               ),
             ),
           ),
+
+          // ✅ 改成右上角，且略微凸出
           Positioned(
-            bottom: 8,
-            right: 8,
+            top: -6, // 向上凸出一點
+            right: -6, // 向右凸出一點
             child: CircleAvatar(
               radius: 16,
               backgroundColor: _getRoleColor(role),
