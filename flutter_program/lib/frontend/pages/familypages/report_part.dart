@@ -42,20 +42,23 @@ class _ReportImagePartState extends State<ReportImagePart> {
 
   static Widget _buildSectionTitle(String title, VoidCallback onMorePressed) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 10, 0),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       child: Row(
         children: [
           const SizedBox(
             height: 15,
           ),
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(title,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const Spacer(),
           TextButton(
               onPressed: onMorePressed,
               child: Row(
                 children: [
                   Text('更多', style: TextStyle(color: FrontUtil.textColor)),
-                  Icon(Icons.arrow_forward_ios, size: 12, color: FrontUtil.textColor),
+                  Icon(Icons.arrow_forward_ios,
+                      size: 12, color: FrontUtil.textColor),
                 ],
               ))
         ],
@@ -65,7 +68,7 @@ class _ReportImagePartState extends State<ReportImagePart> {
 
   static Widget _buildImageSection(List<String> imagePaths) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Row(
         children: [
           imagePaths.isEmpty
@@ -74,7 +77,8 @@ class _ReportImagePartState extends State<ReportImagePart> {
                   width: 159, //176
                   margin: const EdgeInsets.only(right: 10),
                   decoration: BoxDecoration(
-                      color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(10)),
                 )
               : ClipRRect(
                   child: Image.network(
@@ -92,7 +96,8 @@ class _ReportImagePartState extends State<ReportImagePart> {
                       width: 159,
                       margin: const EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
-                          color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(10)),
                     )
                   : ClipRRect(
                       child: Image.network(
@@ -110,7 +115,8 @@ class _ReportImagePartState extends State<ReportImagePart> {
                           width: 74, //83
                           margin: const EdgeInsets.only(right: 10),
                           decoration: BoxDecoration(
-                              color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10)),
                         )
                       : ClipRRect(
                           child: Image.network(
@@ -125,7 +131,8 @@ class _ReportImagePartState extends State<ReportImagePart> {
                           height: 105,
                           width: 74,
                           decoration: BoxDecoration(
-                              color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10)),
                         )
                       : ClipRRect(
                           child: Image.network(
