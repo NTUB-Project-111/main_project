@@ -139,7 +139,7 @@ class _FamilyPageState extends State<FamilyPage> {
 
           // 底部三個 icon + 文字按鈕
           Container(
-            padding: const EdgeInsets.fromLTRB(20, 15, 20, 30),
+            padding: const EdgeInsets.fromLTRB(20, 15, 20, 35),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
