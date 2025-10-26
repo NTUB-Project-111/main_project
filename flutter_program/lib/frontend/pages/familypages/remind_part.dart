@@ -359,6 +359,7 @@ class _WoundRemindPageState extends State<RemindPart> {
           const SizedBox(height: 8),
 
           // 今日換藥列表（固定高度 + 可滑動）
+          // 希望可以在點擊單個提醒時跳出對應的診斷報告
           SizedBox(
             height: listHeight,
             child: ListView.builder(
