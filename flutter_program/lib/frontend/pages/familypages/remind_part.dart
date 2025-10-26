@@ -411,7 +411,7 @@ class _WoundRemindPageState extends State<RemindPart> {
 
           // ===== 推薦開啟提醒區塊 =====
           const Text(
-            "推薦開啟換藥提醒",
+            "建議開啟換藥提醒", //可以根據癒合時間的長短進行建議
             style: TextStyle(
               color: Color(0xFF669FA5),
               fontSize: 18,
