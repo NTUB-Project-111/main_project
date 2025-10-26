@@ -32,6 +32,7 @@ final List<Map<String, String>> reportList = [
 //----------------------------------------
 class _FamilyPageState extends State<FamilyPage> {
   int _selectedTopIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,12 +64,12 @@ class _FamilyPageState extends State<FamilyPage> {
       ),
       body: Column(
         children: [
+          // 上方家庭資訊區塊
           Container(
             padding: const EdgeInsets.fromLTRB(23, 20, 23, 0),
             width: double.infinity,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                // colors: [Color(0xFF7EC2CA), Color(0xFFB8E6EB),Color(0xFFF4FEFF)],
                 colors: [Color(0xFFB8E6EB), Color(0xFFF4FEFF), Colors.white],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -103,31 +104,32 @@ class _FamilyPageState extends State<FamilyPage> {
                               color: Color(0xFF589399)),
                         ),
                         Text(
-                          '家庭人數：4', //這裡之後要改成變數呦
+                          '家庭人數：4',
                           style: TextStyle(color: FrontUtil.textColor),
                         ),
                       ],
                     ),
                     const Spacer(),
                     IconButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => const FamilyDialog(),
-                          );
-                        },
-                        icon: Icon(Icons.groups_rounded,
-                            color: FrontUtil.textColor)),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const FamilyDialog(),
+                        );
+                      },
+                      icon: Icon(Icons.groups_rounded,
+                          color: FrontUtil.textColor),
+                    ),
                   ],
                 ),
               ],
             ),
           ),
-          // _buildTopHeader(context), // 上方的家庭資訊
-          const SizedBox(height: 12),
 
+          const SizedBox(height: 10),
+
+          // 主體內容區
           Expanded(
-            // ✅ 讓 GridView 自動撐滿剩餘空間
             child: _selectedTopIndex == 0
                 ? _buildReportGrid()
                 : _selectedTopIndex == 1
@@ -135,45 +137,71 @@ class _FamilyPageState extends State<FamilyPage> {
                     : const HealedPart(),
           ),
 
+          // 底部三個 icon + 文字按鈕
           Container(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildTopButton('報告', 0),
-                  _buildTopButton('提醒', 1),
-                  _buildTopButton('癒合', 2),
-                ],
-              )),
+            padding: const EdgeInsets.fromLTRB(20, 15, 20, 30),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildTopButton('報告', Icons.article, 0),
+                _buildTopButton('提醒', Icons.alarm, 1),
+                _buildTopButton('癒合', Icons.healing, 2),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTopButton(String text, int index) {
+  // 底部選項按鈕
+  Widget _buildTopButton(String text, IconData icon, int index) {
     final isSelected = _selectedTopIndex == index;
 
-    return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          _selectedTopIndex = index;
-        });
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? const Color(0xFF9FC3C6) : Colors.white,
-        foregroundColor: isSelected ? Colors.white : FrontUtil.textColor,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: FrontUtil.textColor),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        textStyle: const TextStyle(fontSize: 14),
+    return Container(
+      decoration: BoxDecoration(
+        color: isSelected ? const Color(0xFF9FC3C6) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          if (isSelected)
+            BoxShadow(
+              color: const Color(0xFF669FA5).withOpacity(0.3),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+        ],
+        border: Border.all(color: const Color(0xFF669FA5), width: 1),
       ),
-      child: Text(text),
+      child: TextButton.icon(
+        onPressed: () {
+          setState(() {
+            _selectedTopIndex = index;
+          });
+        },
+        icon: Icon(
+          icon,
+          color: isSelected ? Colors.white : const Color(0xFF669FA5),
+          size: 20,
+        ),
+        label: Text(
+          text,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? Colors.white : const Color(0xFF669FA5),
+          ),
+        ),
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+      ),
     );
   }
 
+  // 報告頁 GridView
   Widget _buildReportGrid() {
     return GridView.builder(
       padding: const EdgeInsets.only(top: 8, left: 20, right: 20, bottom: 25),
