@@ -45,7 +45,10 @@ class _FamilyPageState extends State<FamilyPage> {
         ),
         title: Text(
           '家庭群組',
-          style: TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold, fontSize: 20),
+          style: TextStyle(
+              color: FrontUtil.textColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 20),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -113,23 +116,16 @@ class _FamilyPageState extends State<FamilyPage> {
                             builder: (context) => const FamilyDialog(),
                           );
                         },
-                        icon: Icon(Icons.groups_rounded, color: FrontUtil.textColor)),
+                        icon: Icon(Icons.groups_rounded,
+                            color: FrontUtil.textColor)),
                   ],
                 ),
               ],
             ),
           ),
           // _buildTopHeader(context), // 上方的家庭資訊
-          Container(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildTopButton('報告集', 0),
-                  _buildTopButton('已開啟提醒報告', 1),
-                  _buildTopButton('已癒合', 2),
-                ],
-              )),
+          const SizedBox(height: 12),
+
           Expanded(
             // ✅ 讓 GridView 自動撐滿剩餘空間
             child: _selectedTopIndex == 0
@@ -138,7 +134,17 @@ class _FamilyPageState extends State<FamilyPage> {
                     ? const RemindPart()
                     : const HealedPart(),
           ),
-          // const SizedBox(height: 15),
+
+          Container(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildTopButton('報告', 0),
+                  _buildTopButton('提醒', 1),
+                  _buildTopButton('癒合', 2),
+                ],
+              )),
         ],
       ),
     );
