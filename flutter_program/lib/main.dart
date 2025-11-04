@@ -8,6 +8,7 @@ import 'package:drw/frontend/pages/familypages/family_images.dart';
 import 'package:drw/frontend/pages/familypages/family_page.dart';
 import 'package:drw/frontend/pages/loading_page.dart';
 import 'package:drw/frontend/pages/login_page.dart';
+import 'package:drw/frontend/pages/reportpages/record_part.dart';
 import 'package:drw/frontend/pages/test_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:drw/frontend/utility/hospital_util.dart';
@@ -98,8 +99,8 @@ class MyApp extends StatelessWidget {
           ),
           fontFamily: 'NotoSansTC',
         ),
-        // home: const LoadingPage(title: '正在連線伺服器...',isFromEntrance: true,)
-        home : const FamilyPage(),
+        home: const LoadingPage(title: '正在連線伺服器...',isFromEntrance: true,)
+        // home : const FamilyPage(),
         // home: const LoginPage(),
         // home: const TestPage(),
         );
