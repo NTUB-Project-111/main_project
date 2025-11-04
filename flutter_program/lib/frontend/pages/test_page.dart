@@ -1,8 +1,5 @@
-import 'package:drw/backend/models/remind.dart';
-import 'package:drw/frontend/utility/notifier_util.dart';
+import 'package:drw/frontend/pages/reportpages/record_part.dart';
 import 'package:flutter/material.dart';
-// import 'package:device_calendar/device_calendar.dart';
-// import 'package:timezone/timezone.dart' as tz;
 
 class TestPage extends StatefulWidget {
   const TestPage({super.key});
@@ -12,44 +9,19 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
-  Notifier notifier = Notifier();
-  late UserRemind remind;
-  late List<UserRemind> remindList;
-
-  @override
-  void initState() {
-    super.initState();
-    remind =
-        UserRemind(id: 0, recordId: 1, userId: 1, date: '2025-09-26', time: '22:59', freq: '每天');
-    remindList = [remind];
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Test Page')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                final remindTime = DateTime(2025, 10, 4, 14, 05);
-                notifier.addReminder(remindTime);
-              },
-              child: const Text('新增特定時間提醒'),
-            ),
-            ElevatedButton(
-              onPressed: notifier.getAllReminders,
-              child: const Text('查看所有提醒'),
-            ),
-            ElevatedButton(
-              onPressed: notifier.deleteAllReminders,
-              child: const Text('刪除所有提醒'),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const Scaffold(
+        backgroundColor: Color(0xFFEBFEFF),
+        body: SingleChildScrollView(
+            child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Column(
+            children: [
+              RecordPart(),
+            ],
+          ),
+        )));
   }
 }

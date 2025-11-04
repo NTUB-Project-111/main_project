@@ -2,6 +2,7 @@ import 'package:drw/backend/models/user.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
+import 'package:drw/frontend/pages/familypages/family_dialog.dart';
 import 'package:drw/frontend/utility/notifier_util.dart';
 import 'forget_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
@@ -146,6 +147,10 @@ class _LoginPageState extends State<LoginPage> {
                                   setState(() {
                                     isLoading = true;
                                   });
+                                  await showDialog(
+                                    context: context,
+                                    builder: (context) => const FamilyDialog(),
+                                  );
                                   final error = await login.login(login.email, login.password);
                                   if (!mounted) return;
                                   if (error) {
@@ -187,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                                     //   }
                                     // }
 
-                                    FrontUtil.showSuccess('登入成功!');
+                                    // FrontUtil.showSuccess('登入成功!');
                                     if (!mounted) return;
                                     Navigator.pushReplacement(
                                       myContext,

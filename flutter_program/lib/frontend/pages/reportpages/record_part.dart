@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,8 @@ class _RecordPartState extends State<RecordPart> {
   ];
   List<String> woundReactions = ["紅腫", "疼痛", "出血", "發熱", "化膿"];
   final TextEditingController _selfRecord = TextEditingController();
+  final List<String> items = ['爺爺', '奶奶', '爸爸', '媽媽'];
+  String? selectedValue = '爺爺';
   @override
   Widget build(BuildContext context) {
     return Consumer<Report>(builder: (context, report, _) {
@@ -42,10 +45,7 @@ class _RecordPartState extends State<RecordPart> {
               children: [
                 Text(
                   '自我紀錄',
-                  style: TextStyle(
-                    color: Color(0xFF589399),
-                    fontSize: 20,
-                  ),
+                  style: TextStyle(color: Color(0xFF589399), fontSize: 20, height: 3),
                 ),
                 Text(
                   '※選填',
@@ -55,6 +55,72 @@ class _RecordPartState extends State<RecordPart> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
+              ],
+            ),
+            Row(
+              children: [
+                const Text(
+                  '傷口主人',
+                  style: TextStyle(
+                    color: Color(0xFF589399),
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                // const Spacer(),
+                const SizedBox(width: 30),
+                Expanded(
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton2<String>(
+                      isExpanded: true,
+                      value: selectedValue,
+                      items: items
+                          .map((item) => DropdownMenuItem<String>(
+                                value: item,
+                                child: Text(
+                                  item,
+                                  style: const TextStyle(
+                                    color: Color(0xFF5A9A9A),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedValue = value;
+                        });
+                      },
+                      buttonStyleData: ButtonStyleData(
+                        height: 50,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0x4D000000),
+                              blurRadius: 1,
+                            ),
+                          ],
+                        ),
+                      ),
+                      iconStyleData: const IconStyleData(
+                        icon: Icon(Icons.arrow_drop_down_rounded, color: Color(0xFF5A9A9A)),
+                        iconSize: 30,
+                      ),
+                      dropdownStyleData: DropdownStyleData(
+                        elevation: 1,
+                        maxHeight: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
             const SizedBox(height: 22),
