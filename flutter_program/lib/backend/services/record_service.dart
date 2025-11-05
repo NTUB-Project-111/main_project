@@ -13,7 +13,7 @@ import 'apibase.dart';
 
 class RecordService {
   /// 新增診斷紀錄
-  Future<Map<String,dynamic>?> addRecord(
+  Future<Map<String, dynamic>?> addRecord(
     String fkUserid,
     String date,
     String type,
@@ -24,6 +24,7 @@ class RecordService {
     String recording,
     String name,
     File photoFile,
+    int memberId,
   ) async {
     final uri = Uri.parse("${ApiBase.baseUrl}/addRecord");
     final request = http.MultipartRequest('POST', uri);
@@ -37,6 +38,7 @@ class RecordService {
     request.fields['choosekind'] = choosekind;
     request.fields['recording'] = recording;
     request.fields['name'] = name;
+    request.fields['member_Id'] = memberId.toString();
     // 添加圖片檔案
     var mimeType = lookupMimeType(photoFile.path) ?? "image/jpeg"; // 確保有 MIME 類型
     var multipartFile = await http.MultipartFile.fromPath(
@@ -203,6 +205,29 @@ class RecordService {
       debugPrint('取得 groupId 時發生錯誤：$e');
     }
 
+    return null; // 若失敗則回傳 null
+  }
+
+  Future<int?> fetchMemberId(
+    int userId,
+  ) async {
+    final uri = Uri.parse('${ApiBase.baseUrl}/getGroupId?userId=$userId');
+    try {
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data['success'] == true) {
+          return data['memberId']; // 回傳 groupId 整數值
+        } else {
+          debugPrint('API 回傳失敗：${data['message']}');
+        }
+      } else {
+        debugPrint('HTTP 錯誤：${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('取得 memberId 時發生錯誤：$e');
+    }
     return null; // 若失敗則回傳 null
   }
 

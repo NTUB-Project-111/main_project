@@ -12,6 +12,7 @@ import 'package:intl/intl.dart';
 class Report extends ChangeNotifier {
   int userId = 0;
   int recordId = 0;
+  int memberId = 0;
   String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
   File? image;
   String woundType = '';
@@ -42,6 +43,8 @@ class Report extends ChangeNotifier {
   int groupId = 0;
   List<Map<String, dynamic>> remindList = [];
   List<UserRemind> reminds = [];
+  String role = '';
+  String bruiseType = '';
 
   final RecordService _record = RecordService();
   final RemindService _remind = RemindService();
@@ -95,6 +98,11 @@ class Report extends ChangeNotifier {
     } else {
       woundReactions.remove(part);
     }
+    notifyListeners();
+  }
+
+  void setRole(String value) {
+    role = value;
     notifyListeners();
   }
 
@@ -430,11 +438,12 @@ class Report extends ChangeNotifier {
     hospitals = hospitallist;
   }
 
-  Future<void> _generateImages() async {
-    steps = careSteps.entries.map((e) => e.key).toList();
-    RecordService recordService = RecordService();
-    imageUrls = await recordService.generateImages(steps);
-  }
+  // AI生成圖片
+  // Future<void> _generateImages() async {
+  //   steps = careSteps.entries.map((e) => e.key).toList();
+  //   RecordService recordService = RecordService();
+  //   imageUrls = await recordService.generateImages(steps);
+  // }
 
   Future<void> loadData(int userId, String birthday, String disease, String freq, bool isExtra,
       UserReport? report) async {
@@ -481,10 +490,11 @@ class Report extends ChangeNotifier {
         .trim()
         .replaceFirst(RegExp(r',$'), '');
     name == '' ? '$woundType診斷報告' : name;
-    final result = await _record.addRecord(userId.toString(), date, woundType, oktime, gptResult,
+    final result1 = await _record.fetchMemberId(userId);
+    final result2 = await _record.addRecord(userId.toString(), date, woundType, oktime, gptResult,
         notify ? 'Y' : 'N', tags, selfRecord, name, image!);
-    int? id = result?['recordId'];
-    imageUrl = result?['imageUrl'] ?? '';
+    int? id = result2?['recordId'];
+    imageUrl = result2?['imageUrl'] ?? '';
     if (id != null) {
       recordId = id;
       return true;
@@ -537,31 +547,6 @@ class Report extends ChangeNotifier {
     }
     return result;
   }
-  // Future<Map<String, dynamic>> _addGroup(int id, UserReport report) async {
-  //   final grouplist = await _record.fetchGroup(userId.toString());
-
-  //   int newGroupId = 0;
-  //   bool result = true;
-  //   if (grouplist.length == 1 && grouplist.first == 0) {
-  //     newGroupId = 1;
-  //     groupId = 1;
-  //     result = await _record.updateGroupId(userId, recordId, id, 1);
-  //   } else {
-  //     final groupId = await _record.fetchGroupId(userId, id);
-  //     if (groupId != null) {
-  //       newGroupId = groupId;
-  //       this.groupId = groupId;
-  //       result = await _record.updateGroupId(userId, recordId, id, groupId);
-  //     } else {
-  //       final groupId = grouplist.reduce((a, b) => a > b ? a : b);
-  //       newGroupId = groupId + 1;
-  //       this.groupId = groupId + 1;
-  //       result = await _record.updateGroupId(userId, recordId, id, newGroupId);
-  //     }
-  //   }
-  //   debugPrint('新報告groupID: $newGroupId');
-  //   return {'result': result, 'newGroupId': newGroupId};
-  // }
 
   Future<bool> uploadData(String userId, bool isExtra, int id, UserReport? report) async {
     isSaving = true;
@@ -640,6 +625,8 @@ class Report extends ChangeNotifier {
         recording: selfRecord,
         name: name,
         groupId: groupId,
+        role: role,
+        bruiseType: bruiseType,
         reminds: reminds);
   }
 
