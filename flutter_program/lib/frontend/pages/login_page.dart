@@ -111,6 +111,8 @@ class _LoginPageState extends State<LoginPage> {
                               email: '',
                               disease: '無',
                               freq: '每天',
+                              role: '訪客',
+                              password: '',
                               reports: [],
                             ));
                             // 清空診斷報告與提醒
@@ -147,65 +149,71 @@ class _LoginPageState extends State<LoginPage> {
                                   setState(() {
                                     isLoading = true;
                                   });
-                                  await showDialog(
-                                    context: context,
-                                    builder: (context) => const FamilyDialog(),
-                                  );
+
                                   final error = await login.login(login.email, login.password);
                                   if (!mounted) return;
                                   if (error) {
                                     // 1. 從後端取得完整使用者資料
                                     final userInfo =
                                         await UserService.fetchUserInfo(login.accessToken!);
-
-                                    // 2. 儲存使用者資料
-                                    Provider.of<UserProvider>(context, listen: false)
-                                        .setUserInfo(userInfo);
-
-                                    // 3. 儲存診斷報告
-                                    Provider.of<ReportProvider>(context, listen: false)
-                                        .setReports(userInfo.reports);
-
-                                    // 4. 提取所有提醒並儲存
-                                    final allReminds =
-                                        userInfo.reports.expand((r) => r.reminds).toList();
-                                    Provider.of<RemindProvider>(context, listen: false)
-                                        .setReminds(allReminds);
-                                    notifier.setRemind(context);
-                                    // 打印診斷報告與每筆報告底下的提醒
-                                    // debugPrint(userInfo.toString());
-                                    // for (var report in userInfo.reports) {
-                                    //   debugPrint("====== 報告 ======");
-                                    //   debugPrint("報告ID：${report.id}");
-                                    //   debugPrint("日期：${report.date}");
-                                    //   debugPrint("類型：${report.type}");
-                                    //   debugPrint("照護方式：${report.caremode}");
-                                    //   debugPrint("是否提醒：${report.ifcall}");
-                                    //   debugPrint("備註：${report.recording}");
-
-                                    //   // 每一筆提醒
-                                    //   for (var remind in report.reminds) {
-                                    //     debugPrint("  -> 提醒ID：${remind.id}");
-                                    //     debugPrint("     日期：${remind.date}");
-                                    //     debugPrint("     時間：${remind.time}");
-                                    //     debugPrint("     頻率：${remind.freq}");
-                                    //   }
-                                    // }
-
-                                    // FrontUtil.showSuccess('登入成功!');
-                                    if (!mounted) return;
-                                    Navigator.pushReplacement(
-                                      myContext,
-                                      MaterialPageRoute(builder: (context) => const Tabs()),
+                                    List<String> userRole = [userInfo.role];
+                                    await showDialog(
+                                      context: context,
+                                      builder: (context) => FamilyDialog(
+                                        user: userInfo,
+                                        userRole: [userInfo.role],
+                                      ),
                                     );
-                                  } else {
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    debugPrint('email:${login.email} psd:${login.password}');
-                                    FrontUtil.showFail(
-                                      '登入失敗，帳號或密碼輸入錯誤',
-                                    );
+
+                                    //   // 2. 儲存使用者資料
+                                    //   Provider.of<UserProvider>(context, listen: false)
+                                    //       .setUserInfo(userInfo);
+
+                                    //   // 3. 儲存診斷報告
+                                    //   Provider.of<ReportProvider>(context, listen: false)
+                                    //       .setReports(userInfo.reports);
+
+                                    //   // 4. 提取所有提醒並儲存
+                                    //   final allReminds =
+                                    //       userInfo.reports.expand((r) => r.reminds).toList();
+                                    //   Provider.of<RemindProvider>(context, listen: false)
+                                    //       .setReminds(allReminds);
+
+                                    //   // notifier.setRemind(context);
+                                    //   // 打印診斷報告與每筆報告底下的提醒
+                                    //   // debugPrint(userInfo.toString());
+                                    //   // for (var report in userInfo.reports) {
+                                    //   //   debugPrint("====== 報告 ======");
+                                    //   //   debugPrint("報告ID：${report.id}");
+                                    //   //   debugPrint("日期：${report.date}");
+                                    //   //   debugPrint("類型：${report.type}");
+                                    //   //   debugPrint("照護方式：${report.caremode}");
+                                    //   //   debugPrint("是否提醒：${report.ifcall}");
+                                    //   //   debugPrint("備註：${report.recording}");
+
+                                    //   //   // 每一筆提醒
+                                    //   //   for (var remind in report.reminds) {
+                                    //   //     debugPrint("  -> 提醒ID：${remind.id}");
+                                    //   //     debugPrint("     日期：${remind.date}");
+                                    //   //     debugPrint("     時間：${remind.time}");
+                                    //   //     debugPrint("     頻率：${remind.freq}");
+                                    //   //   }
+                                    //   // }
+
+                                    //   // FrontUtil.showSuccess('登入成功!');
+                                    //   if (!mounted) return;
+                                    //   Navigator.pushReplacement(
+                                    //     myContext,
+                                    //     MaterialPageRoute(builder: (context) => const Tabs()),
+                                    //   );
+                                    // } else {
+                                    //   setState(() {
+                                    //     isLoading = false;
+                                    //   });
+                                    //   debugPrint('email:${login.email} psd:${login.password}');
+                                    //   FrontUtil.showFail(
+                                    //     '登入失敗，帳號或密碼輸入錯誤',
+                                    //   );
                                   }
                                 },
                           style: ElevatedButton.styleFrom(

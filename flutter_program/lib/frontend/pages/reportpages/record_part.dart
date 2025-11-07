@@ -30,7 +30,7 @@ class _RecordPartState extends State<RecordPart> {
   ];
   List<String> woundReactions = ["紅腫", "疼痛", "出血", "發熱", "化膿"];
   final TextEditingController _selfRecord = TextEditingController();
-  final List<String> items = ['爺爺', '奶奶', '爸爸', '媽媽'];
+  final List<String> items = ['爺爺', '奶奶', '爸爸', '媽媽', '哥哥', '姊姊', '弟弟', '妹妹'];
   String? selectedValue = '爺爺';
   @override
   Widget build(BuildContext context) {
@@ -91,6 +91,7 @@ class _RecordPartState extends State<RecordPart> {
                         setState(() {
                           selectedValue = value;
                         });
+                        report.setRole(value!);
                       },
                       buttonStyleData: ButtonStyleData(
                         height: 50,

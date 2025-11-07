@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 
 import 'apibase.dart';
 
-
 class AuthService {
   //傳送驗證碼
   Future<String?> sendCode(String email) async {
@@ -88,8 +87,8 @@ class AuthService {
     required String birthday,
     required String email,
     required String password,
-    String disease = '[無]',
-    String freq = '無、無、無',
+    required String disease,
+    required String freq,
   }) async {
     final uri = Uri.parse('${ApiBase.baseUrl}/register');
 

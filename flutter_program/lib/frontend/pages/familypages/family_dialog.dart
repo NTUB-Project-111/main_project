@@ -1,9 +1,14 @@
+import 'package:drw/backend/models/user.dart';
+import 'package:drw/backend/services/auth_service.dart';
 import 'package:drw/frontend/pages/registerpages/birthday_year_selector_part.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 
 class FamilyDialog extends StatefulWidget {
+  final UserInfo? user;
   final Widget? nextPage;
-  const FamilyDialog({super.key, this.nextPage});
+  final List<String> userRole;
+  const FamilyDialog({super.key, this.nextPage, this.user, required this.userRole});
 
   @override
   State<FamilyDialog> createState() => _FamilyDialogState();
@@ -27,17 +32,29 @@ class _FamilyDialogState extends State<FamilyDialog> {
     "靜脈功能不全",
     "周邊動脈阻塞"
   ];
+  List<String> selectedFreqs = ['無', '無', '無'];
   List<String> selectedSymptoms = [];
+  String selectedYearText = "未填寫";
+  String selectedHabitText = "未填寫";
+  String selectedDiseaseText = "未填寫";
+  AuthService authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
-    final members = [
-      {'name': '我滴家', 'icon': Icons.home_filled, 'isMain': true},
-      {'name': '媽媽'},
-      {'name': '爸爸'},
-      {'name': '哥哥'},
-      {'name': '叔叔'},
-      {'name': '奶奶'},
-    ];
+    // final members = [
+    //   {'name': '我滴家', 'icon': Icons.home_filled, 'isMain': true},
+    //   {'name': '媽媽'},
+    //   {'name': '爸爸'},
+    //   {'name': '哥哥'},
+    //   {'name': '叔叔'},
+    //   {'name': '奶奶'},
+    // ];
+    final members = widget.userRole.map((role) {
+      return {
+        'name': role,
+        'isMain': role == '我滴家',
+      };
+    }).toList();
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -59,7 +76,7 @@ class _FamilyDialogState extends State<FamilyDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              '請選擇要查看的家人',
+              '請選擇身分',
               style: TextStyle(
                 fontSize: 18,
                 color: Color(0xFF326A6A),
@@ -132,7 +149,6 @@ class _FamilyDialogState extends State<FamilyDialog> {
             GestureDetector(
               onTap: () {
                 Navigator.pop(context);
-                // TODO: 新增家庭成員的行為
               },
               child: TextButton(
                   onPressed: () {
@@ -213,27 +229,49 @@ class _FamilyDialogState extends State<FamilyDialog> {
                 ),
                 const SizedBox(height: 20),
                 _editableRow(
-                    label: "出生年份",
-                    value: "2025",
-                    icon: Icons.calendar_today,
-                    onTap: () => _selectYear()),
+                  label: "出生年份",
+                  value: selectedYearText,
+                  icon: Icons.calendar_today,
+                  onTap: () => _selectYear(),
+                ),
                 const Divider(color: Color(0xFF669FA5)),
                 const SizedBox(height: 10),
                 _editableRow(
-                    label: "個人習慣",
-                    value: "未填寫",
-                    icon: Icons.edit,
-                    onTap: () => _showHabitDialog(context)),
+                  label: "個人習慣",
+                  value: selectedHabitText,
+                  icon: Icons.edit,
+                  onTap: () => _showHabitDialog(context),
+                ),
                 const Divider(color: Color(0xFF669FA5)),
                 const SizedBox(height: 10),
                 _editableRow(
-                    label: "特殊疾病", value: "未填寫", icon: Icons.edit, onTap: () => _showMultiSelect()),
+                  label: "特殊疾病",
+                  value: selectedDiseaseText,
+                  icon: Icons.edit,
+                  onTap: () => _showMultiSelect(),
+                ),
+
                 const Divider(color: Color(0xFF669FA5)),
                 // const SizedBox(height: 12),
                 IconButton(
-                  onPressed: () {
-                    debugPrint('新成員名稱：${nameController.text}');
-                    Navigator.pop(context);
+                  onPressed: () async {
+                    setState(() {
+                      selectedHabitText = selectedFreqs.join("、");
+                    });
+                    debugPrint(selectedDiseaseText);
+                    debugPrint(selectedFreqs.toString());
+                    debugPrint(selectedYearText);
+                    final message = await authService.register(
+                        name: widget.user!.name,
+                        birthday: selectedYearText,
+                        email: widget.user!.email,
+                        password: widget.user!.password,
+                        disease: selectedDiseaseText,
+                        freq: selectedHabitText);
+                    message != null
+                        ? [Navigator.pop(context),
+                        ]
+                        : FrontUtil.showError('註冊失敗', Colors.red, Colors.white);
                   },
                   icon: const Icon(Icons.check_circle, color: Color(0xFF2E6D74), size: 30),
                 ),
@@ -247,6 +285,7 @@ class _FamilyDialogState extends State<FamilyDialog> {
 
   Widget _editableRow(
       {required String label, required String value, required IconData icon, VoidCallback? onTap}) {
+    String str = '';
     return InkWell(
         onTap: onTap ?? () {},
         child: Row(
@@ -255,7 +294,9 @@ class _FamilyDialogState extends State<FamilyDialog> {
             Text(label,
                 style: const TextStyle(
                     fontSize: 14, color: Color(0xFF2E6D74), fontWeight: FontWeight.bold)),
-            Text(value, style: TextStyle(fontSize: 14, color: Colors.grey[500])),
+            str == ''
+                ? Text(value, style: TextStyle(fontSize: 14, color: Colors.grey[500]))
+                : Text(str, style: const TextStyle(fontSize: 14, color: Color(0xFF2E6D74))),
             Icon(icon, size: 18, color: const Color(0xFF2E6D74)),
           ],
         ));
@@ -265,20 +306,17 @@ class _FamilyDialogState extends State<FamilyDialog> {
     showDialog(
       context: context,
       builder: (context) {
-        //用 Map 儲存每一項習慣的選擇
-        Map<String, String> habits = {
-          '抽菸': '無',
-          '喝酒': '無',
-          '嚼檳榔': '無',
-        };
-
         //建立選項組件
-        Widget buildHabitRow(String title, List<String> options) {
+        Widget buildHabitRow(int index, List<String> options) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title,
+                index == 0
+                    ? "抽菸"
+                    : index == 1
+                        ? "喝酒"
+                        : "嚼檳榔",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -295,14 +333,17 @@ class _FamilyDialogState extends State<FamilyDialog> {
                         children: [
                           Radio<String>(
                             value: option,
-                            groupValue: habits[title],
+                            groupValue: selectedFreqs[index],
                             activeColor: const Color(0xFF2E6D74),
                             visualDensity:
                                 const VisualDensity(horizontal: -4, vertical: -4), // 減少 Radio 佔據的空間
                             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap, // 去除多餘空白點擊範圍
                             onChanged: (value) {
-                              habits[title] = value!;
+                              selectedFreqs[index] = value!;
                               (context as Element).markNeedsBuild();
+                              setState(() {
+                                selectedHabitText = selectedFreqs.toString();
+                              });
                             },
                           ),
                           Text(
@@ -342,9 +383,9 @@ class _FamilyDialogState extends State<FamilyDialog> {
                 const SizedBox(height: 20),
 
                 //三組習慣選項
-                buildHabitRow("抽菸", ["無", "偶爾(每周1～6根)", "經常"]),
-                buildHabitRow("喝酒", ["無", "偶爾(每月1～3次)", "經常"]),
-                buildHabitRow("嚼檳榔", ["無", "偶爾(每月1～5次)", "經常"]),
+                buildHabitRow(0, ["無", "偶爾(每周1～6根)", "經常"]),
+                buildHabitRow(1, ["無", "偶爾(每月1～3次)", "經常"]),
+                buildHabitRow(2, ["無", "偶爾(每月1～5次)", "經常"]),
                 const SizedBox(height: 10),
               ],
             ),
@@ -371,6 +412,7 @@ class _FamilyDialogState extends State<FamilyDialog> {
     if (picked != null && picked != selectedYear) {
       setState(() {
         selectedYear = picked;
+        selectedYearText = "$picked 年";
       });
     }
   }
@@ -386,7 +428,7 @@ class _FamilyDialogState extends State<FamilyDialog> {
       builder: (context) {
         return StatefulBuilder(builder: (context, setModalState) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24), // ⬅️ 外框 padding
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24), // 外框 padding
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -439,7 +481,9 @@ class _FamilyDialogState extends State<FamilyDialog> {
                             selectedSymptoms.remove(symptom);
                           }
                         });
-                        setState(() {});
+                        setState(() {
+                          selectedDiseaseText = selectedSymptoms.toString();
+                        });
                       },
                     );
                   }).toList(),

@@ -13,6 +13,8 @@ class UserReport {
   final String photo;
   final String name;
   final int groupId;
+  final String role;
+  final String bruiseType;
   List<UserRemind> reminds;
 
   UserReport({
@@ -28,6 +30,8 @@ class UserReport {
     required this.photo,
     required this.name,
     required this.groupId,
+    required this.role,
+    required this.bruiseType, 
     required this.reminds,
   });
 
@@ -44,6 +48,8 @@ class UserReport {
     String? photo,
     String? name,
     int? groupId,
+    String? role,
+    String? bruiseType,
     List<UserRemind>? reminds,
   }) {
     return UserReport(
@@ -59,6 +65,8 @@ class UserReport {
       photo: photo ?? this.photo,
       name: name ?? this.name,
       groupId: groupId ?? this.groupId,
+      role: role ?? this.role,
+      bruiseType: bruiseType ?? this.bruiseType,
       reminds: reminds ?? this.reminds,
     );
   }
@@ -77,6 +85,8 @@ class UserReport {
       photo: json['photo'],
       name: json['name'] ?? '',
       groupId: json['group_id'] ?? 0,
+      role: json['role'] ?? '',
+      bruiseType: json['bruise_type'] ?? '',
       reminds: (json['reminds'] as List).map((r) => UserRemind.fromJson(r)).toList(),
     );
   }
