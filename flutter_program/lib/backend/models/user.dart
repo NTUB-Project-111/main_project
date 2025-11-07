@@ -7,6 +7,8 @@ class UserInfo {
   final String email;
   final String disease;
   final String freq;
+  final String role;
+  final String password;
   List<UserReport> reports;
 
   UserInfo({
@@ -16,6 +18,8 @@ class UserInfo {
     required this.email,
     required this.disease,
     required this.freq,
+    required this.role,
+    required this.password,
     required this.reports,
   });
 
@@ -27,6 +31,8 @@ class UserInfo {
     String? email,
     String? disease,
     String? freq,
+    String? role,
+    String? password,
     List<UserReport>? reports,
   }) {
     return UserInfo(
@@ -36,6 +42,8 @@ class UserInfo {
       email: email ?? this.email,
       disease: disease ?? this.disease,
       freq: freq ?? this.freq,
+      role: role ?? this.role,
+      password: password ?? this.password,
       reports: reports ?? this.reports,
     );
   }
@@ -48,6 +56,8 @@ class UserInfo {
       email: json['email'],
       disease: json['disease'],
       freq: json['freq'],
+      role: json['role'],
+      password: json['password'],
       reports:
           (json['reports'] as List).map((reportJson) => UserReport.fromJson(reportJson)).toList(),
     );

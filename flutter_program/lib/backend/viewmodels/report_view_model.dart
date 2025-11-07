@@ -490,9 +490,10 @@ class Report extends ChangeNotifier {
         .trim()
         .replaceFirst(RegExp(r',$'), '');
     name == '' ? '$woundType診斷報告' : name;
-    final result1 = await _record.fetchMemberId(userId);
+    // final result1 = await _record.fetchMemberId(userId);
+    // memberId = result1 ?? 1;
     final result2 = await _record.addRecord(userId.toString(), date, woundType, oktime, gptResult,
-        notify ? 'Y' : 'N', tags, selfRecord, name, image!);
+        notify ? 'Y' : 'N', tags, selfRecord, name, image!,memberId);
     int? id = result2?['recordId'];
     imageUrl = result2?['imageUrl'] ?? '';
     if (id != null) {
