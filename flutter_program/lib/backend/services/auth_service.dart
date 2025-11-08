@@ -89,6 +89,7 @@ class AuthService {
     required String password,
     required String disease,
     required String freq,
+    String? role,
   }) async {
     final uri = Uri.parse('${ApiBase.baseUrl}/register');
 
@@ -105,6 +106,7 @@ class AuthService {
           'password': password,
           'disease': disease,
           'freq': freq,
+          'role': role
         }),
       );
 

@@ -15,6 +15,7 @@ class FamilyDialog extends StatefulWidget {
 }
 
 class _FamilyDialogState extends State<FamilyDialog> {
+  final TextEditingController nameController = TextEditingController();
   int selectedYear = DateTime.now().year;
   final List<String> symptoms = [
     "高血壓",
@@ -39,6 +40,18 @@ class _FamilyDialogState extends State<FamilyDialog> {
   String selectedDiseaseText = "未填寫";
   AuthService authService = AuthService();
 
+  List<Map<String, dynamic>> members = [];
+  @override
+  void initState() {
+    super.initState();
+    members = widget.userRole.map((role) {
+      return <String, dynamic>{
+        'name': role,
+        'isMain': role == '我滴家',
+      };
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     // final members = [
@@ -49,12 +62,6 @@ class _FamilyDialogState extends State<FamilyDialog> {
     //   {'name': '叔叔'},
     //   {'name': '奶奶'},
     // ];
-    final members = widget.userRole.map((role) {
-      return {
-        'name': role,
-        'isMain': role == '我滴家',
-      };
-    }).toList();
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -176,8 +183,6 @@ class _FamilyDialogState extends State<FamilyDialog> {
   }
 
   void _addMember() {
-    final TextEditingController nameController = TextEditingController();
-
     showDialog(
       context: context,
       builder: (context) {
@@ -268,10 +273,18 @@ class _FamilyDialogState extends State<FamilyDialog> {
                         password: widget.user!.password,
                         disease: selectedDiseaseText,
                         freq: selectedHabitText);
-                    message != null
-                        ? [Navigator.pop(context),
-                        ]
-                        : FrontUtil.showError('註冊失敗', Colors.red, Colors.white);
+                    debugPrint(message);
+                    if (message != null) {
+                      setState(() {
+                        members.add({
+                          'name': nameController.text,
+                          'isMain': nameController.text == '我滴家',
+                        });
+                      });
+                      Navigator.pop(context);
+                    } else {
+                      FrontUtil.showError('成員新增失敗', Colors.red, Colors.white);
+                    }
                   },
                   icon: const Icon(Icons.check_circle, color: Color(0xFF2E6D74), size: 30),
                 ),
