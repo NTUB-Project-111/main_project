@@ -1,5 +1,6 @@
 import 'package:drw/backend/models/user.dart';
-import 'package:drw/backend/services/auth_service.dart';
+// import 'package:drw/backend/services/auth_service.dart';
+import 'package:drw/backend/services/family_service.dart';
 import 'package:drw/frontend/pages/registerpages/birthday_year_selector_part.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,8 @@ class _FamilyDialogState extends State<FamilyDialog> {
   String selectedYearText = "未填寫";
   String selectedHabitText = "未填寫";
   String selectedDiseaseText = "未填寫";
-  AuthService authService = AuthService();
+  // AuthService authService = AuthService();
+  FamilyService familyService = FamilyService();
 
   List<Map<String, dynamic>> members = [];
   @override
@@ -266,15 +268,14 @@ class _FamilyDialogState extends State<FamilyDialog> {
                     debugPrint(selectedDiseaseText);
                     debugPrint(selectedFreqs.toString());
                     debugPrint(selectedYearText);
-                    final message = await authService.register(
-                        name: widget.user!.name,
-                        birthday: selectedYearText,
-                        email: widget.user!.email,
-                        password: widget.user!.password,
+                    final message = await familyService.addMember(
+                        userId: widget.user!.id,
+                        role: nameController.text,
+                        birthyear: selectedYear,
                         disease: selectedDiseaseText,
                         freq: selectedHabitText);
-                    debugPrint(message);
-                    if (message != null) {
+                    // debugPrint(message);
+                    if (message == null) {
                       setState(() {
                         members.add({
                           'name': nameController.text,
@@ -282,6 +283,8 @@ class _FamilyDialogState extends State<FamilyDialog> {
                         });
                       });
                       Navigator.pop(context);
+                    } else if (message == '該成員已存在') {
+                      FrontUtil.showError('該成員已存在', Colors.red, Colors.white);
                     } else {
                       FrontUtil.showError('成員新增失敗', Colors.red, Colors.white);
                     }
@@ -320,7 +323,7 @@ class _FamilyDialogState extends State<FamilyDialog> {
       context: context,
       builder: (context) {
         //建立選項組件
-        Widget buildHabitRow(int index, List<String> options) {
+        Widget buildHabitRow(int index, List<String> options, String text) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -366,6 +369,13 @@ class _FamilyDialogState extends State<FamilyDialog> {
                               color: Color(0xFF2E6D74),
                             ),
                           ),
+                          Text(
+                            text,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          )
                         ],
                       ),
                       const SizedBox(width: 10),
@@ -396,9 +406,9 @@ class _FamilyDialogState extends State<FamilyDialog> {
                 const SizedBox(height: 20),
 
                 //三組習慣選項
-                buildHabitRow(0, ["無", "偶爾(每周1～6根)", "經常"]),
-                buildHabitRow(1, ["無", "偶爾(每月1～3次)", "經常"]),
-                buildHabitRow(2, ["無", "偶爾(每月1～5次)", "經常"]),
+                buildHabitRow(0, ["無", "偶爾", "經常"], "每週1～6根"),
+                buildHabitRow(1, ["無", "偶爾", "經常"], "每月1～3次"),
+                buildHabitRow(2, ["無", "偶爾", "經常"], "每月1～5次"),
                 const SizedBox(height: 10),
               ],
             ),
