@@ -1,4 +1,5 @@
-import 'package:drw/backend/models/user.dart';
+import 'package:drw/backend/models/family.dart';
+// import 'package:drw/backend/models/user.dart';
 // import 'package:drw/backend/services/auth_service.dart';
 import 'package:drw/backend/services/family_service.dart';
 import 'package:drw/frontend/pages/registerpages/birthday_year_selector_part.dart';
@@ -6,10 +7,10 @@ import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 
 class FamilyDialog extends StatefulWidget {
-  final UserInfo? user;
+  final List<UserFamily> userFamily;
   final Widget? nextPage;
-  final List<String> userRole;
-  const FamilyDialog({super.key, this.nextPage, this.user, required this.userRole});
+  // final List<String> userRole;
+  const FamilyDialog({super.key, this.nextPage, required this.userFamily});
 
   @override
   State<FamilyDialog> createState() => _FamilyDialogState();
@@ -42,16 +43,13 @@ class _FamilyDialogState extends State<FamilyDialog> {
   // AuthService authService = AuthService();
   FamilyService familyService = FamilyService();
 
-  List<Map<String, dynamic>> members = [];
+  List<String> members = [];
   @override
   void initState() {
     super.initState();
-    members = widget.userRole.map((role) {
-      return <String, dynamic>{
-        'name': role,
-        'isMain': role == '我滴家',
-      };
-    }).toList();
+    for (var member in widget.userFamily) {
+      members.add(member.role);
+    }
   }
 
   @override
@@ -133,11 +131,11 @@ class _FamilyDialogState extends State<FamilyDialog> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if (member['isMain'] == true)
-                            const Icon(Icons.home, size: 14, color: Color(0xFF589399)),
-                          if (member['isMain'] == true) const SizedBox(width: 3),
+                          // if (member['isMain'] == true)
+                          //   const Icon(Icons.home, size: 14, color: Color(0xFF589399)),
+                          // if (member['isMain'] == true) const SizedBox(width: 3),
                           Text(
-                            member['name'] as String,
+                            member,
                             style: const TextStyle(
                               color: Color(0xFF589399),
                               fontWeight: FontWeight.w600,
@@ -269,7 +267,7 @@ class _FamilyDialogState extends State<FamilyDialog> {
                     debugPrint(selectedFreqs.toString());
                     debugPrint(selectedYearText);
                     final message = await familyService.addMember(
-                        userId: widget.user!.id,
+                        userId: widget.userFamily[0].userId,
                         role: nameController.text,
                         birthyear: selectedYear,
                         disease: selectedDiseaseText,
@@ -277,10 +275,9 @@ class _FamilyDialogState extends State<FamilyDialog> {
                     // debugPrint(message);
                     if (message == null) {
                       setState(() {
-                        members.add({
-                          'name': nameController.text,
-                          'isMain': nameController.text == '我滴家',
-                        });
+                        members.add(
+                          nameController.text,
+                        );
                       });
                       Navigator.pop(context);
                     } else if (message == '該成員已存在') {
