@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class UserFamily {
   final int memberId;
   final int userId;
@@ -26,6 +28,7 @@ class UserFamily {
   }
 
   factory UserFamily.fromJson(Map<String, dynamic> json) {
+    debugPrint(json.toString());
     return UserFamily(
         memberId: json['member_id'],
         userId: json['user_id'],

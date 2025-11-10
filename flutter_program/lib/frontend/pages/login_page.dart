@@ -2,6 +2,8 @@ import 'package:drw/backend/models/user.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
+import 'package:drw/backend/services/auth_service.dart';
+// import 'package:drw/backend/services/family_service.dart';
 import 'package:drw/frontend/pages/familypages/family_dialog.dart';
 import 'package:drw/frontend/utility/notifier_util.dart';
 import 'forget_page.dart';
@@ -12,7 +14,7 @@ import '../../backend/viewmodels/login_view_model.dart';
 import '../widgets/headers/header2.dart';
 import 'registerpages/disclaimer_page.dart';
 import 'tabs/tabs.dart';
-import '../../backend/services/user_service.dart';
+// import '../../backend/services/user_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool isLoading = false;
   Notifier notifier = Notifier();
+  AuthService authService = AuthService();
   @override
   void dispose() {
     _emailController.dispose();
@@ -154,14 +157,15 @@ class _LoginPageState extends State<LoginPage> {
                                   if (!mounted) return;
                                   if (error) {
                                     // 1. 從後端取得完整使用者資料
-                                    final userInfo =
-                                        await UserService.fetchUserInfo(login.accessToken!);
-                                    List<String> userRole = [userInfo.role];
+                                    // final userInfo =
+                                    //     await UserService.fetchUserInfo(login.accessToken!);
+                                    final userFamily =
+                                        await authService.getUserFamily(login.accessToken!);
+                                    // List<String> userRole = [userInfo.role];
                                     await showDialog(
                                       context: context,
                                       builder: (context) => FamilyDialog(
-                                        user: userInfo,
-                                        userRole: [userInfo.role],
+                                        userFamily: userFamily!,
                                       ),
                                     );
 

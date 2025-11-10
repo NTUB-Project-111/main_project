@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:drw/backend/models/family.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -199,6 +200,34 @@ class AuthService {
     } catch (e) {
       debugPrint('例外錯誤：$e');
       return '連線失敗：$e';
+    }
+  }
+
+  Future<List<UserFamily>?> getUserFamily(String token) async {
+    List<UserFamily> members = [];
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiBase.baseUrl}/getUserFamily'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        for (var item in data['family']) {
+          members.add(UserFamily.fromJson(item));
+        }
+        // return UserFamily.fromJson(data['family'][0]);
+        return members;
+      } else if (response.statusCode == 401) {
+        throw Exception('Token 無效或已過期');
+      } else {
+        throw Exception('伺服器回傳錯誤: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('API 錯誤: $e');
+      rethrow;
     }
   }
 }
