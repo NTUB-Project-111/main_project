@@ -108,7 +108,7 @@ class _FamilyDialogState extends State<FamilyDialog> {
                 return InkWell(
                   onTap: () {
                     widget.nextPage == null
-                        ? Navigator.pop(context)
+                        ? {debugPrint(member), Navigator.pop(context)}
                         : Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => widget.nextPage!),

@@ -31,7 +31,7 @@ class UserReport {
     required this.name,
     required this.groupId,
     required this.role,
-    required this.bruiseType, 
+    required this.bruiseType,
     required this.reminds,
   });
 
@@ -73,8 +73,8 @@ class UserReport {
 
   factory UserReport.fromJson(Map<String, dynamic> json) {
     return UserReport(
-      id: json['id'],
-      userId: json['userId'],
+      id: json['id_record'],
+      userId: json['fk_userid'],
       date: json['date'],
       type: json['type'],
       oktime: json['oktime'],
@@ -87,7 +87,8 @@ class UserReport {
       groupId: json['group_id'] ?? 0,
       role: json['role'] ?? '',
       bruiseType: json['bruise_type'] ?? '',
-      reminds: (json['reminds'] as List).map((r) => UserRemind.fromJson(r)).toList(),
+      reminds:
+          (json['reminds'] as List<dynamic>?)?.map((r) => UserRemind.fromJson(r)).toList() ?? [],
     );
   }
 }

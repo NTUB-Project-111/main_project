@@ -32,7 +32,7 @@ class Login extends ChangeNotifier {
       _accessToken = token;
       return true;
     } catch (e) {
-      debugPrint('❌ login 發生錯誤: $e');
+      debugPrint('login 發生錯誤: $e');
       return false;
     } finally {
       // isLoading = false;

@@ -17,10 +17,10 @@ class UserRemind {
 
   factory UserRemind.fromJson(Map<String, dynamic> json) {
     return UserRemind(
-      id: json['id'],
-      recordId: json['recordId'],
-      userId: json['userId'],
-      date: json['date'],
+      id: json['id_calls'],
+      recordId: json['fk_record_id'],
+      userId: json['fk_user_id'],
+      date: json['day'],
       time: json['time'],
       freq: json['freq'],
     );

@@ -58,8 +58,10 @@ class UserInfo {
       freq: json['freq'],
       role: json['role'],
       password: json['password'],
-      reports:
-          (json['reports'] as List).map((reportJson) => UserReport.fromJson(reportJson)).toList(),
+      reports: (json['reports'] as List<dynamic>?)
+              ?.map((reportJson) => UserReport.fromJson(reportJson))
+              .toList() ??
+          [],
     );
   }
 

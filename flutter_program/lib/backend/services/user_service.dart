@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:drw/backend/models/family.dart';
+import 'package:drw/backend/models/remind.dart';
+import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/models/user.dart';
 // import 'package:drw/backend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -29,8 +32,6 @@ class UserService {
   //   }
   // }
 
-  
-
   // static Future<void> getUserInfo(BuildContext context, String accessToken) async {
   //   final response = await http.get(
   //     Uri.parse('${ApiBase.baseUrl}/getUserInfo'),
@@ -50,22 +51,21 @@ class UserService {
   //   }
   // }
   Future<bool> wakeUpServer() async {
-  try {
-    final response = await http.get(Uri.parse('${ApiBase.baseUrl}/getUsers'));
+    try {
+      final response = await http.get(Uri.parse('${ApiBase.baseUrl}/getUsers'));
 
-    // 只要伺服器有回應就算成功，不管 statusCode
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      // 即使不是 200，也代表伺服器醒了
-      return true;
+      // 只要伺服器有回應就算成功，不管 statusCode
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        // 即使不是 200，也代表伺服器醒了
+        return true;
+      }
+    } catch (e) {
+      // 失敗才回 false
+      return false;
     }
-  } catch (e) {
-    // 失敗才回 false
-    return false;
   }
-}
-
 
   Future<bool> updateUserName(String userId, String newName) async {
     final url = Uri.parse('${ApiBase.baseUrl}/updateName');
@@ -131,7 +131,7 @@ class UserService {
     }
   }
 
-  static Future<UserInfo> fetchUserInfo(String token) async {
+  static Future<UserInfo> getUserDetail(String token) async {
     final response = await http.get(
       Uri.parse('${ApiBase.baseUrl}/getUserDetail'),
       headers: {
@@ -146,6 +146,41 @@ class UserService {
       return UserInfo.fromJson(userJson);
     } else {
       throw Exception('取得使用者資料失敗: ${response.body}');
+    }
+  }
+
+  Future<Map<String, dynamic>?> fetchUserInfo(int id) async {
+    List<UserFamily> members = [];
+    List<UserReport> reports = [];
+    List<UserRemind> reminds = [];
+    try {
+      final uri = Uri.parse('${ApiBase.baseUrl}/fetchUserInfo?id=$id');
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        for (var member in data['family']) {
+          members.add(UserFamily.fromJson(member));
+        }
+        for (var report in data['reports']) {
+          reports.add(UserReport.fromJson(report));
+        }
+        for (var remind in data['reminds']) {
+          reminds.add(UserRemind.fromJson(remind));
+        }
+        return {
+          'user': UserInfo.fromJson(data['user']),
+          'family': members,
+          'reports': reports,
+          'reminds': reminds,
+        };
+      } else {
+        debugPrint('取得使用者資料失敗: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('錯誤: $e');
+      return null;
     }
   }
 
