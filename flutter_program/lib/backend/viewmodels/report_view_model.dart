@@ -608,6 +608,7 @@ class Report extends ChangeNotifier {
       reminds.add(UserRemind(
           id: remindId + i,
           recordId: recordId,
+          memberId: memberId,
           userId: userId,
           date: remindList[i]['day'],
           time: remindList[i]['time'],
@@ -616,6 +617,7 @@ class Report extends ChangeNotifier {
     return UserReport(
         userId: userId,
         id: recordId,
+        memberId: memberId,
         date: date,
         type: woundType,
         photo: imageUrl,

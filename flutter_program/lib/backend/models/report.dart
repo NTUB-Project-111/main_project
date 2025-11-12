@@ -3,6 +3,7 @@ import 'package:drw/backend/models/remind.dart';
 class UserReport {
   final int id;
   final int userId;
+  final int memberId;
   final String date;
   final String type;
   final String oktime;
@@ -15,11 +16,13 @@ class UserReport {
   final int groupId;
   final String role;
   final String bruiseType;
+
   List<UserRemind> reminds;
 
   UserReport({
     required this.id,
     required this.userId,
+    required this.memberId,
     required this.date,
     required this.type,
     required this.oktime,
@@ -38,6 +41,7 @@ class UserReport {
   UserReport copyWith({
     int? id,
     int? userId,
+    int? memberId,
     String? date,
     String? type,
     String? oktime,
@@ -55,6 +59,7 @@ class UserReport {
     return UserReport(
       id: id ?? this.id,
       userId: userId ?? this.userId,
+      memberId: memberId ?? this.memberId,
       date: date ?? this.date,
       type: type ?? this.type,
       oktime: oktime ?? this.oktime,
@@ -75,6 +80,7 @@ class UserReport {
     return UserReport(
       id: json['id_record'],
       userId: json['fk_userid'],
+      memberId: json['member_id'],
       date: json['date'],
       type: json['type'],
       oktime: json['oktime'],

@@ -27,6 +27,7 @@ class FamilyRecordCard extends StatelessWidget {
       case '媽':
         return const Color.fromARGB(255, 119, 87, 119);
       case '姐':
+      case '姊':
         return const Color.fromARGB(255, 217, 168, 204);
       case '妹':
         return const Color.fromARGB(255, 217, 168, 204);
