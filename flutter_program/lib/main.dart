@@ -1,3 +1,4 @@
+import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/services/google_map.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/remind_provider.dart'; //
@@ -34,6 +35,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ReportProvider()),
         ChangeNotifierProvider(create: (_) => RemindProvider()),
+        ChangeNotifierProvider(create: (_) => FamilyProvider()),
         ChangeNotifierProvider(create: (_) => Register()),
         ChangeNotifierProvider(create: (_) => HospitalView()),//新增的
         ChangeNotifierProvider(create: (_) => GoogleMapService()),//新增的

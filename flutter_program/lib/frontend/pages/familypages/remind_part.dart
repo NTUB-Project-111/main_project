@@ -1,6 +1,10 @@
 // import 'package:dropdown_button2/dropdown_button2.dart';
 // import 'package:drw/frontend/utility/front_util.dart';
+import 'package:drw/backend/provider/family_provider.dart';
+import 'package:drw/backend/provider/remind_provider.dart';
+import 'package:drw/backend/provider/report_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RemindPart extends StatefulWidget {
   const RemindPart({super.key});
@@ -11,35 +15,55 @@ class RemindPart extends StatefulWidget {
 
 class _WoundRemindPageState extends State<RemindPart> {
   // 模擬今日換藥的資料
-  List<Map<String, dynamic>> reminders = [
-    {"time": "12:00", "member": "媽媽", "done": false},
-    {"time": "12:00", "member": "媽媽", "done": false},
-    {"time": "12:00", "member": "媽媽", "done": true},
-    {"time": "12:00", "member": "媽媽", "done": false},
-    {"time": "12:00", "member": "媽媽", "done": false},
-    {"time": "12:00", "member": "媽媽", "done": false},
-  ];
+  // List<Map<String, dynamic>> reminders = [
+  //   {"time": "12:00", "member": "媽媽", "done": false},
+  //   {"time": "12:00", "member": "媽媽", "done": false},
+  //   {"time": "12:00", "member": "媽媽", "done": true},
+  //   {"time": "12:00", "member": "媽媽", "done": false},
+  //   {"time": "12:00", "member": "媽媽", "done": false},
+  //   {"time": "12:00", "member": "媽媽", "done": false},
+  // ];
 
+  List<Map<String, dynamic>> reminders = [];
   // 模擬推薦開啟提醒的傷口照片
-  List<String> recommended = [
-    "10.25",
-    "10.25",
-    "10.25",
-    "10.25",
-  ];
+  // List<String> recommended = [
+  //   "10.25",
+  //   "10.25",
+  //   "10.25",
+  //   "10.25",
+  // ];
+  List<Map<String, dynamic>> recommended = [];
 
   @override
   Widget build(BuildContext context) {
+    final remindProvider = context.read<RemindProvider>();
+    final reminds = remindProvider.reminds;
+    final familyProvider = context.read<FamilyProvider>();
+    final members = familyProvider.members;
+    final reportProvider = context.read<ReportProvider>();
+    final reports = reportProvider.reports;
+    for (var remind in reminds) {
+      for (var member in members) {
+        if (member.memberId == remind.memberId) {
+          reminders.add({"time": remind.time, "member": member.role, "done": false});
+        }
+      }
+    }
+    for (var report in reports) {
+      if (report.ifcall == 'N') {
+        final dateTime = DateTime.parse(report.date);
+        String date = '${dateTime.month}/${dateTime.day}';
+        recommended.add({"date": date, "image": report.photo});
+      }
+    }
     int total = reminders.length;
     int doneCount = reminders.where((r) => r["done"]).length;
 
     // 設定每個 item 高度 + margin
     const double itemHeight = 73;
     const int maxVisibleItems = 5;
-    final double listHeight = (reminders.length > maxVisibleItems
-            ? maxVisibleItems
-            : reminders.length) *
-        itemHeight;
+    final double listHeight =
+        (reminders.length > maxVisibleItems ? maxVisibleItems : reminders.length) * itemHeight;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
@@ -79,8 +103,7 @@ class _WoundRemindPageState extends State<RemindPart> {
               itemBuilder: (context, index) {
                 final remind = reminders[index];
                 return Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                   margin: const EdgeInsets.only(bottom: 6),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -98,8 +121,7 @@ class _WoundRemindPageState extends State<RemindPart> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.access_time,
-                              size: 18, color: Color(0xFF9FBABB)),
+                          const Icon(Icons.access_time, size: 18, color: Color(0xFF9FBABB)),
                           const SizedBox(width: 8),
                           Text("換藥時間：${remind["time"]}"),
                           const SizedBox(width: 20),
@@ -143,8 +165,7 @@ class _WoundRemindPageState extends State<RemindPart> {
                 return Container(
                   width: 110,
                   padding: const EdgeInsets.all(6),
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                  margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
@@ -159,17 +180,33 @@ class _WoundRemindPageState extends State<RemindPart> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 100,
-                        height: 70,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD8E6E6),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
+                      recommended[index]["image"] == null
+                          ? Container(
+                              width: 100,
+                              height: 70,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFD8E6E6),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            )
+                          : Container(
+                              width: 100,
+                              height: 70,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFD8E6E6),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.network(
+                                  recommended[index]["image"].toString(),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
                       const SizedBox(height: 5),
                       Text(
-                        "拍攝日：${recommended[index]}",
+                        "拍攝日：${recommended[index]["date"]}",
                         style: const TextStyle(fontSize: 12),
                         textAlign: TextAlign.center,
                       ),

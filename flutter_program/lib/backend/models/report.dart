@@ -3,6 +3,7 @@ import 'package:drw/backend/models/remind.dart';
 class UserReport {
   final int id;
   final int userId;
+  final int memberId;
   final String date;
   final String type;
   final String oktime;
@@ -15,11 +16,13 @@ class UserReport {
   final int groupId;
   final String role;
   final String bruiseType;
+
   List<UserRemind> reminds;
 
   UserReport({
     required this.id,
     required this.userId,
+    required this.memberId,
     required this.date,
     required this.type,
     required this.oktime,
@@ -31,13 +34,14 @@ class UserReport {
     required this.name,
     required this.groupId,
     required this.role,
-    required this.bruiseType, 
+    required this.bruiseType,
     required this.reminds,
   });
 
   UserReport copyWith({
     int? id,
     int? userId,
+    int? memberId,
     String? date,
     String? type,
     String? oktime,
@@ -55,6 +59,7 @@ class UserReport {
     return UserReport(
       id: id ?? this.id,
       userId: userId ?? this.userId,
+      memberId: memberId ?? this.memberId,
       date: date ?? this.date,
       type: type ?? this.type,
       oktime: oktime ?? this.oktime,
@@ -73,8 +78,9 @@ class UserReport {
 
   factory UserReport.fromJson(Map<String, dynamic> json) {
     return UserReport(
-      id: json['id'],
-      userId: json['userId'],
+      id: json['id_record'],
+      userId: json['fk_userid'],
+      memberId: json['member_id'],
       date: json['date'],
       type: json['type'],
       oktime: json['oktime'],
@@ -87,7 +93,8 @@ class UserReport {
       groupId: json['group_id'] ?? 0,
       role: json['role'] ?? '',
       bruiseType: json['bruise_type'] ?? '',
-      reminds: (json['reminds'] as List).map((r) => UserRemind.fromJson(r)).toList(),
+      reminds:
+          (json['reminds'] as List<dynamic>?)?.map((r) => UserRemind.fromJson(r)).toList() ?? [],
     );
   }
 }

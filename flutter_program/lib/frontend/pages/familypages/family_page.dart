@@ -1,3 +1,7 @@
+import 'package:drw/backend/models/family.dart';
+import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/provider/family_provider.dart';
+import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/frontend/pages/familypages/family_dialog.dart';
 import 'package:drw/frontend/pages/familypages/healed_part.dart';
 import 'package:drw/frontend/pages/familypages/remind_part.dart';
@@ -5,6 +9,7 @@ import 'package:drw/frontend/pages/familypages/remind_part.dart';
 import 'package:drw/frontend/utility/family_record_util.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FamilyPage extends StatefulWidget {
   const FamilyPage({super.key});
@@ -14,20 +19,20 @@ class FamilyPage extends StatefulWidget {
 }
 
 //--------------假資料 (之後記得刪掉------------------------
-final List<Map<String, String>> reportList = [
-  {'imageUrl': '', 'date': '10.25', 'woundType': '手術傷口', 'role': '媽'},
-  {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
-  {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
-  {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
-  {'imageUrl': '', 'date': '10.25', 'woundType': '割傷', 'role': '媽'},
-  {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
-  {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
-  {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
-  {'imageUrl': '', 'date': '10.25', 'woundType': '割傷', 'role': '媽'},
-  {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
-  {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
-  {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
-];
+// final List<Map<String, String>> reportList = [
+//   {'imageUrl': '', 'date': '10.25', 'woundType': '手術傷口', 'role': '媽'},
+//   {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
+//   {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
+//   {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
+//   {'imageUrl': '', 'date': '10.25', 'woundType': '割傷', 'role': '媽'},
+//   {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
+//   {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
+//   {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
+//   {'imageUrl': '', 'date': '10.25', 'woundType': '割傷', 'role': '媽'},
+//   {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
+//   {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
+//   {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
+// ];
 
 //----------------------------------------
 class _FamilyPageState extends State<FamilyPage> {
@@ -35,6 +40,11 @@ class _FamilyPageState extends State<FamilyPage> {
 
   @override
   Widget build(BuildContext context) {
+    final reportProvider = context.read<ReportProvider>();
+    final reports = reportProvider.reports;
+    final familyProvider = context.read<FamilyProvider>();
+    final members = familyProvider.members;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -46,10 +56,7 @@ class _FamilyPageState extends State<FamilyPage> {
         ),
         title: Text(
           '家庭群組',
-          style: TextStyle(
-              color: FrontUtil.textColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 20),
+          style: TextStyle(color: FrontUtil.textColor, fontWeight: FontWeight.bold, fontSize: 20),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -114,11 +121,12 @@ class _FamilyPageState extends State<FamilyPage> {
                       onPressed: () {
                         showDialog(
                           context: context,
-                          builder: (context) => const FamilyDialog(userFamily: [],),
+                          builder: (context) => const FamilyDialog(
+                            userFamily: [],
+                          ),
                         );
                       },
-                      icon: Icon(Icons.groups_rounded,
-                          color: FrontUtil.textColor),
+                      icon: Icon(Icons.groups_rounded, color: FrontUtil.textColor),
                     ),
                   ],
                 ),
@@ -131,7 +139,7 @@ class _FamilyPageState extends State<FamilyPage> {
           // 主體內容區
           Expanded(
             child: _selectedTopIndex == 0
-                ? _buildReportGrid()
+                ? _buildReportGrid(reports, members)
                 : _selectedTopIndex == 1
                     ? const RemindPart()
                     : const HealedPart(),
@@ -202,7 +210,7 @@ class _FamilyPageState extends State<FamilyPage> {
   }
 
   // 報告頁 GridView
-  Widget _buildReportGrid() {
+  Widget _buildReportGrid(List<UserReport> reports, List<UserFamily> members) {
     return GridView.builder(
       padding: const EdgeInsets.only(top: 8, left: 20, right: 20, bottom: 25),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -211,14 +219,22 @@ class _FamilyPageState extends State<FamilyPage> {
         crossAxisSpacing: 10,
         childAspectRatio: 0.72,
       ),
-      itemCount: reportList.length,
+      itemCount: reports.length,
       itemBuilder: (context, index) {
-        final report = reportList[index];
+        final report = reports[index];
+        final dateTime = DateTime.parse(report.date);
+        String date = '${dateTime.month}/${dateTime.day}';
+        String role = '';
+        for (var member in members) {
+          if (member.memberId == report.memberId) {
+            role = member.role;
+          }
+        }
         return FamilyRecordCard(
-          imageUrl: report['imageUrl'] ?? '',
-          date: report['date'] ?? '',
-          woundType: report['woundType'] ?? '',
-          role: report['role'] ?? '',
+          imageUrl: report.photo,
+          date: date,
+          woundType: report.type,
+          role: role[0],
         );
       },
     );

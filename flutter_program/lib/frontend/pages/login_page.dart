@@ -1,8 +1,10 @@
 import 'package:drw/backend/models/user.dart';
+import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/auth_service.dart';
+import 'package:drw/backend/services/user_service.dart';
 // import 'package:drw/backend/services/family_service.dart';
 import 'package:drw/frontend/pages/familypages/family_dialog.dart';
 import 'package:drw/frontend/utility/notifier_util.dart';
@@ -31,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoading = false;
   Notifier notifier = Notifier();
   AuthService authService = AuthService();
+  UserService userService = UserService();
   @override
   void dispose() {
     _emailController.dispose();
@@ -168,21 +171,23 @@ class _LoginPageState extends State<LoginPage> {
                                         userFamily: userFamily!,
                                       ),
                                     );
+                                    final userInfo =
+                                        await userService.fetchUserInfo(userFamily![0].userId);
+                                    // debugPrint(userInfo.toString());
+                                    // // 2. 儲存使用者資料
+                                    Provider.of<UserProvider>(context, listen: false)
+                                        .setUserInfo(userInfo!['user']);
 
-                                    //   // 2. 儲存使用者資料
-                                    //   Provider.of<UserProvider>(context, listen: false)
-                                    //       .setUserInfo(userInfo);
+                                    // // 3. 儲存診斷報告
+                                    Provider.of<ReportProvider>(context, listen: false)
+                                        .setReports(userInfo['reports']);
 
-                                    //   // 3. 儲存診斷報告
-                                    //   Provider.of<ReportProvider>(context, listen: false)
-                                    //       .setReports(userInfo.reports);
-
-                                    //   // 4. 提取所有提醒並儲存
+                                    // // 4. 提取所有提醒並儲存
                                     //   final allReminds =
                                     //       userInfo.reports.expand((r) => r.reminds).toList();
-                                    //   Provider.of<RemindProvider>(context, listen: false)
-                                    //       .setReminds(allReminds);
-
+                                    Provider.of<RemindProvider>(context, listen: false)
+                                        .setReminds(userInfo['reminds']);
+                                    Provider.of<FamilyProvider>(context,listen:false).setMembers(userInfo['family']);
                                     //   // notifier.setRemind(context);
                                     //   // 打印診斷報告與每筆報告底下的提醒
                                     //   // debugPrint(userInfo.toString());
@@ -204,20 +209,20 @@ class _LoginPageState extends State<LoginPage> {
                                     //   //   }
                                     //   // }
 
-                                    //   // FrontUtil.showSuccess('登入成功!');
-                                    //   if (!mounted) return;
-                                    //   Navigator.pushReplacement(
-                                    //     myContext,
-                                    //     MaterialPageRoute(builder: (context) => const Tabs()),
-                                    //   );
-                                    // } else {
-                                    //   setState(() {
-                                    //     isLoading = false;
-                                    //   });
-                                    //   debugPrint('email:${login.email} psd:${login.password}');
-                                    //   FrontUtil.showFail(
-                                    //     '登入失敗，帳號或密碼輸入錯誤',
-                                    //   );
+                                    FrontUtil.showSuccess('登入成功!');
+                                    if (!mounted) return;
+                                    Navigator.pushReplacement(
+                                      myContext,
+                                      MaterialPageRoute(builder: (context) => const Tabs()),
+                                    );
+                                  } else {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                    debugPrint('email:${login.email} psd:${login.password}');
+                                    FrontUtil.showFail(
+                                      '登入失敗，帳號或密碼輸入錯誤',
+                                    );
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
