@@ -4,7 +4,6 @@ import 'package:drw/backend/services/apibase.dart';
 import 'package:http/http.dart' as http;
 
 class FamilyService {
-
   //取得成員
   Future<List<dynamic>> getMembers(int userId) async {
     final url = Uri.parse('${ApiBase.baseUrl}/getMembers');
@@ -23,7 +22,7 @@ class FamilyService {
   }
 
   // 增加成員
-  Future<String?> addMember(
+  Future<Map<String, dynamic>?> addMember(
       {required int userId,
       required String role,
       required int birthyear,
@@ -44,21 +43,20 @@ class FamilyService {
           'freq': freq,
         }),
       );
-
+      final data = jsonDecode(response.body);
       if (response.statusCode == 201) {
-        return null; // 新增成員成功
+        return {'result': null, 'member': data['member']}; // 新增成員成功
       } else if (response.statusCode == 409) {
-        return '該成員已存在';
+        return {'result': '該成員已存在', 'member': null};
       } else {
         try {
-          final data = jsonDecode(response.body);
-          return data['message'] ?? '成員新增失敗';
+          return data['message'] ?? {'result': '成員新增失敗', 'member': null};
         } catch (_) {
-          return '成員新增失敗';
+          return {'result': '成員新增失敗', 'member': null};
         }
       }
     } catch (e) {
-      return '錯誤：$e';
+      return {'result': '錯誤：$e', 'member': null};
     }
   }
 }

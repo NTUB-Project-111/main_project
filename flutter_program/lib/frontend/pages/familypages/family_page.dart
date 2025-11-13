@@ -121,8 +121,8 @@ class _FamilyPageState extends State<FamilyPage> {
                       onPressed: () {
                         showDialog(
                           context: context,
-                          builder: (context) => const FamilyDialog(
-                            userFamily: [],
+                          builder: (context) => FamilyDialog(
+                            userFamily: members,
                           ),
                         );
                       },
