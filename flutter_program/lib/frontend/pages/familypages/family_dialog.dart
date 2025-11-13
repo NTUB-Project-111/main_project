@@ -1,10 +1,12 @@
 import 'package:drw/backend/models/family.dart';
+import 'package:drw/backend/provider/family_provider.dart';
 // import 'package:drw/backend/models/user.dart';
 // import 'package:drw/backend/services/auth_service.dart';
 import 'package:drw/backend/services/family_service.dart';
 import 'package:drw/frontend/pages/registerpages/birthday_year_selector_part.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FamilyDialog extends StatefulWidget {
   final List<UserFamily> userFamily;
@@ -266,21 +268,23 @@ class _FamilyDialogState extends State<FamilyDialog> {
                     debugPrint(selectedDiseaseText);
                     debugPrint(selectedFreqs.toString());
                     debugPrint(selectedYearText);
-                    final message = await familyService.addMember(
+                    final response = await familyService.addMember(
                         userId: widget.userFamily[0].userId,
                         role: nameController.text,
                         birthyear: selectedYear,
                         disease: selectedDiseaseText,
                         freq: selectedHabitText);
+                    final familyProvider = context.read<FamilyProvider>();
                     // debugPrint(message);
-                    if (message == null) {
+                    if (response!['result'] == null) {
+                      familyProvider.addMember(UserFamily.fromJson(response['member']));
                       setState(() {
                         members.add(
                           nameController.text,
                         );
                       });
                       Navigator.pop(context);
-                    } else if (message == '該成員已存在') {
+                    } else if (response['result'] == '該成員已存在') {
                       FrontUtil.showError('該成員已存在', Colors.red, Colors.white);
                     } else {
                       FrontUtil.showError('成員新增失敗', Colors.red, Colors.white);

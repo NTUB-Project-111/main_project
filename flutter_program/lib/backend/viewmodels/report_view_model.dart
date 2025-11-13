@@ -106,6 +106,11 @@ class Report extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setMemberId(int value) {
+    memberId = value;
+    notifyListeners();
+  }
+
   void removeTags(String text, List<String> list) {
     list.remove(text);
     notifyListeners();
@@ -493,7 +498,7 @@ class Report extends ChangeNotifier {
     // final result1 = await _record.fetchMemberId(userId);
     // memberId = result1 ?? 1;
     final result2 = await _record.addRecord(userId.toString(), date, woundType, oktime, gptResult,
-        notify ? 'Y' : 'N', tags, selfRecord, name, image!,memberId);
+        notify ? 'Y' : 'N', tags, selfRecord, name, image!, memberId);
     int? id = result2?['recordId'];
     imageUrl = result2?['imageUrl'] ?? '';
     if (id != null) {

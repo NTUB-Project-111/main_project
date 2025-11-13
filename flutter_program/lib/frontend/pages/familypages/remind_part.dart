@@ -35,27 +35,31 @@ class _WoundRemindPageState extends State<RemindPart> {
   List<Map<String, dynamic>> recommended = [];
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     final remindProvider = context.read<RemindProvider>();
-    final reminds = remindProvider.reminds;
     final familyProvider = context.read<FamilyProvider>();
-    final members = familyProvider.members;
     final reportProvider = context.read<ReportProvider>();
-    final reports = reportProvider.reports;
-    for (var remind in reminds) {
-      for (var member in members) {
+
+    for (var remind in remindProvider.reminds) {
+      for (var member in familyProvider.members) {
         if (member.memberId == remind.memberId) {
           reminders.add({"time": remind.time, "member": member.role, "done": false});
         }
       }
     }
-    for (var report in reports) {
+
+    for (var report in reportProvider.reports) {
       if (report.ifcall == 'N') {
         final dateTime = DateTime.parse(report.date);
         String date = '${dateTime.month}/${dateTime.day}';
         recommended.add({"date": date, "image": report.photo});
       }
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     int total = reminders.length;
     int doneCount = reminders.where((r) => r["done"]).length;
 

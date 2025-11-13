@@ -1,4 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +31,20 @@ class _RecordPartState extends State<RecordPart> {
   ];
   List<String> woundReactions = ["紅腫", "疼痛", "出血", "發熱", "化膿"];
   final TextEditingController _selfRecord = TextEditingController();
-  final List<String> items = ['爺爺', '奶奶', '爸爸', '媽媽', '哥哥', '姊姊', '弟弟', '妹妹'];
-  String? selectedValue = '爺爺';
+  List<String> items = [];
+  String? selectedValue = '姊姊';
+
+  @override
+  void initState() {
+    super.initState();
+    final familyProvider = context.read<FamilyProvider>();
+    final members = familyProvider.members;
+    for (var member in members) {
+      items.add(member.role);
+    }
+    // report.setMemberId(member.userId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<Report>(builder: (context, report, _) {
@@ -92,6 +105,13 @@ class _RecordPartState extends State<RecordPart> {
                           selectedValue = value;
                         });
                         report.setRole(value!);
+                        final familyProvider = context.read<FamilyProvider>();
+                        final members = familyProvider.members;
+                        for (var member in members) {
+                          if (member.role == report.role) {
+                            report.setMemberId(member.userId);
+                          }
+                        }
                       },
                       buttonStyleData: ButtonStyleData(
                         height: 50,
