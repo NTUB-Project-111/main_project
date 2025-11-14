@@ -173,8 +173,8 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                     final userInfo =
                                         await userService.fetchUserInfo(userFamily![0].userId);
-                                    // debugPrint(userInfo.toString());
-                                    // // 2. 儲存使用者資料
+                                    
+                                    // 2. 儲存使用者資料
                                     Provider.of<UserProvider>(context, listen: false)
                                         .setUserInfo(userInfo!['user']);
 
@@ -182,12 +182,13 @@ class _LoginPageState extends State<LoginPage> {
                                     Provider.of<ReportProvider>(context, listen: false)
                                         .setReports(userInfo['reports']);
 
-                                    // // 4. 提取所有提醒並儲存
+                                    //4. 提取所有提醒並儲存
                                     //   final allReminds =
                                     //       userInfo.reports.expand((r) => r.reminds).toList();
                                     Provider.of<RemindProvider>(context, listen: false)
                                         .setReminds(userInfo['reminds']);
-                                    Provider.of<FamilyProvider>(context,listen:false).setMembers(userInfo['family']);
+                                    Provider.of<FamilyProvider>(context, listen: false)
+                                        .setMembers(userInfo['family']);
                                     //   // notifier.setRemind(context);
                                     //   // 打印診斷報告與每筆報告底下的提醒
                                     //   // debugPrint(userInfo.toString());

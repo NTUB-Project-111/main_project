@@ -497,6 +497,7 @@ class Report extends ChangeNotifier {
     name == '' ? '$woundType診斷報告' : name;
     // final result1 = await _record.fetchMemberId(userId);
     // memberId = result1 ?? 1;
+    // debugPrint(memberId.toString());
     final result2 = await _record.addRecord(userId.toString(), date, woundType, oktime, gptResult,
         notify ? 'Y' : 'N', tags, selfRecord, name, image!, memberId);
     int? id = result2?['recordId'];
