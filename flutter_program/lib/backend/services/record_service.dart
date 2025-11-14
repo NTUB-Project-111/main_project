@@ -38,7 +38,7 @@ class RecordService {
     request.fields['choosekind'] = choosekind;
     request.fields['recording'] = recording;
     request.fields['name'] = name;
-    request.fields['member_Id'] = memberId.toString();
+    request.fields['member_id'] = memberId.toString();
     // 添加圖片檔案
     var mimeType = lookupMimeType(photoFile.path) ?? "image/jpeg"; // 確保有 MIME 類型
     var multipartFile = await http.MultipartFile.fromPath(

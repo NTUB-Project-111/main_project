@@ -168,6 +168,7 @@ class UserService {
         for (var remind in data['reminds']) {
           reminds.add(UserRemind.fromJson(remind));
         }
+        // debugPrint('=== ${data['user'].toString()} ===');
         return {
           'user': UserInfo.fromJson(data['user']),
           'family': members,
