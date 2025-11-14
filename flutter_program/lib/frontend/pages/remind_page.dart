@@ -33,18 +33,41 @@ class _RemindPageState extends State<RemindPage> {
     _isInitialized = true;
   }
 
+  // Future<void> loadReminders() async {
+  //   final userInfo = Provider.of<UserProvider>(context, listen: false).user;
+  //   if (userInfo != null) {
+  //     setState(() {
+  //       reminders
+  //         ..clear()
+  //         ..addAll(userInfo.reports
+  //                 .where((r) => r.ifcall == 'Y' && r.oktime != '傷口已痊癒')
+  //                 .map((r) => Reminder.fromReport(r))
+  //                 .whereType<Reminder>() // 過濾掉 null
+  //             );
+  //     });
+  //   }
+  // }
   Future<void> loadReminders() async {
-    final userInfo = Provider.of<UserProvider>(context, listen: false).user;
-    if (userInfo != null) {
-      setState(() {
-        reminders
-          ..clear()
-          ..addAll(userInfo.reports
-                  .where((r) => r.ifcall == 'Y' && r.oktime != '傷口已痊癒')
-                  .map((r) => Reminder.fromReport(r))
-                  .whereType<Reminder>() // 過濾掉 null
-              );
-      });
+    final reports = Provider.of<ReportProvider>(context, listen: false).reports;
+    final reminds = Provider.of<RemindProvider>(context, listen: false).reminds;
+    for (var report in reports) {
+      for (var remind in reminds) {
+        if (report.id == remind.recordId && report.ifcall == 'Y' && report.oktime != '傷口已痊癒') {
+          reminders.add(Reminder(
+              date: report.date,
+              userId: report.userId,
+              recordId: report.id,
+              remindId: remind.id,
+              imagePath: report.photo,
+              woundType: report.type,
+              remindDate: remind.date,
+              initialFreq: remind.freq,
+              initialTime: remind.time,
+              oktime: report.oktime,
+              isDelete: false));
+          break;
+        }
+      }
     }
   }
 
