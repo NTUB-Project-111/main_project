@@ -1,4 +1,5 @@
 import 'package:drw/backend/models/remind.dart';
+import 'package:intl/intl.dart';
 
 class UserReport {
   final int id;
@@ -81,7 +82,9 @@ class UserReport {
       id: json['id_record'],
       userId: json['fk_userid'],
       memberId: json['member_id'],
-      date: json['date'],
+      // date: json['date'],
+      date: DateFormat('yyyy-MM-dd').format(DateTime.parse(json['date'])),
+
       type: json['type'],
       oktime: json['oktime'],
       caremode: json['caremode'],
