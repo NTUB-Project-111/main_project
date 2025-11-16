@@ -4,6 +4,7 @@ import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/frontend/pages/familypages/family_dialog.dart';
 import 'package:drw/frontend/pages/familypages/healed_part.dart';
+// import 'package:drw/frontend/pages/familypages/member_dialog.dart';
 import 'package:drw/frontend/pages/familypages/remind_part.dart';
 // import 'package:drw/frontend/pages/familypages/report_part.dart';
 import 'package:drw/frontend/utility/family_record_util.dart';
@@ -125,6 +126,10 @@ class _FamilyPageState extends State<FamilyPage> {
                             userFamily: members,
                           ),
                         );
+                        // showDialog(
+                        //   context:context,
+                        //   builder:(context) => const MemberDialog()
+                        // );
                       },
                       icon: Icon(Icons.groups_rounded, color: FrontUtil.textColor),
                     ),
