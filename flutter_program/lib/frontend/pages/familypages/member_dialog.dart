@@ -13,6 +13,7 @@ class _MemberDialogState extends State<MemberDialog> {
   int selectedYear = DateTime.now().year;
   String yearText = '未填寫';
   String selectedYearText = '';
+  List<String> selectedHabitText = ['', '', ''];
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -181,11 +182,31 @@ class _MemberDialogState extends State<MemberDialog> {
 
                     const SizedBox(height: 16),
 
+                    // _infoRow(
+                    //   label: '個人習慣',
+                    //   value: selectedHabitText.every((e) => e.isEmpty)
+                    //       ? '未填寫'
+                    //       : "抽菸：${selectedHabitText[0]}，喝酒：${selectedHabitText[1]}，嚼檳榔：${selectedHabitText[2]}",
+                    //   icon: Icons.edit,
+                    //   onTap: () {
+                    //     _showHabitDialog(context);
+                    //   },
+                    // ),
                     _infoRow(
                       label: '個人習慣',
-                      value: '未填寫',
+                      value: selectedHabitText.every((e) => e.isEmpty)
+                          ? '未填寫'
+                          : "抽菸：${selectedHabitText[0]}，喝酒：${selectedHabitText[1]}，嚼檳榔：${selectedHabitText[2]}",
                       icon: Icons.edit,
-                      onTap: () {},
+                      onTap: () async {
+                        final result = await _showHabitDialog(context);
+                        if (result != null) {
+                          setState(() {
+                            selectedHabitText = result;
+                          });
+                          setStateDialog(() {});
+                        }
+                      },
                     ),
 
                     const SizedBox(height: 16),
@@ -228,15 +249,20 @@ class _MemberDialogState extends State<MemberDialog> {
                   color: Color(0xff2F6F6F),
                 ),
               ),
-              const Spacer(),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: value == '未填寫' ? Colors.grey : Colors.black87,
+              SizedBox(
+                width: 80, // 自訂寬度
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: value == '未填寫' ? Colors.grey : Colors.black87,
+                  ),
                 ),
               ),
-              const Spacer(),
+
+              // const Spacer(),
               Icon(icon, size: 18, color: const Color(0xff2F6F6F)),
             ],
           ),
@@ -271,5 +297,108 @@ class _MemberDialogState extends State<MemberDialog> {
       return picked;
     }
     return null;
+  }
+
+  Future<List<String>?> _showHabitDialog(BuildContext context) async {
+    List<String> tempSelection = ['無', '無', '無'];
+    String smoke = "無", drink = "無", betel = "無";
+
+    return showDialog<List<String>>(
+      context: context,
+      barrierDismissible: true, // 點外面也可以關閉
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            Widget buildSectionTitle(String text) => Padding(
+                  padding: const EdgeInsets.only(top: 24, bottom: 8),
+                  child: Text(
+                    text,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF2E6D74),
+                    ),
+                  ),
+                );
+
+            Widget buildRadioItem(String label, String value, String groupValue,
+                    void Function(String?) onChanged) =>
+                Row(
+                  children: [
+                    Radio(
+                      value: value,
+                      groupValue: groupValue,
+                      activeColor: const Color(0xFF669FA5),
+                      onChanged: onChanged,
+                    ),
+                    Text(label, style: const TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
+                  ],
+                );
+
+            Widget buildRadioRow({
+              required String groupValue,
+              required void Function(String?) onChanged,
+            }) =>
+                Row(
+                  children: [
+                    buildRadioItem("無", "無", groupValue, onChanged),
+                    const SizedBox(width: 20),
+                    buildRadioItem("偶爾", "偶爾", groupValue, onChanged),
+                    const SizedBox(width: 20),
+                    buildRadioItem("經常", "經常", groupValue, onChanged),
+                  ],
+                );
+
+            return Dialog(
+              insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+                width: 360,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "個人習慣",
+                      style: TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xFF2E6D74)),
+                    ),
+                    // 抽菸
+                    buildSectionTitle("抽菸"),
+                    buildRadioRow(
+                        groupValue: smoke,
+                        onChanged: (v) => setState(() {
+                              smoke = v!;
+                              tempSelection[0] = smoke;
+                            })),
+                    // 喝酒
+                    buildSectionTitle("喝酒"),
+                    buildRadioRow(
+                        groupValue: drink,
+                        onChanged: (v) => setState(() {
+                              drink = v!;
+                              tempSelection[1] = drink;
+                            })),
+                    // 嚼檳榔
+                    buildSectionTitle("嚼檳榔"),
+                    buildRadioRow(
+                        groupValue: betel,
+                        onChanged: (v) => setState(() {
+                              betel = v!;
+                              tempSelection[2] = betel;
+                            })),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context, tempSelection),
+                      child: const Text("確定"),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
