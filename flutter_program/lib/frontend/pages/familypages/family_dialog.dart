@@ -39,9 +39,12 @@ class _FamilyDialogState extends State<FamilyDialog> {
   ];
   List<String> selectedFreqs = ['無', '無', '無'];
   List<String> selectedSymptoms = [];
-  String selectedYearText = "未填寫";
-  String selectedHabitText = "未填寫";
-  String selectedDiseaseText = "未填寫";
+  String yearText = '未填寫';
+  String habitText = '未填寫';
+  String diseaseText = '未填寫';
+  String selectedYearText = '';
+  String selectedHabitText = '';
+  String selectedDiseaseText = '';
   // AuthService authService = AuthService();
   FamilyService familyService = FamilyService();
 
@@ -237,6 +240,7 @@ class _FamilyDialogState extends State<FamilyDialog> {
                 const SizedBox(height: 20),
                 _editableRow(
                   label: "出生年份",
+                  defaultText: yearText,
                   value: selectedYearText,
                   icon: Icons.calendar_today,
                   onTap: () => _selectYear(),
@@ -245,6 +249,7 @@ class _FamilyDialogState extends State<FamilyDialog> {
                 const SizedBox(height: 10),
                 _editableRow(
                   label: "個人習慣",
+                  defaultText: habitText,
                   value: selectedHabitText,
                   icon: Icons.edit,
                   onTap: () => _showHabitDialog(context),
@@ -253,6 +258,7 @@ class _FamilyDialogState extends State<FamilyDialog> {
                 const SizedBox(height: 10),
                 _editableRow(
                   label: "特殊疾病",
+                  defaultText: diseaseText,
                   value: selectedDiseaseText,
                   icon: Icons.edit,
                   onTap: () => _showMultiSelect(),
@@ -301,8 +307,12 @@ class _FamilyDialogState extends State<FamilyDialog> {
   }
 
   Widget _editableRow(
-      {required String label, required String value, required IconData icon, VoidCallback? onTap}) {
-    String str = '';
+      {required String label,
+      required String defaultText,
+      required String value,
+      required IconData icon,
+      VoidCallback? onTap}) {
+    // String str = '';
     return InkWell(
         onTap: onTap ?? () {},
         child: Row(
@@ -311,9 +321,9 @@ class _FamilyDialogState extends State<FamilyDialog> {
             Text(label,
                 style: const TextStyle(
                     fontSize: 14, color: Color(0xFF2E6D74), fontWeight: FontWeight.bold)),
-            str == ''
-                ? Text(value, style: TextStyle(fontSize: 14, color: Colors.grey[500]))
-                : Text(str, style: const TextStyle(fontSize: 14, color: Color(0xFF2E6D74))),
+            value == ''
+                ? Text('未填寫', style: TextStyle(fontSize: 14, color: Colors.grey[500]))
+                : Text(value, style: const TextStyle(fontSize: 14, color: Color(0xFF2E6D74))),
             Icon(icon, size: 18, color: const Color(0xFF2E6D74)),
           ],
         ));

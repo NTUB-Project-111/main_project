@@ -5,8 +5,9 @@ import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/auth_service.dart';
 import 'package:drw/backend/services/user_service.dart';
+import 'package:drw/frontend/pages/familypages/member_dialog.dart';
 // import 'package:drw/backend/services/family_service.dart';
-import 'package:drw/frontend/pages/familypages/family_dialog.dart';
+// import 'package:drw/frontend/pages/familypages/family_dialog.dart';
 import 'package:drw/frontend/utility/notifier_util.dart';
 import 'forget_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
@@ -165,15 +166,19 @@ class _LoginPageState extends State<LoginPage> {
                                     final userFamily =
                                         await authService.getUserFamily(login.accessToken!);
                                     // List<String> userRole = [userInfo.role];
+                                    // await showDialog(
+                                    //   context: context,
+                                    //   builder: (context) => FamilyDialog(
+                                    //     userFamily: userFamily!,
+                                    //   ),
+                                    // );
                                     await showDialog(
                                       context: context,
-                                      builder: (context) => FamilyDialog(
-                                        userFamily: userFamily!,
-                                      ),
+                                      builder: (context) =>const MemberDialog(),
                                     );
                                     final userInfo =
                                         await userService.fetchUserInfo(userFamily![0].userId);
-                                    
+
                                     // 2. 儲存使用者資料
                                     Provider.of<UserProvider>(context, listen: false)
                                         .setUserInfo(userInfo!['user']);
