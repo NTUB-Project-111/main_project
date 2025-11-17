@@ -1,19 +1,54 @@
+import 'package:drw/backend/models/family.dart';
+import 'package:drw/backend/provider/family_provider.dart';
+import 'package:drw/backend/services/family_service.dart';
 import 'package:drw/frontend/pages/registerpages/birthday_year_selector_part.dart';
+import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MemberDialog extends StatefulWidget {
-  const MemberDialog({super.key});
+  final List<UserFamily> userFamily;
+  const MemberDialog({super.key, required this.userFamily});
 
   @override
   State<MemberDialog> createState() => _MemberDialogState();
 }
 
 class _MemberDialogState extends State<MemberDialog> {
-  List<String> members = ['爸爸', '媽媽', '哥哥', '姊姊', '弟弟', '妹妹'];
+  final TextEditingController nameController = TextEditingController();
+  // List<String> members = ['爸爸', '媽媽', '哥哥', '姊姊', '弟弟', '妹妹'];
   int selectedYear = DateTime.now().year;
   String yearText = '未填寫';
   String selectedYearText = '';
   List<String> selectedHabitText = ['', '', ''];
+  final List<String> symptoms = [
+    "高血壓",
+    "高血脂",
+    "糖尿病",
+    "愛滋病",
+    "壞血病",
+    "白血病",
+    "敗血病",
+    "血友病",
+    "貧血",
+    "肝病",
+    "腎病",
+    "癌症",
+    "靜脈功能不全",
+    "周邊動脈阻塞"
+  ];
+  List<String> selectedSymptoms = [];
+  String selectedDiseaseText = '未填寫';
+  FamilyService familyService = FamilyService();
+  List<String> members = [];
+  @override
+  void initState() {
+    super.initState();
+    for (var member in widget.userFamily) {
+      members.add(member.role);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -67,7 +102,7 @@ class _MemberDialogState extends State<MemberDialog> {
                         height: 60,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage('images/icon.png'), // 你自己的熊圖
+                            image: AssetImage('images/icon.png'),
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -155,8 +190,25 @@ class _MemberDialogState extends State<MemberDialog> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('成員名稱', style: TextStyle(fontSize: 16, color: Colors.grey)),
-                        const SizedBox(width: 6),
+                        Expanded(
+                          child: TextField(
+                            controller: nameController,
+                            textAlign: TextAlign.center,
+                            decoration: InputDecoration(
+                              hintText: "成員名稱",
+                              hintStyle: TextStyle(color: Colors.grey[500]),
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF2E6D74),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        // const SizedBox(width: 6),
                         Icon(Icons.edit, size: 18, color: Colors.grey[600]),
                       ],
                     ),
@@ -179,19 +231,7 @@ class _MemberDialogState extends State<MemberDialog> {
                         }
                       },
                     ),
-
                     const SizedBox(height: 16),
-
-                    // _infoRow(
-                    //   label: '個人習慣',
-                    //   value: selectedHabitText.every((e) => e.isEmpty)
-                    //       ? '未填寫'
-                    //       : "抽菸：${selectedHabitText[0]}，喝酒：${selectedHabitText[1]}，嚼檳榔：${selectedHabitText[2]}",
-                    //   icon: Icons.edit,
-                    //   onTap: () {
-                    //     _showHabitDialog(context);
-                    //   },
-                    // ),
                     _infoRow(
                       label: '個人習慣',
                       value: selectedHabitText.every((e) => e.isEmpty)
@@ -208,17 +248,60 @@ class _MemberDialogState extends State<MemberDialog> {
                         }
                       },
                     ),
-
                     const SizedBox(height: 16),
-
                     _infoRow(
                       label: '特殊疾病',
-                      value: '未填寫',
+                      value: selectedDiseaseText,
                       icon: Icons.edit,
-                      onTap: () {},
+                      onTap: () async {
+                        final result = await _showMultiSelect();
+                        // debugPrint(result.toString());
+                        if (result != null) {
+                          setState(() {
+                            selectedSymptoms = result;
+                            selectedDiseaseText =
+                                selectedSymptoms.isEmpty ? '未填寫' : selectedSymptoms.join('、');
+                          });
+                          setStateDialog(() {});
+                        }
+                      },
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 15),
+                    (selectedYearText.isNotEmpty &&
+                            selectedHabitText.every((e) => e.isNotEmpty) &&
+                            selectedSymptoms.isNotEmpty &&
+                            selectedDiseaseText != '未填寫')
+                        ? IconButton(
+                            onPressed: () async {
+                              final habitfreq =
+                                  '${selectedHabitText[0]}、${selectedHabitText[1]}、${selectedHabitText[2]}';
+                              final response = await familyService.addMember(
+                                  userId: widget.userFamily[0].userId,
+                                  role: nameController.text,
+                                  birthyear: selectedYear,
+                                  disease: selectedDiseaseText,
+                                  freq: habitfreq);
+                              final familyProvider = context.read<FamilyProvider>();
+                              // debugPrint(message);
+                              if (response!['result'] == null) {
+                                familyProvider.addMember(UserFamily.fromJson(response['member']));
+                                setState(() {
+                                  members.add(
+                                    nameController.text,
+                                  );
+                                });
+                                Navigator.pop(context);
+                              } else if (response['result'] == '該成員已存在') {
+                                FrontUtil.showError('該成員已存在', Colors.red, Colors.white);
+                              } else {
+                                FrontUtil.showError('成員新增失敗', Colors.red, Colors.white);
+                              }
+                            },
+                            icon:
+                                const Icon(Icons.check_circle, color: Color(0xFF2E6D74), size: 30),
+                          )
+                        : const SizedBox()
                   ],
                 ),
               ),
@@ -302,6 +385,18 @@ class _MemberDialogState extends State<MemberDialog> {
   Future<List<String>?> _showHabitDialog(BuildContext context) async {
     List<String> tempSelection = ['無', '無', '無'];
     String smoke = "無", drink = "無", betel = "無";
+    if (selectedHabitText[0] != '') {
+      tempSelection[0] = selectedHabitText[0];
+      smoke = selectedHabitText[0];
+    }
+    if (selectedHabitText[1] != '') {
+      tempSelection[1] = selectedHabitText[1];
+      drink = selectedHabitText[1];
+    }
+    if (selectedHabitText[2] != '') {
+      tempSelection[2] = selectedHabitText[2];
+      betel = selectedHabitText[2];
+    }
 
     return showDialog<List<String>>(
       context: context,
@@ -364,33 +459,36 @@ class _MemberDialogState extends State<MemberDialog> {
                           fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xFF2E6D74)),
                     ),
                     // 抽菸
-                    buildSectionTitle("抽菸"),
-                    buildRadioRow(
-                        groupValue: smoke,
-                        onChanged: (v) => setState(() {
-                              smoke = v!;
-                              tempSelection[0] = smoke;
-                            })),
-                    // 喝酒
-                    buildSectionTitle("喝酒"),
-                    buildRadioRow(
-                        groupValue: drink,
-                        onChanged: (v) => setState(() {
-                              drink = v!;
-                              tempSelection[1] = drink;
-                            })),
-                    // 嚼檳榔
-                    buildSectionTitle("嚼檳榔"),
-                    buildRadioRow(
-                        groupValue: betel,
-                        onChanged: (v) => setState(() {
-                              betel = v!;
-                              tempSelection[2] = betel;
-                            })),
+                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      buildSectionTitle("抽菸"),
+                      buildRadioRow(
+                          groupValue: smoke,
+                          onChanged: (v) => setState(() {
+                                smoke = v!;
+                                tempSelection[0] = smoke;
+                              })),
+                      // 喝酒
+                      buildSectionTitle("喝酒"),
+                      buildRadioRow(
+                          groupValue: drink,
+                          onChanged: (v) => setState(() {
+                                drink = v!;
+                                tempSelection[1] = drink;
+                              })),
+                      // 嚼檳榔
+                      buildSectionTitle("嚼檳榔"),
+                      buildRadioRow(
+                          groupValue: betel,
+                          onChanged: (v) => setState(() {
+                                betel = v!;
+                                tempSelection[2] = betel;
+                              })),
+                    ]),
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context, tempSelection),
-                      child: const Text("確定"),
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2E6D74)),
+                      child: const Text("確定", style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 ),
@@ -401,4 +499,189 @@ class _MemberDialogState extends State<MemberDialog> {
       },
     );
   }
+
+  Future<List<String>?> _showMultiSelect() async {
+    return await showModalBottomSheet<List<String>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        List<String> tempSelection = List.from(selectedSymptoms); // 先複製一份目前的選項
+
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const Text(
+                    '選擇症狀',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF5E9CA0),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: symptoms.map((symptom) {
+                      final isSelected = tempSelection.contains(symptom);
+                      return FilterChip(
+                        label: Text(symptom),
+                        selected: isSelected,
+                        selectedColor: const Color(0xFFE5F8F8),
+                        checkmarkColor: const Color(0xFF5E9CA0),
+                        labelStyle: TextStyle(
+                          color: isSelected ? const Color(0xFF5E9CA0) : Colors.grey[700],
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                        shape: StadiumBorder(
+                          side: BorderSide(
+                            color: isSelected ? const Color(0xFF5E9CA0) : Colors.grey[400]!,
+                          ),
+                        ),
+                        onSelected: (value) {
+                          setModalState(() {
+                            if (value) {
+                              tempSelection.add(symptom);
+                            } else {
+                              tempSelection.remove(symptom);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // 確定按鈕：關閉 BottomSheet，並把選擇傳回外層
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context, tempSelection); // 回傳值
+                      },
+                      child: const Text("確定"),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // void _showMultiSelect() {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.white,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //     ),
+  //     builder: (context) {
+  //       return StatefulBuilder(builder: (context, setModalState) {
+  //         return Padding(
+  //           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24), // 外框 padding
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               // drag handle
+  //               Center(
+  //                 child: Container(
+  //                   width: 40,
+  //                   height: 4,
+  //                   margin: const EdgeInsets.only(bottom: 20),
+  //                   decoration: BoxDecoration(
+  //                     color: Colors.grey[300],
+  //                     borderRadius: BorderRadius.circular(2),
+  //                   ),
+  //                 ),
+  //               ),
+  //               const Text(
+  //                 '選擇症狀',
+  //                 style: TextStyle(
+  //                   fontSize: 18,
+  //                   fontWeight: FontWeight.bold,
+  //                   color: Color(0xFF5E9CA0),
+  //                 ),
+  //               ),
+  //               const SizedBox(height: 16), // ⬅️ 標題和 chips 間距
+  //               Wrap(
+  //                 spacing: 8, // ⬅️ chips 左右間距
+  //                 runSpacing: 8, // ⬅️ chips 上下間距
+  //                 children: symptoms.map((symptom) {
+  //                   final isSelected = selectedSymptoms.contains(symptom);
+  //                   return FilterChip(
+  //                     label: Text(symptom),
+  //                     selected: isSelected,
+  //                     selectedColor: const Color(0xFFE5F8F8),
+  //                     checkmarkColor: const Color(0xFF5E9CA0),
+  //                     labelStyle: TextStyle(
+  //                       color: isSelected ? const Color(0xFF5E9CA0) : Colors.grey[700],
+  //                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+  //                     ),
+  //                     shape: StadiumBorder(
+  //                       side: BorderSide(
+  //                         color: isSelected ? const Color(0xFF5E9CA0) : Colors.grey[400]!,
+  //                       ),
+  //                     ),
+  //                     // onSelected: (bool value) {
+  //                     //   setModalState(() {
+  //                     //     if (value) {
+  //                     //       selectedSymptoms.add(symptom);
+  //                     //     } else {
+  //                     //       selectedSymptoms.remove(symptom);
+  //                     //     }
+  //                     //   });
+  //                     //   setState(() {
+  //                     //     // selectedDiseaseText = selectedSymptoms.toString();
+  //                     //   });
+  //                     // },
+  //                     onSelected: (bool value) {
+  //                       setModalState(() {
+  //                         if (value) {
+  //                           selectedSymptoms.add(symptom);
+  //                         } else {
+  //                           selectedSymptoms.remove(symptom);
+  //                         }
+  //                       });
+
+  //                       // 同步更新外層畫面
+  //                       setState(() {
+  //                         selectedDiseaseText =
+  //                             selectedSymptoms.isEmpty ? '未填寫' : selectedSymptoms.join('、');
+  //                       });
+  //                     },
+  //                   );
+  //                 }).toList(),
+  //               ),
+  //               const SizedBox(height: 24), // ⬅️ chips 和底部間距
+  //             ],
+  //           ),
+  //         );
+  //       });
+  //     },
+  //   );
+  // }
 }

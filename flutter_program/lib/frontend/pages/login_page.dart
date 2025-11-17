@@ -174,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                                     // );
                                     await showDialog(
                                       context: context,
-                                      builder: (context) =>const MemberDialog(),
+                                      builder: (context) => MemberDialog(userFamily: userFamily!,),
                                     );
                                     final userInfo =
                                         await userService.fetchUserInfo(userFamily![0].userId);
