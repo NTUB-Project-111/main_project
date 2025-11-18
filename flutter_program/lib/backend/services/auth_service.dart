@@ -85,12 +85,12 @@ class AuthService {
   // }
   Future<String?> register({
     required String name,
-    required String birthday,
+    required String birthyear,
     required String email,
     required String password,
     required String disease,
     required String freq,
-    String? role,
+    required String role,
   }) async {
     final uri = Uri.parse('${ApiBase.baseUrl}/register');
 
@@ -102,7 +102,7 @@ class AuthService {
         },
         body: jsonEncode({
           'name': name,
-          'birthday': birthday,
+          'birthyear': birthyear,
           'email': email,
           'password': password,
           'disease': disease,

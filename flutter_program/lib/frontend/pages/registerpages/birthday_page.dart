@@ -34,7 +34,7 @@ class _BirthdayPageState extends State<BirthdayPage> {
 
     if (picked != null && picked != selectedYear) {
       final register = context.read<Register>();
-      register.setBirthday(picked);
+      register.setBirthyear(picked);
       setState(() {
         selectedYear = picked;
       });

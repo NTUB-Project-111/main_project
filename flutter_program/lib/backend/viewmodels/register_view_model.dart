@@ -8,7 +8,7 @@ class Register extends ChangeNotifier {
   String code = '';
   String password = '';
   String rePassword = '';
-  int birthday = 2025;
+  int birthyear = 2025;
   String smokingFreq = '無';
   String drinkingFreq = '無';
   String betelNutFreq = '無';
@@ -41,8 +41,8 @@ class Register extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setBirthday(int value) {
-    birthday = value;
+  void setBirthyear(int value) {
+    birthyear = value;
     notifyListeners();
   }
 
@@ -95,11 +95,12 @@ class Register extends ChangeNotifier {
   Future<String?> register() async {
     final error = await _authService.register(
         name: name,
-        birthday: birthday.toString(),
+        birthyear: birthyear.toString(),
         email: email,
         password: password,
         disease: diseases.toString(),
-        freq: '$smokingFreq、$drinkingFreq、$betelNutFreq');
+        freq: '$smokingFreq、$drinkingFreq、$betelNutFreq',
+        role: name);
     return error;
   }
 }
