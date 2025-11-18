@@ -52,11 +52,11 @@ class UserInfo {
     return UserInfo(
       id: json['id'],
       name: json['name'],
-      birthday: json['birthday'],
+      birthday: json['birthday'] ?? '',
       email: json['email'],
-      disease: json['disease'],
-      freq: json['freq'],
-      role: json['role'],
+      disease: json['disease'] ?? '',
+      freq: json['freq'] ?? '',
+      role: json['role'] ?? '',
       password: json['password'],
       reports: (json['reports'] as List<dynamic>?)
               ?.map((reportJson) => UserReport.fromJson(reportJson))

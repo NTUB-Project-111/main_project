@@ -2,8 +2,9 @@ import 'package:drw/backend/models/family.dart';
 import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
-import 'package:drw/frontend/pages/familypages/family_dialog.dart';
+// import 'package:drw/frontend/pages/familypages/family_dialog.dart';
 import 'package:drw/frontend/pages/familypages/healed_part.dart';
+import 'package:drw/frontend/pages/familypages/member_dialog.dart';
 // import 'package:drw/frontend/pages/familypages/member_dialog.dart';
 import 'package:drw/frontend/pages/familypages/remind_part.dart';
 // import 'package:drw/frontend/pages/familypages/report_part.dart';
@@ -122,7 +123,7 @@ class _FamilyPageState extends State<FamilyPage> {
                       onPressed: () {
                         showDialog(
                           context: context,
-                          builder: (context) => FamilyDialog(
+                          builder: (context) => MemberDialog(
                             userFamily: members,
                           ),
                         );
