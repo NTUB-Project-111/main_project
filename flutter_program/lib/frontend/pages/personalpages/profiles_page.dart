@@ -1,3 +1,4 @@
+import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 // import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/widgets/headers/header4.dart';
@@ -140,10 +141,10 @@ class _ProfilesPageState extends State<ProfilesPage> {
                         children: [
                           const Text('生日',
                               style: TextStyle(fontSize: 15, color: Color(0xFF669FA5))),
-                          Consumer<UserProvider>(builder: (context, userProvider, _) {
-                            final user = userProvider.user;
+                          Consumer<FamilyProvider>(builder: (context, familyProvider, _) {
+                            final members = familyProvider.members;
                             return Text(
-                              user!.birthday,
+                              members[0].birthyear.toString(),
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: Color.fromARGB(255, 140, 140, 140),

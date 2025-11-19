@@ -11,6 +11,11 @@ class FamilyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setMember(UserFamily member,int i) {
+    _members[i] = member;
+    notifyListeners();
+  }
+
   void addMember(UserFamily member) {
     _members.add(member);
     notifyListeners();

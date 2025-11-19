@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
-import 'package:drw/backend/provider/user_provider.dart';
+import 'package:drw/backend/provider/family_provider.dart';
+// import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/user_service.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -40,20 +41,34 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
   }
 
   /// 判斷是否有修改
-  bool get hasChanged => !const ListEquality()
-      .equals(selectedFrequencyIndex, originalFrequencyIndex);
+  bool get hasChanged =>
+      !const ListEquality().equals(selectedFrequencyIndex, originalFrequencyIndex);
 
   /// 儲存更新
-  Future<void> _saveFreq(UserProvider userProvider) async {
-    final user = userProvider.user!;
-    final freq =
-        selectedFrequencyIndex.map((i) => freqOptions[i]).toList().join('、');
+  // Future<void> _saveFreq(UserProvider userProvider) async {
+  //   final user = userProvider.user!;
+  //   final freq =
+  //       selectedFrequencyIndex.map((i) => freqOptions[i]).toList().join('、');
 
-    final success = await userService.updateFreq(id: user.id, freq: freq);
+  //   final success = await userService.updateFreq(id: user.id, freq: freq);
+
+  //   if (success) {
+  //     final updatedUser = user.copyWith(freq: freq);
+  //     userProvider.setUserInfo(updatedUser);
+  //     FrontUtil.showSuccess('修改成功');
+  //     Navigator.pop(context);
+  //   } else {
+  //     FrontUtil.showFail('修改失敗');
+  //   }
+  // }
+  Future<void> _saveFreq(FamilyProvider familyProvider) async {
+    final members = familyProvider.members;
+    final freq = selectedFrequencyIndex.map((i) => freqOptions[i]).toList().join('、');
+    final success = await userService.updateFreq(id: members[0].userId, freq: freq);
 
     if (success) {
-      final updatedUser = user.copyWith(freq: freq);
-      userProvider.setUserInfo(updatedUser);
+      final updatedUser = members[0].copyWith(freq: freq);
+      familyProvider.setMember(updatedUser,0);
       FrontUtil.showSuccess('修改成功');
       Navigator.pop(context);
     } else {
@@ -65,9 +80,9 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final user = context.read<UserProvider>().user;
-      if (user != null) {
-        final freq = user.freq.split('、');
+      final members = context.read<FamilyProvider>().members;
+      if (members.isNotEmpty) {
+        final freq = members[0].freq.split('、');
         for (int i = 0; i < freq.length; i++) {
           if (freq[i].contains('無')) {
             selectedFrequencyIndex[i] = 0;
@@ -85,7 +100,7 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = context.read<UserProvider>();
+    final familyProvider = context.read<FamilyProvider>();
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -107,7 +122,7 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                           null,
                           '取消',
                           '確定',
-                          () => _saveFreq(userProvider),
+                          () => _saveFreq(familyProvider),
                         );
                       } else {
                         Navigator.pop(context);
@@ -119,10 +134,7 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                   Text(
                     "個人習慣",
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                        height: 2),
+                        fontSize: 18, fontWeight: FontWeight.bold, color: textColor, height: 2),
                   ),
                   const Spacer(),
                   Icon(Icons.info_outline, color: textColor),
@@ -175,9 +187,7 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                                   habit,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      color: isSelected
-                                          ? Colors.white
-                                          : const Color(0xFF669FA5),
+                                      color: isSelected ? Colors.white : const Color(0xFF669FA5),
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 1.5),
                                 ),
@@ -186,9 +196,7 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                                   freqOptions[selectedFrequencyIndex[i]],
                                   style: TextStyle(
                                       fontSize: 16,
-                                      color: isSelected
-                                          ? Colors.white
-                                          : const Color(0xFF669FA5),
+                                      color: isSelected ? Colors.white : const Color(0xFF669FA5),
                                       fontWeight: FontWeight.w500),
                                 ),
                               ],
@@ -226,8 +234,7 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                         final i = entry.key;
                         final option = entry.value;
                         final isSelected =
-                            selectedFrequencyIndex[selectedHabitIndex] ==
-                                i; // ✅ 判斷選中
+                            selectedFrequencyIndex[selectedHabitIndex] == i; // ✅ 判斷選中
                         return GestureDetector(
                           onTap: () {
                             setState(() {
@@ -251,9 +258,8 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                             child: Text(
                               option,
                               style: TextStyle(
-                                color: isSelected
-                                    ? Colors.white
-                                    : const Color(0xFF669FA5), // ✅ 這裡改對
+                                color:
+                                    isSelected ? Colors.white : const Color(0xFF669FA5), // ✅ 這裡改對
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.5,
                               ),
@@ -301,7 +307,7 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
                   ),
                   const SizedBox(width: 30),
                   IconButton(
-                    onPressed: () => _saveFreq(userProvider),
+                    onPressed: () => _saveFreq(familyProvider),
                     icon: const Icon(
                       Icons.check_circle,
                       color: Color(0xFF2E6D74),
