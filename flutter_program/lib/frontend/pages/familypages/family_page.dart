@@ -113,7 +113,7 @@ class _FamilyPageState extends State<FamilyPage> {
                               color: Color(0xFF589399)),
                         ),
                         Text(
-                          '家庭人數：4',
+                          '家庭人數：${members.length}',
                           style: TextStyle(color: FrontUtil.textColor),
                         ),
                       ],

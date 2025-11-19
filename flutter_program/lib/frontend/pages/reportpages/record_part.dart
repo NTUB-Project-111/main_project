@@ -116,10 +116,11 @@ class _RecordPartState extends State<RecordPart> {
                         // }
                         for (int i = 0; i < members.length; i++) {
                           if (members[i].role == report.role) {
-                            report.setMemberId(members[i].userId);
+                            report.setMemberId(members[i].memberId);
                             index = i;
                           }
                         }
+                        debugPrint('=====角色id$index=====');
                       },
                       buttonStyleData: ButtonStyleData(
                         height: 50,
