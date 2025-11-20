@@ -1,4 +1,6 @@
-import 'package:drw/backend/provider/user_provider.dart';
+import 'package:drw/backend/provider/family_provider.dart';
+// import 'package:drw/backend/provider/user_provider.dart';
+import 'package:drw/backend/services/family_service.dart';
 import 'package:drw/backend/services/user_service.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ class _EditDiseasePageFromnoState extends State<EditDiseasePageFromno> {
   List<String> compareList = [];
   bool showButton = false;
   UserService userService = UserService();
+  FamilyService familyService = FamilyService();
 
   final List<String> allConditions = [
     "高血壓",
@@ -62,17 +65,12 @@ class _EditDiseasePageFromnoState extends State<EditDiseasePageFromno> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userProvider = context.read<UserProvider>();
-      final user = userProvider.user;
-      final disease =
-          user?.disease.replaceAll("[", "").replaceAll("]", "") ?? "";
+      final familyProvider = context.read<FamilyProvider>();
+      final members = familyProvider.members;
+      final disease = members[0].disease.replaceAll("[", "").replaceAll("]", "");
       mainConditions = disease.isEmpty
           ? []
-          : disease
-              .split(',')
-              .map((e) => e.trim())
-              .where((e) => e.isNotEmpty)
-              .toList();
+          : disease.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
       compareList = List.from(mainConditions);
       selectedConditions.addAll(mainConditions);
       setState(() {});
@@ -81,8 +79,8 @@ class _EditDiseasePageFromnoState extends State<EditDiseasePageFromno> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = context.read<UserProvider>();
-    final user = userProvider.user;
+    final familyProvider = context.read<FamilyProvider>();
+    final members = familyProvider.members;
 
     return Scaffold(
       backgroundColor: const Color(0xFFE6FAFA),
@@ -111,10 +109,7 @@ class _EditDiseasePageFromnoState extends State<EditDiseasePageFromno> {
         ),
         title: const Text(
           "特殊病症",
-          style: TextStyle(
-              color: Color(0xFF5C9EA0),
-              fontWeight: FontWeight.bold,
-              fontSize: 20),
+          style: TextStyle(color: Color(0xFF5C9EA0), fontWeight: FontWeight.bold, fontSize: 20),
         ),
         actions: [
           IconButton(
@@ -179,23 +174,21 @@ class _EditDiseasePageFromnoState extends State<EditDiseasePageFromno> {
                     if (showButton) {
                       FrontUtil.showConfirmDialog(
                         context,
-                        FrontUtil.textColor, // ✅ 你想要的主題色
+                        FrontUtil.textColor, // 你想要的主題色
                         '要儲存修改嗎?',
-                        null, // ✅ subTitle 如果沒有就傳 null
+                        null, // subTitle 如果沒有就傳 null
                         '取消',
                         '確定',
                         () async {
                           final success = await userService.updateDisease(
-                            id: user!.id,
+                            id: members[0].userId,
                             disease: mainConditions.toString(),
                           );
                           if (success) {
-                            final updatedUser = user.copyWith(
+                            final updatedUser = members[0].copyWith(
                               disease: mainConditions.toString(),
                             );
-                            context
-                                .read<UserProvider>()
-                                .setUserInfo(updatedUser);
+                            context.read<FamilyProvider>().setMember(updatedUser, 0);
                             FrontUtil.showSuccess('修改成功');
                             Navigator.pop(context);
                           } else {
@@ -207,8 +200,7 @@ class _EditDiseasePageFromnoState extends State<EditDiseasePageFromno> {
                       Navigator.pop(context);
                     }
                   },
-                  icon: const Icon(Icons.check_circle,
-                      color: Color(0xFF2E6D74), size: 35),
+                  icon: const Icon(Icons.check_circle, color: Color(0xFF2E6D74), size: 35),
                 ),
               ],
             ),

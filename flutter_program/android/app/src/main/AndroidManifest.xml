@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!--取得大範圍位置-->
     <uses-permission android:name="android.permission.INTERNET"/> <!--允許應用程式連上外部網站-->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!--允許應用程式存取圖片-->
+    <uses-permission android:name="android.permission.READ_CALENDAR"/>
+    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
+
     <application
         android:label="Dr.w"
         android:name="${applicationName}"

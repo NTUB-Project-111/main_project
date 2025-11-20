@@ -1,4 +1,5 @@
 import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 // import 'package:drw/frontend/headers/header5.dart';
@@ -41,10 +42,15 @@ class _ReportPageState extends State<ReportPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final report = Provider.of<Report>(context, listen: false);
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      final user = userProvider.user;
+      final familyProvider = Provider.of<FamilyProvider>(context, listen: false);
+      final members = familyProvider.members;
       report.isLoading = true; // <-- 這行很關鍵！每次都要先設為 loading
-      await report.loadData(user!.id, user.birthday, user.disease, user.freq, widget.isExtra,
+      await report.loadData(
+          members[0].userId,
+          members[0].birthyear.toString(),
+          members[0].disease,
+          members[0].freq,
+          widget.isExtra,
           widget.report); // 這樣 Consumer 才會觸發 CircularProgressIndicator
     });
   }

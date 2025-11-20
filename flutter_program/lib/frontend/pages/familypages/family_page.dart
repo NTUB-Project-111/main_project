@@ -39,6 +39,8 @@ class FamilyPage extends StatefulWidget {
 //----------------------------------------
 class _FamilyPageState extends State<FamilyPage> {
   int _selectedTopIndex = 0;
+  List<UserReport> selectedReports = [];
+  UserFamily? selectedMember;
 
   @override
   Widget build(BuildContext context) {
@@ -113,20 +115,35 @@ class _FamilyPageState extends State<FamilyPage> {
                               color: Color(0xFF589399)),
                         ),
                         Text(
-                          '家庭人數：4',
+                          '家庭人數：${members.length}',
                           style: TextStyle(color: FrontUtil.textColor),
                         ),
                       ],
                     ),
                     const Spacer(),
                     IconButton(
-                      onPressed: () {
-                        showDialog(
+                      onPressed: () async {
+                        selectedReports.clear();
+                        String? responseMember = await showDialog(
                           context: context,
                           builder: (context) => MemberDialog(
                             userFamily: members,
                           ),
                         );
+                        if (responseMember != null) {
+                          for (var member in members) {
+                            if (member.role == responseMember) {
+                              selectedMember = member;
+                              for (var report in reports) {
+                                if (report.memberId == member.memberId) {
+                                  selectedReports.add(report);
+                                }
+                              }
+                              break;
+                            }
+                          }
+                          setState(() {});
+                        }
                         // showDialog(
                         //   context:context,
                         //   builder:(context) => const MemberDialog()
@@ -145,9 +162,16 @@ class _FamilyPageState extends State<FamilyPage> {
           // 主體內容區
           Expanded(
             child: _selectedTopIndex == 0
-                ? _buildReportGrid(reports, members)
+                ? selectedReports.isEmpty
+                    ? _buildReportGrid(reports, members, selectedMember)
+                    : _buildReportGrid(selectedReports, members, selectedMember)
                 : _selectedTopIndex == 1
-                    ? const RemindPart()
+                    ? selectedReports.isEmpty
+                        ? const RemindPart()
+                        : RemindPart(
+                            selectedMember: selectedMember!.memberId,
+                            selectedRole: selectedMember!.role,
+                          )
                     : const HealedPart(),
           ),
 
@@ -216,7 +240,7 @@ class _FamilyPageState extends State<FamilyPage> {
   }
 
   // 報告頁 GridView
-  Widget _buildReportGrid(List<UserReport> reports, List<UserFamily> members) {
+  Widget _buildReportGrid(List<UserReport> reports, List<UserFamily>? members, UserFamily? member) {
     return GridView.builder(
       padding: const EdgeInsets.only(top: 8, left: 20, right: 20, bottom: 25),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -231,16 +255,19 @@ class _FamilyPageState extends State<FamilyPage> {
         final dateTime = DateTime.parse(report.date);
         String date = '${dateTime.month}/${dateTime.day}';
         String role = '';
-        for (var member in members) {
-          if (member.memberId == report.memberId) {
-            role = member.role;
+        if (members != null) {
+          for (var member in members) {
+            if (member.memberId == report.memberId) {
+              role = member.role;
+            }
           }
         }
+
         return FamilyRecordCard(
           imageUrl: report.photo,
           date: date,
           woundType: report.type,
-          role: role[0],
+          role: members != null ? role[0] : member!.role,
         );
       },
     );

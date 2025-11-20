@@ -1,8 +1,9 @@
+import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/frontend/pages/personalpages/editdisease_page.dart';
 import 'package:drw/frontend/pages/personalpages/nodisease_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:drw/backend/provider/user_provider.dart';
+// import 'package:drw/backend/provider/user_provider.dart';
 
 class ShowdiseasePage extends StatelessWidget {
   const ShowdiseasePage({super.key});
@@ -12,13 +13,13 @@ class ShowdiseasePage extends StatelessWidget {
     const Color backgroundColor = Color(0xFFE5F7F9);
     const Color textColor = Color(0xFF5A8A90);
 
-    final userProvider = context.watch<UserProvider>();
-    final user = userProvider.user;
+    final familyProvider = context.watch<FamilyProvider>();
+    final members = familyProvider.members;
 
     // 把 disease 轉換成 List<String>
-    final List<String> mainConditions = (user == null || user.disease.isEmpty)
+    final List<String> mainConditions = (members.isNotEmpty || members[0].disease.isEmpty)
         ? []
-        : user.disease
+        : members[0].disease
             .replaceAll("[", "")
             .replaceAll("]", "")
             .split(",")

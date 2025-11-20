@@ -114,11 +114,11 @@ class _LoginPageState extends State<LoginPage> {
                             userProvider.setUserInfo(UserInfo(
                               id: -1,
                               name: '訪客',
-                              birthday: '2000',
+                              // birthday: '2000',
                               email: '',
-                              disease: '無',
-                              freq: '每天',
-                              role: '訪客',
+                              // disease: '無',
+                              // freq: '每天',
+                              // role: '訪客',
                               password: '',
                               reports: [],
                             ));

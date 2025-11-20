@@ -82,9 +82,7 @@ class UserReport {
       id: json['id_record'],
       userId: json['fk_userid'],
       memberId: json['member_id'],
-      // date: json['date'],
       date: DateFormat('yyyy-MM-dd').format(DateTime.parse(json['date'])),
-
       type: json['type'],
       oktime: json['oktime'],
       caremode: json['caremode'],
@@ -100,4 +98,14 @@ class UserReport {
           (json['reminds'] as List<dynamic>?)?.map((r) => UserRemind.fromJson(r)).toList() ?? [],
     );
   }
+
+  @override
+  String toString() {
+    final remindSummary = reminds.isEmpty
+        ? '[]'
+        : '[${reminds.map((r) => '${r.date} ${r.time}').join(', ')}]';
+    return 'UserReport{id: $id, userId: $userId, memberId: $memberId, date: $date, type: $type, oktime: $oktime, caremode: $caremode, ifcall: $ifcall, name: $name, groupId: $groupId, role: $role, bruiseType: $bruiseType, reminds: $remindSummary}';
+  }
+
+  
 }

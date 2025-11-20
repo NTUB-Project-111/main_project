@@ -156,19 +156,22 @@ class UserService {
     try {
       final uri = Uri.parse('${ApiBase.baseUrl}/fetchUserInfo?id=$id');
       final response = await http.get(uri);
-
+      // debugPrint(response.toString());
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         for (var member in data['family']) {
+          // debugPrint(UserFamily.fromJson(member).toString());
           members.add(UserFamily.fromJson(member));
         }
         for (var report in data['reports']) {
+          // debugPrint(UserReport.fromJson(report).toString());
           reports.add(UserReport.fromJson(report));
         }
         for (var remind in data['reminds']) {
+          // debugPrint(UserRemind.fromJson(remind).toString());
           reminds.add(UserRemind.fromJson(remind));
         }
-        // debugPrint('=== ${data['user'].toString()} ===');
+        // debugPrint('=== ${UserInfo.fromJson(data['user']).toString()} ===');
         return {
           'user': UserInfo.fromJson(data['user']),
           'family': members,

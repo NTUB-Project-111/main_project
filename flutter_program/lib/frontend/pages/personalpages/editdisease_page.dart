@@ -1,4 +1,5 @@
-import 'package:drw/backend/provider/user_provider.dart';
+import 'package:drw/backend/provider/family_provider.dart';
+// import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/user_service.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -63,13 +64,12 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
   }
 
   @override
-  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userProvider = context.read<UserProvider>();
-      final user = userProvider.user;
-      final disease = user!.disease.replaceAll("[", "").replaceAll("]", "");
+      final familyProvider = context.read<FamilyProvider>();
+      final members = familyProvider.members;
+      final disease = members[0].disease.replaceAll("[", "").replaceAll("]", "");
       mainConditions = disease.split(',').map((e) => e.trim()).toList();
       compareList = List.from(mainConditions);
       for (int i = 0; i < mainConditions.length; i++) {
@@ -81,8 +81,8 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = context.read<UserProvider>();
-    final user = userProvider.user;
+    final familyProvider = context.read<FamilyProvider>();
+    final members = familyProvider.members;
     return Scaffold(
       backgroundColor: const Color(0xFFE6FAFA),
       appBar: AppBar(
@@ -110,10 +110,7 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
         ),
         title: const Text(
           "特殊病症",
-          style: TextStyle(
-              color: Color(0xFF5C9EA0),
-              fontWeight: FontWeight.bold,
-              fontSize: 20),
+          style: TextStyle(color: Color(0xFF5C9EA0), fontWeight: FontWeight.bold, fontSize: 20),
         ),
         actions: [
           IconButton(
@@ -140,10 +137,7 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
             // const SizedBox(height: 20),
             const Text(
               "其他",
-              style: TextStyle(
-                  color: Color(0xFF669FA5),
-                  fontWeight: FontWeight.bold,
-                  height: 5),
+              style: TextStyle(color: Color(0xFF669FA5), fontWeight: FontWeight.bold, height: 5),
             ),
             // const SizedBox(height: 20),
             Expanded(
@@ -165,8 +159,7 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
                       padding: const EdgeInsets.all(15),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color:
-                            isSelected ? const Color(0xFFB2E2E4) : Colors.white,
+                        color: isSelected ? const Color(0xFFB2E2E4) : Colors.white,
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: const [
                           BoxShadow(
@@ -206,18 +199,15 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
                                 '取消',
                                 '確定',
                                 () async {
-                                  final success =
-                                      await userService.updateDisease(
-                                    id: user!.id,
+                                  final success = await userService.updateDisease(
+                                    id: members[0].userId,
                                     disease: mainConditions.toString(),
                                   );
                                   if (success) {
-                                    final updatedUser = user.copyWith(
+                                    final updatedUser = members[0].copyWith(
                                       disease: mainConditions.toString(),
                                     );
-                                    context
-                                        .read<UserProvider>()
-                                        .setUserInfo(updatedUser);
+                                    context.read<FamilyProvider>().setMember(updatedUser, 0);
                                     FrontUtil.showSuccess('修改成功');
                                     Navigator.pop(context);
                                   } else {

@@ -33,6 +33,7 @@ class _RecordPartState extends State<RecordPart> {
   final TextEditingController _selfRecord = TextEditingController();
   List<String> items = [];
   String? selectedValue = '姊姊';
+  int index = 0;
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _RecordPartState extends State<RecordPart> {
       items.add(member.role);
     }
     // report.setMemberId(member.userId);
+    index = 0;
   }
 
   @override
@@ -107,11 +109,18 @@ class _RecordPartState extends State<RecordPart> {
                         report.setRole(value!);
                         final familyProvider = context.read<FamilyProvider>();
                         final members = familyProvider.members;
-                        for (var member in members) {
-                          if (member.role == report.role) {
-                            report.setMemberId(member.userId);
+                        // for (var member in members) {
+                        //   if (member.role == report.role) {
+                        //     report.setMemberId(member.userId);
+                        //   }
+                        // }
+                        for (int i = 0; i < members.length; i++) {
+                          if (members[i].role == report.role) {
+                            report.setMemberId(members[i].memberId);
+                            index = i;
                           }
                         }
+                        debugPrint('=====角色id$index=====');
                       },
                       buttonStyleData: ButtonStyleData(
                         height: 50,
@@ -322,9 +331,11 @@ class _RecordPartState extends State<RecordPart> {
                 child: ElevatedButton(
                   onPressed: (report.updateButton && !report.isUpdating)
                       ? () async {
-                          final userProvider = Provider.of<UserProvider>(context, listen: false);
-                          final user = userProvider.user;
-                          report.updateOktime(user!.birthday, user.disease, user.freq);
+                          final familyProvider =
+                              Provider.of<FamilyProvider>(context, listen: false);
+                          final members = familyProvider.members;
+                          report.updateOktime(members[index].birthyear.toString(),
+                              members[index].disease, members[index].freq);
                         }
                       : null,
                   style: ButtonStyle(

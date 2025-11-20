@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 class MemberDialog extends StatefulWidget {
   final List<UserFamily> userFamily;
   final Widget? nextPage;
-  const MemberDialog({super.key, required this.userFamily,this.nextPage});
+  const MemberDialog({super.key, required this.userFamily, this.nextPage});
 
   @override
   State<MemberDialog> createState() => _MemberDialogState();
@@ -95,14 +95,25 @@ class _MemberDialogState extends State<MemberDialog> {
               itemBuilder: (context, index) {
                 final member = members[index];
                 return InkWell(
+                  // onTap: () {
+                  //   widget.nextPage == null
+                  //       ? {debugPrint(member), Navigator.pop(context)}
+                  //       : Navigator.push(
+                  //           context,
+                  //           MaterialPageRoute(builder: (context) => widget.nextPage!),
+                  //         );
+                  // },
                   onTap: () {
-                    widget.nextPage == null
-                        ? {debugPrint(member), Navigator.pop(context)}
-                        : Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => widget.nextPage!),
-                          );
+                    if (widget.nextPage == null) {
+                      Navigator.pop(context, member); // ← 回傳角色名稱
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => widget.nextPage!),
+                      );
+                    }
                   },
+
                   child: Column(
                     children: [
                       // 熊頭圖片
