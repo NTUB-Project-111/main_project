@@ -5,6 +5,7 @@ class Reminder {
   final int userId;
   final int recordId;
   final int remindId;
+  final int memberId;
   final String imagePath;
   final String date;
   final String woundType;
@@ -21,6 +22,7 @@ class Reminder {
     required this.userId,
     required this.recordId,
     required this.remindId,
+    required this.memberId,
     required this.imagePath,
     required this.date,
     required this.woundType,
@@ -46,6 +48,7 @@ class Reminder {
       userId: report.userId,
       recordId: report.id,
       remindId: remind.id,
+      memberId: report.memberId,
       imagePath: report.photo,
       date: report.date,
       woundType: report.type,
@@ -73,6 +76,4 @@ class Reminder {
     final parts = timeStr.split(':');
     return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
   }
-
-  
 }

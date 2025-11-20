@@ -515,7 +515,7 @@ class Report extends ChangeNotifier {
     _createRemindList();
     for (var remind in remindList) {
       result = await _remind.addRemind(userId, recordId.toString(), remind["day"].toString(),
-          remind["time"].toString(), remindFreq);
+          remind["time"].toString(), remindFreq, memberId);
       if (!result) {
         debugPrint("新增提醒失敗: $remind");
         return false;
@@ -567,21 +567,6 @@ class Report extends ChangeNotifier {
       //建立群組
       groupResult = await _addGroup(id, report!);
     }
-    // isSaving = false;
-    // woundType = '';
-    // careSteps = {};
-    // oktime = '';
-    // hospitals = [];
-    // injuryParts = [];
-    // woundReactions = [];
-    // selfRecord = '';
-    // updateButton = false;
-    // newOktime = '';
-    // remindList = [];
-    // image = null;
-    // gptResult = '';
-    // name = '';
-    // notifyListeners();
     return recordResult && remindResult && groupResult;
   }
   // Future<Map<String, dynamic>> uploadData(

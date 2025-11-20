@@ -44,6 +44,7 @@ class _RecordPartState extends State<RecordPart> {
       items.add(member.role);
     }
     // report.setMemberId(member.userId);
+    selectedValue = members[0].role;
     index = 0;
   }
 

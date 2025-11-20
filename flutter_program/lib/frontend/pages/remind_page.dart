@@ -58,6 +58,7 @@ class _RemindPageState extends State<RemindPage> {
               userId: report.userId,
               recordId: report.id,
               remindId: remind.id,
+              memberId: report.memberId,
               imagePath: report.photo,
               woundType: report.type,
               remindDate: remind.date,

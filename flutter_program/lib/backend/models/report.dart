@@ -99,13 +99,13 @@ class UserReport {
     );
   }
 
-  @override
-  String toString() {
-    final remindSummary = reminds.isEmpty
-        ? '[]'
-        : '[${reminds.map((r) => '${r.date} ${r.time}').join(', ')}]';
-    return 'UserReport{id: $id, userId: $userId, memberId: $memberId, date: $date, type: $type, oktime: $oktime, caremode: $caremode, ifcall: $ifcall, name: $name, groupId: $groupId, role: $role, bruiseType: $bruiseType, reminds: $remindSummary}';
-  }
+  // @override
+  // String toString() {
+  //   final remindSummary = reminds.isEmpty
+  //       ? '[]'
+  //       : '[${reminds.map((r) => '${r.date} ${r.time}').join(', ')}]';
+  //   return 'UserReport{id: $id, userId: $userId, memberId: $memberId, date: $date, type: $type, oktime: $oktime, caremode: $caremode, ifcall: $ifcall, name: $name, groupId: $groupId, role: $role, bruiseType: $bruiseType, reminds: $remindSummary}';
+  // }
 
   
 }

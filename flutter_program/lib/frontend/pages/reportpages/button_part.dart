@@ -95,8 +95,8 @@ class _ButtonPartState extends State<ButtonPart> {
                                   remindProvider.addReminds(report.reminds);
                                   Provider.of<ReportProvider>(context, listen: false)
                                       .setReports(userReports);
-                                  notifier.scheduleReminders(remindProvider.reminds);
-                                  notifier.getAllReminders();
+                                  // notifier.scheduleReminders(remindProvider.reminds);
+                                  // notifier.getAllReminders();
                                   FrontUtil.showSuccess('報告儲存成功!');
                                   Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(builder: (_) => const Tabs(currentIndex: 0)),

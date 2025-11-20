@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 class RemindService {
   Future<bool> addRemind(
-      String fkUserId, String fkRecordId, String day, String time, String freq) async {
+      String fkUserId, String fkRecordId, String day, String time, String freq,int memberId) async {
     if (fkUserId.isEmpty || day.isEmpty || time.isEmpty) {
       debugPrint("參數有空值: fk_user_id: $fkUserId, day: $day, time: $time");
       return false;
@@ -29,6 +29,7 @@ class RemindService {
           'day': day,
           'time': time,
           'freq': freq,
+          'member_id':memberId,
         }),
       );
       if (response.statusCode == 200) {
