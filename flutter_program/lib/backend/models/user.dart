@@ -79,4 +79,14 @@ class UserInfo {
   //     習慣頻率: $freq
   //   ''';
   // }
+    @override
+  String toString() {
+    return '''
+      === 使用者資料 === 
+      id: $id
+      姓名: $name
+      Email: $email
+      =================
+    ''';
+  }
 }
