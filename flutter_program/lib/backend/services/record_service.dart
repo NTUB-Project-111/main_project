@@ -108,6 +108,7 @@ class RecordService {
         }
 
         final List<dynamic> reportsJson = jsonData['reports'];
+        debugPrint('======= ${reportsJson.toString()} =========');
         return reportsJson.map((r) => UserReport.fromJson(r)).toList();
       } else {
         throw Exception('Failed to load reports (status ${response.statusCode})');

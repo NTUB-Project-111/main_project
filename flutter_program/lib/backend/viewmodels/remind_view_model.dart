@@ -26,7 +26,9 @@ class RemindViewModel {
               remind.recordId.toString(),
               userRemind['day'],
               remind.selectedTime,
-              remind.selectedFreq);
+              remind.selectedFreq,
+              remind.memberId
+              );
           if (!success) {
             return false; // 任一筆失敗就整體失敗
           }

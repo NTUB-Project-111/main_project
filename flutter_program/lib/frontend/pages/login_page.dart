@@ -195,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                                         .setReminds(userInfo['reminds']);
                                     Provider.of<FamilyProvider>(context, listen: false)
                                         .setMembers(userInfo['family']);
-                                    //   // notifier.setRemind(context);
+                                     notifier.deleteAllReminders();
                                     //   // 打印診斷報告與每筆報告底下的提醒
                                     //   // debugPrint(userInfo.toString());
                                     //   // for (var report in userInfo.reports) {
