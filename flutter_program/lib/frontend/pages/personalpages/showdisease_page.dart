@@ -17,7 +17,7 @@ class ShowdiseasePage extends StatelessWidget {
     final members = familyProvider.members;
 
     // 把 disease 轉換成 List<String>
-    final List<String> mainConditions = (members.isNotEmpty || members[0].disease.isEmpty)
+    final List<String> mainConditions = (members.isEmpty || members[0].disease.isEmpty)
         ? []
         : members[0].disease
             .replaceAll("[", "")

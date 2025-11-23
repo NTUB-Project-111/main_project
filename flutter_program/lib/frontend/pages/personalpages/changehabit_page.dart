@@ -64,11 +64,11 @@ class _ChangeHabitPageState extends State<ChangeHabitPage> {
   Future<void> _saveFreq(FamilyProvider familyProvider) async {
     final members = familyProvider.members;
     final freq = selectedFrequencyIndex.map((i) => freqOptions[i]).toList().join('、');
-    final success = await userService.updateFreq(id: members[0].userId, freq: freq);
+    final success = await userService.updateFreq(id: members[0].memberId, freq: freq);
 
     if (success) {
       final updatedUser = members[0].copyWith(freq: freq);
-      familyProvider.setMember(updatedUser,0);
+      familyProvider.setMember(updatedUser, 0);
       FrontUtil.showSuccess('修改成功');
       Navigator.pop(context);
     } else {

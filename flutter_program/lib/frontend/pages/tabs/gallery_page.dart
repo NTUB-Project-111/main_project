@@ -117,7 +117,7 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                 physics: const NeverScrollableScrollPhysics(),
                 controller: _tabController,
                 children: [
-                  _buildImagePage(userReports),
+                  _buildImagePage(userReports.reversed.toList()),
                   _buildImagePage(cuts.reversed.toList()),
                   _buildImagePage(abrasions.reversed.toList()),
                   _buildImagePage(bruises.reversed.toList()),

@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:drw/backend/models/remind.dart';
 import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/services/remind_service.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
@@ -203,7 +204,7 @@ class _ShowReportPageState extends State<ShowReportPage> {
   @override
   Widget build(BuildContext context) {
     RecordService recordService = RecordService();
-
+    RemindService remindService = RemindService();
     return Scaffold(
         backgroundColor: const Color(0xFFEBFEFF),
         body: isSaving
@@ -252,13 +253,15 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                           try {
                                             if (isNotify) {
                                               // 先新增提醒，再更新 ifcall
-                                              final s1 = await userReport
-                                                  .addRemind(widget.report.userId.toString());
+                                              final s1 = await userReport.addRemind(
+                                                  widget.report.userId.toString(),
+                                                  widget.report.memberId);
                                               final s2 = await recordService.updateIfcall(
                                                 userId: widget.report.userId,
                                                 recordId: widget.report.id,
                                                 ifcall: 'Y',
                                               );
+
                                               success = s1 && s2;
                                               if (success) {
                                                 final updatedReport =
@@ -266,6 +269,8 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                                 context
                                                     .read<ReportProvider>()
                                                     .updateReport(updatedReport);
+                                                await RemindService.getReminds(
+                                                    context, widget.report.userId.toString());
                                               }
                                             } else {
                                               // 關閉提醒
@@ -274,12 +279,16 @@ class _ShowReportPageState extends State<ShowReportPage> {
                                                 recordId: widget.report.id,
                                                 ifcall: 'N',
                                               );
-                                              if (success) {
+                                              final s2 = await remindService.deleteRemind(
+                                                  widget.report.userId, widget.report.id);
+                                              if (success && s2) {
                                                 final updatedReport =
                                                     widget.report.copyWith(ifcall: 'N');
                                                 context
                                                     .read<ReportProvider>()
                                                     .updateReport(updatedReport);
+                                                await RemindService.getReminds(
+                                                    context, widget.report.userId.toString());
                                               }
                                             }
                                             // 更新通知排程
@@ -742,7 +751,9 @@ class _ShowReportPageState extends State<ShowReportPage> {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              imageSteps.isNotEmpty ? imageSteps[currentIndex] : "步驟 ${currentIndex + 1}",
+                              imageSteps.isNotEmpty
+                                  ? imageSteps[currentIndex]
+                                  : "步驟 ${currentIndex + 1}",
                               style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 class FamilyImagesPage extends StatefulWidget {
   final String title;
-  const FamilyImagesPage({super.key, required this.title});
+  final List<String> images;
+  const FamilyImagesPage({super.key, required this.title,required this.images});
 
   @override
   State<FamilyImagesPage> createState() => _FamilyImagesPageState();
