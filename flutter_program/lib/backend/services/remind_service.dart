@@ -43,26 +43,6 @@ class RemindService {
       return false;
     }
   }
-
-  // static Future<void> getReminds(BuildContext context, String userId) async {
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse('${ApiBase.baseUrl}/getReminds?id=$userId'),
-  //     );
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       final List recordsJson = data;
-  //       final List<UserRemind> reminds =
-  //           recordsJson.map((json) => UserRemind.fromJson(json)).toList();
-  //       Provider.of<Reminds>(context, listen: false).setReminds(reminds);
-  //     } else {
-  //       debugPrint('取得提醒失敗: ${response.statusCode}');
-  //       debugPrint('錯誤訊息: ${response.body}');
-  //     }
-  //   } catch (e) {
-  //     debugPrint('例外錯誤: $e');
-  //   }
-  // }
   static Future<void> getReminds(BuildContext context, String userId) async {
     try {
       final response = await http.get(

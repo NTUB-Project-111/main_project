@@ -1,4 +1,5 @@
 import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 // import 'package:drw/backend/services/apibase.dart';
 import 'package:drw/frontend/widgets/headers/header3.dart';
@@ -34,35 +35,41 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
     List<UserReport> stabs = [];
     List<UserReport> surgicals = [];
     List<UserReport> seriours = [];
+    List<UserReport> userReports = [];
 
     final reportProvider = context.watch<ReportProvider>();
+    final familyProvider = context.watch<FamilyProvider>();
+    final memberId = familyProvider.members[0].memberId;
     final reports = reportProvider.reports;
     if (reports.isNotEmpty) {
       for (var report in reports) {
-        switch (report.type) {
-          case '割傷':
-            cuts.add(report);
-            break;
-          case '擦傷':
-            abrasions.add(report);
-            break;
-          case '瘀青':
-            bruises.add(report);
-            break;
-          case '燒傷':
-          case '燙傷':
-          case '燒燙傷':
-            burns.add(report);
-            break;
-          case '刺傷':
-            stabs.add(report);
-            break;
-          case '手術傷口':
-            surgicals.add(report);
-            break;
-          case '嚴重傷口':
-            seriours.add(report);
-            break;
+        if (report.memberId == memberId) {
+          userReports.add(report);
+          switch (report.type) {
+            case '割傷':
+              cuts.add(report);
+              break;
+            case '擦傷':
+              abrasions.add(report);
+              break;
+            case '瘀青':
+              bruises.add(report);
+              break;
+            case '燒傷':
+            case '燙傷':
+            case '燒燙傷':
+              burns.add(report);
+              break;
+            case '刺傷':
+              stabs.add(report);
+              break;
+            case '手術傷口':
+              surgicals.add(report);
+              break;
+            case '嚴重傷口':
+              seriours.add(report);
+              break;
+          }
         }
       }
     }
@@ -110,7 +117,7 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                 physics: const NeverScrollableScrollPhysics(),
                 controller: _tabController,
                 children: [
-                  _buildImagePage(reports.reversed.toList()),
+                  _buildImagePage(userReports.reversed.toList()),
                   _buildImagePage(cuts.reversed.toList()),
                   _buildImagePage(abrasions.reversed.toList()),
                   _buildImagePage(bruises.reversed.toList()),

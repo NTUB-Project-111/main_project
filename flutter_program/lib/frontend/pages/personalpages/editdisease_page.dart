@@ -200,7 +200,7 @@ class _EditDiseasePageState extends State<EditDiseasePage> {
                                 '確定',
                                 () async {
                                   final success = await userService.updateDisease(
-                                    id: members[0].userId,
+                                    id: members[0].memberId,
                                     disease: mainConditions.toString(),
                                   );
                                   if (success) {

@@ -450,10 +450,11 @@ class Report extends ChangeNotifier {
   //   imageUrls = await recordService.generateImages(steps);
   // }
 
-  Future<void> loadData(int userId, String birthday, String disease, String freq, bool isExtra,
+  Future<void> loadData(int userId,int memberId, String birthday, String disease, String freq, bool isExtra,
       UserReport? report) async {
     // debugPrint('$birthday\n$disease\n$freq');
     this.userId = userId;
+    this.memberId = memberId;
     try {
       await Future.wait([
         // _fetchHospitals(),
@@ -510,7 +511,7 @@ class Report extends ChangeNotifier {
     }
   }
 
-  Future<bool> addRemind(String userId) async {
+  Future<bool> addRemind(String userId,int memberId) async {
     bool result = true;
     _createRemindList();
     for (var remind in remindList) {
@@ -562,7 +563,7 @@ class Report extends ChangeNotifier {
     bool remindResult = true;
     bool groupResult = true;
     recordResult = await addRecord();
-    if (notify) remindResult = await addRemind(userId);
+    if (notify) remindResult = await addRemind(userId,memberId);
     if (isExtra) {
       //建立群組
       groupResult = await _addGroup(id, report!);

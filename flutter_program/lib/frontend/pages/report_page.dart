@@ -47,6 +47,7 @@ class _ReportPageState extends State<ReportPage> {
       report.isLoading = true; // <-- 這行很關鍵！每次都要先設為 loading
       await report.loadData(
           members[0].userId,
+          members[0].memberId,
           members[0].birthyear.toString(),
           members[0].disease,
           members[0].freq,

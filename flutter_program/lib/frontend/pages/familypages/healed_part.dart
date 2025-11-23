@@ -1,6 +1,10 @@
+import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/provider/family_provider.dart';
+import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/frontend/pages/familypages/family_images.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HealedPart extends StatefulWidget {
   const HealedPart({super.key});
@@ -16,16 +20,57 @@ class _HealedPartState extends State<HealedPart> {
   int selectedMember = 0;
 
   /// 成員資料
-  final List<Map<String, String>> members = [
-    {"name": "媽媽", "image": "images/register_icon.png"},
-    {"name": "爸爸", "image": "images/register_icon.png"},
-    {"name": "爺爺", "image": "images/register_icon.png"},
-    {"name": "奶奶", "image": "images/register_icon.png"},
-    {"name": "哥哥", "image": "images/register_icon.png"},
-  ];
+  List<Map<String, dynamic>> userMembers = [];
+  Map<String, List<String>> memberImages = {};
+
+  void setMemberImages(List<UserReport> reports, int memberId) {
+    memberImages.clear();
+
+    for (var report in reports) {
+      if (report.memberId == memberId) {
+        final dateList = report.date.split('-'); // yyyy-mm-dd
+        final month = dateList[1];
+
+        // 如果這個月份還沒有初始化，就先建立空的 List
+        memberImages.putIfAbsent(month, () => []);
+
+        // 加入照片路徑
+        memberImages[month]!.add(report.photo);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 等待 provider 完成後再抓資料
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final familyProvider = context.read<FamilyProvider>();
+      final reportProvider = context.read<ReportProvider>();
+
+      final members = familyProvider.members;
+      final reports = reportProvider.reports;
+
+      if (members.isNotEmpty) {
+        setState(() {
+          setMemberImages(reports, members[0].memberId);
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    userMembers.clear();
+    final familyProvider = context.watch<FamilyProvider>();
+    final reportProvider = context.watch<ReportProvider>();
+    final members = familyProvider.members;
+    final reports = reportProvider.reports;
+    for (var member in members) {
+      userMembers.add(
+          {"memberId": member.memberId, "name": member.role, "image": "images/register_icon.png"});
+    }
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -33,45 +78,26 @@ class _HealedPartState extends State<HealedPart> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
-
-            /// -------------------------
-            /// 成員選擇卡片
-            /// -------------------------
-            _buildMemberSelector(),
-
+            _buildMemberSelector(reports),
             const SizedBox(height: 10),
+            for (var entry in memberImages.entries) ...[
+              _buildSectionTitle(
+                '2025年 ${entry.key}月',
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FamilyImagesPage(
+                        title: '2025年${entry.key}月_已癒合',
+                        images: entry.value, // <-- 把該月份圖片傳進去
+                      ),
+                    ),
+                  );
+                },
+              ),
 
-            /// -------------------------
-            /// 2025年 9月
-            /// -------------------------
-            _buildSectionTitle('2025年 9月', () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const FamilyImagesPage(
-                    title: '2025年9月_已癒合',
-                  ),
-                ),
-              );
-            }),
-
-            _buildImageSection([]),
-
-            /// -------------------------
-            /// 2025年 8月
-            /// -------------------------
-            _buildSectionTitle('2025年 8月', () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const FamilyImagesPage(
-                    title: '2025年8月_已癒合',
-                  ),
-                ),
-              );
-            }),
-
-            _buildImageSection([]),
+              _buildImageSection(entry.value), // <-- 放圖片 List
+            ],
           ],
         ),
       ),
@@ -81,12 +107,12 @@ class _HealedPartState extends State<HealedPart> {
   // ===========================================================================
   // 成員卡片列
   // ===========================================================================
-  Widget _buildMemberSelector() {
+  Widget _buildMemberSelector(List<UserReport> reports) {
     return SizedBox(
       height: 120,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: members.length,
+        itemCount: userMembers.length,
         padding: const EdgeInsets.symmetric(vertical: 6), // 左右一致
         itemBuilder: (context, index) {
           bool isSelected = index == selectedMember;
@@ -97,6 +123,9 @@ class _HealedPartState extends State<HealedPart> {
               onTap: () {
                 setState(() {
                   selectedMember = index;
+                  final memberId = userMembers[index]['memberId'] as int;
+                  debugPrint(memberId.toString());
+                  setMemberImages(reports, memberId);
                 });
               },
               child: Container(
@@ -117,12 +146,12 @@ class _HealedPartState extends State<HealedPart> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      members[index]["image"]!,
+                      userMembers[index]["image"]!,
                       width: 55,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      members[index]["name"]!,
+                      userMembers[index]["name"]!,
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -183,30 +212,21 @@ class _HealedPartState extends State<HealedPart> {
   // 圖片區塊（左大 + 右三小）
   // ===========================================================================
   Widget _buildImageSection(List<String> images) {
-    List<String?> list =
-        List<String?>.generate(4, (i) => i < images.length ? images[i] : null);
+    List<String?> list = List<String?>.generate(4, (i) => i < images.length ? images[i] : null);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _imageBox(list[0],
-              width: 160,
-              height: 220,
-              margin: const EdgeInsets.only(right: 10)),
+          _imageBox(list[0], width: 160, height: 220, margin: const EdgeInsets.only(right: 10)),
           Column(
             children: [
-              _imageBox(list[1],
-                  width: 160,
-                  height: 106,
-                  margin: const EdgeInsets.only(bottom: 8)),
+              _imageBox(list[1], width: 160, height: 106, margin: const EdgeInsets.only(bottom: 8)),
               Row(
                 children: [
                   _imageBox(list[2],
-                      width: 77,
-                      height: 106,
-                      margin: const EdgeInsets.only(right: 6)),
+                      width: 77, height: 106, margin: const EdgeInsets.only(right: 6)),
                   _imageBox(list[3], width: 77, height: 106),
                 ],
               )

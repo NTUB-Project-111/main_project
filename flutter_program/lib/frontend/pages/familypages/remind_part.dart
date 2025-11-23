@@ -39,39 +39,6 @@ class _WoundRemindPageState extends State<RemindPart> {
   @override
   void initState() {
     super.initState();
-    // final remindProvider = context.read<RemindProvider>();
-    // final familyProvider = context.read<FamilyProvider>();
-    // final reportProvider = context.read<ReportProvider>();
-    // if (widget.selectedMember == null) {
-    //   for (var remind in remindProvider.reminds) {
-    //     for (var member in familyProvider.members) {
-    //       if (member.memberId == remind.memberId) {
-    //         reminders.add({"time": remind.time, "member": member.role, "done": false});
-    //       }
-    //     }
-    //   }
-
-    //   for (var report in reportProvider.reports) {
-    //     if (report.ifcall == 'N') {
-    //       final dateTime = DateTime.parse(report.date);
-    //       String date = '${dateTime.month}/${dateTime.day}';
-    //       recommended.add({"date": date, "image": report.photo});
-    //     }
-    //   }
-    // } else {
-    //   for (var remind in remindProvider.reminds) {
-    //     if (widget.selectedMember == remind.memberId) {
-    //       reminders.add({"time": remind.time, "member": widget.selectedRole, "done": false});
-    //     }
-    //   }
-    //   for (var report in reportProvider.reports) {
-    //     if (report.ifcall == 'N' && report.memberId == widget.selectedMember) {
-    //       final dateTime = DateTime.parse(report.date);
-    //       String date = '${dateTime.month}/${dateTime.day}';
-    //       recommended.add({"date": date, "image": report.photo});
-    //     }
-    //   }
-    // }
   }
 
   @override
