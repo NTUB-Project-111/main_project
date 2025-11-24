@@ -124,7 +124,6 @@ class _HealedPartState extends State<HealedPart> {
                 setState(() {
                   selectedMember = index;
                   final memberId = userMembers[index]['memberId'] as int;
-                  debugPrint(memberId.toString());
                   setMemberImages(reports, memberId);
                 });
               },
@@ -251,7 +250,8 @@ class _HealedPartState extends State<HealedPart> {
       height: height,
       margin: margin,
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        // color: Colors.grey[200],
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         image: url != null
             ? DecorationImage(

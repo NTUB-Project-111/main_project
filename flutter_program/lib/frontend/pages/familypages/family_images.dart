@@ -4,25 +4,22 @@ import 'package:flutter/material.dart';
 class FamilyImagesPage extends StatefulWidget {
   final String title;
   final List<String> images;
-  const FamilyImagesPage({super.key, required this.title,required this.images});
+  const FamilyImagesPage({super.key, required this.title, required this.images});
 
   @override
   State<FamilyImagesPage> createState() => _FamilyImagesPageState();
 }
 
 class _FamilyImagesPageState extends State<FamilyImagesPage> {
+  String? getImage(int index) {
+    if (index < widget.images.length) {
+      return widget.images[index];
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<String> imageUrls = [
-      // 'images/icon.png',
-      // 'images/icon.png',
-      // 'images/icon.png',
-      // 'images/icon.png',
-      // 'images/icon.png',
-      // 'images/icon.png',
-      // 'images/icon.png',
-    ];
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -49,7 +46,6 @@ class _FamilyImagesPageState extends State<FamilyImagesPage> {
       ),
       body: Column(
         children: [
-          // 日期區塊（帶漸層背景）
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -74,223 +70,95 @@ class _FamilyImagesPageState extends State<FamilyImagesPage> {
               ),
             ),
           ),
-
           const SizedBox(height: 8),
-
-          // 圖片網格
           Expanded(
             child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [_buildImageGrid(imageUrls)],
-                )),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildImageGrid(),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildImageGrid(List<String> imageUrls) {
+  Widget _buildBox(String? url, double w, double h) {
+    if (url == null) {
+      return Container(
+        width: w,
+        height: h,
+        // margin: const EdgeInsets.only(right: 10, bottom: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Image.network(
+        url,
+        width: w,
+        height: h,
+        fit: BoxFit.cover,
+      ),
+    );
+  }
+
+  Widget _buildImageGrid() {
     return Column(
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // 左側大區塊
             Column(
               children: [
+                _buildBox(getImage(0), 170, 180),
+                const SizedBox(height: 10),
+                _buildBox(getImage(3), 170, 100),
+                const SizedBox(height: 10),
                 Row(
                   children: [
-                    Column(
-                      children: [
-                        imageUrls.isEmpty
-                            ? Container(
-                                height: 180,
-                                width: 160, //176
-                                margin: const EdgeInsets.only(right: 10, bottom: 10),
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(10)),
-                              )
-                            : ClipRRect(
-                                child: Image.network(
-                                  '',
-                                  fit: BoxFit.cover,
-                                  height: 180,
-                                  width: 160,
-                                ),
-                              ),
-                        imageUrls.isEmpty
-                            ? Container(
-                                height: 104,
-                                width: 160, //176
-                                margin: const EdgeInsets.only(right: 10, bottom: 10),
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(10)),
-                              )
-                            : ClipRRect(
-                                child: Image.network(
-                                  '',
-                                  fit: BoxFit.cover,
-                                  height: 104,
-                                  width: 160,
-                                ),
-                              ),
-                        Row(
-                          children: [
-                            imageUrls.isEmpty
-                                ? Container(
-                                    height: 80,
-                                    width: 73, //176
-                                    margin: const EdgeInsets.only(right: 10),
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(10)),
-                                  )
-                                : ClipRRect(
-                                    child: Image.network(
-                                      '',
-                                      fit: BoxFit.cover,
-                                      height: 80,
-                                      width: 73,
-                                    ),
-                                  ),
-                            imageUrls.isEmpty
-                                ? Container(
-                                    height: 80,
-                                    width: 73, //176
-                                    margin: const EdgeInsets.only(right: 10),
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(10)),
-                                  )
-                                : ClipRRect(
-                                    child: Image.network(
-                                      '',
-                                      fit: BoxFit.cover,
-                                      height: 80,
-                                      width: 73,
-                                    ),
-                                  ),
-                          ],
-                        )
-                      ],
-                    )
+                    _buildBox(getImage(5), 80, 85),
+                    const SizedBox(width: 10),
+                    _buildBox(getImage(6), 80, 85),
                   ],
                 ),
+                const SizedBox(height: 10),
               ],
             ),
+
+            const SizedBox(width: 10),
+
+            // 右側區塊
             Column(
-              // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    imageUrls.isEmpty
-                        ? Container(
-                            height: 89,
-                            width: 80, //176
-                            margin: const EdgeInsets.only(right: 10, bottom: 10),
-                            decoration: BoxDecoration(
-                                color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-                          )
-                        : ClipRRect(
-                            child: Image.network(
-                              '',
-                              fit: BoxFit.cover,
-                              height: 89,
-                              width: 80,
-                            ),
-                          ),
-                    imageUrls.isEmpty
-                        ? Container(
-                            height: 89,
-                            width: 80, //176
-                            margin: const EdgeInsets.only(bottom: 10),
-                            decoration: BoxDecoration(
-                                color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-                          )
-                        : ClipRRect(
-                            child: Image.network(
-                              '',
-                              fit: BoxFit.cover,
-                              height: 89,
-                              width: 80,
-                            ),
-                          ),
+                    _buildBox(getImage(1), 80, 85),
+                    const SizedBox(width: 10),
+                    _buildBox(getImage(2), 80, 85),
                   ],
                 ),
-                imageUrls.isEmpty
-                    ? Container(
-                        height: 170,
-                        width: 170, //176
-                        margin: const EdgeInsets.only(bottom: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-                      )
-                    : ClipRRect(
-                        child: Image.network(
-                          '',
-                          fit: BoxFit.cover,
-                          height: 170,
-                          width: 170,
-                        ),
-                      ),
-                imageUrls.isEmpty
-                    ? Container(
-                        height: 105,
-                        width: 170, //176
-                        margin: const EdgeInsets.only(bottom: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-                      )
-                    : ClipRRect(
-                        child: Image.network(
-                          '',
-                          fit: BoxFit.cover,
-                          height: 105,
-                          width: 170,
-                        ),
-                      ),
+                const SizedBox(height: 10),
+                _buildBox(getImage(4), 170, 180),
+                const SizedBox(height: 10),
+                _buildBox(getImage(7), 170, 100),
+                const SizedBox(height: 10),
               ],
             ),
           ],
         ),
         Row(
           children: [
-            imageUrls.isEmpty
-                ? Container(
-                    height: 100,
-                    width: 250, //176
-                    margin: const EdgeInsets.only(bottom: 10, right: 10),
-                    decoration: BoxDecoration(
-                        color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-                  )
-                : ClipRRect(
-                    child: Image.network(
-                      '',
-                      fit: BoxFit.cover,
-                      height: 100,
-                      width: 250,
-                    ),
-                  ),
-            imageUrls.isEmpty
-                ? Container(
-                    height: 100,
-                    width: 80, //176
-                    margin: const EdgeInsets.only(bottom: 10, right: 10),
-                    decoration: BoxDecoration(
-                        color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-                  )
-                : ClipRRect(
-                    child: Image.network(
-                      '',
-                      fit: BoxFit.cover,
-                      height: 100,
-                      width: 80,
-                    ),
-                  ),
+            _buildBox(getImage(8), 250, 100),
+            const SizedBox(width: 10),
+            _buildBox(getImage(9), 90, 100),
           ],
-        )
+        ),
+       
       ],
     );
   }
