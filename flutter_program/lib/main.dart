@@ -5,15 +5,15 @@ import 'package:drw/backend/provider/remind_provider.dart'; //
 import 'package:drw/backend/provider/report_provider.dart'; //
 import 'package:drw/backend/provider/user_provider.dart'; //
 import 'package:drw/backend/viewmodels/register_view_model.dart';
-import 'package:drw/frontend/pages/familypages/family_images.dart';
-import 'package:drw/frontend/pages/familypages/family_page.dart';
+// import 'package:drw/frontend/pages/familypages/family_images.dart';
+// import 'package:drw/frontend/pages/familypages/family_page.dart';
 import 'package:drw/frontend/pages/loading_page.dart';
-import 'package:drw/frontend/pages/login_page.dart';
-import 'package:drw/frontend/pages/reportpages/record_part.dart';
-import 'package:drw/frontend/pages/test_page.dart';
+// import 'package:drw/frontend/pages/login_page.dart';
+// import 'package:drw/frontend/pages/reportpages/record_part.dart';
+// import 'package:drw/frontend/pages/test_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:drw/frontend/utility/hospital_util.dart';
-import 'package:drw/frontend/utility/notifier_util.dart';
+// import 'package:drw/frontend/utility/notifier_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -103,6 +103,7 @@ class MyApp extends StatelessWidget {
         ),
         home: const LoadingPage(title: '正在連線伺服器...',isFromEntrance: true,)
         // home : const FamilyPage(),
+        // home: FamilyImagesPage(title: '2024年',images: [],),
         // home: const LoginPage(),
         // home: const TestPage(),
         );
