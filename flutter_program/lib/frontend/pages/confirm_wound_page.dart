@@ -1,4 +1,6 @@
+import 'package:drw/backend/models/family.dart';
 import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
 import 'package:drw/backend/services/apibase.dart';
@@ -94,13 +96,8 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                   icon: Icons.favorite,
                   color: const Color(0xFFFF6262),
                   onPressed: () {
-                    FrontUtil.showConfirmDialog(
-                        context,
-                        const Color(0xFFFF6262),
-                        '此傷口已經癒合了嗎?',
-                        '※『是的』將會關閉傷口的後續追蹤',
-                        '還沒',
-                        '是的', () async {
+                    FrontUtil.showConfirmDialog(context, const Color(0xFFFF6262), '此傷口已經癒合了嗎?',
+                        '※『是的』將會關閉傷口的後續追蹤', '還沒', '是的', () async {
                       widget.report.groupId == 0
                           ? await recordService.updateOktime(
                               userId: widget.report.userId.toString(),
@@ -113,10 +110,8 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                               recordId: widget.report.id.toString(),
                               groupId: widget.report.groupId.toString(),
                               ifcall: 'N');
-                      final userReport = await RecordService.fetchReports(
-                          widget.report.userId);
-                      final userProvider =
-                          Provider.of<UserProvider>(context, listen: false);
+                      final userReport = await RecordService.fetchReports(widget.report.userId);
+                      final userProvider = Provider.of<UserProvider>(context, listen: false);
                       final user = userProvider.user;
                       if (user != null) {
                         user.reports = userReport;
@@ -124,8 +119,7 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                         userProvider.setUserInfo(user);
                       }
                       if (mounted) {
-                        Provider.of<ReportProvider>(context, listen: false)
-                            .setReports(userReport);
+                        Provider.of<ReportProvider>(context, listen: false).setReports(userReport);
                         debugPrint(userReport.reversed.first.oktime);
                       }
                       notifier.setRemind(context);
@@ -138,15 +132,32 @@ class _ConfirmWoundPageState extends State<ConfirmWoundPage> {
                   icon: Icons.check,
                   color: FrontUtil.textColor,
                   onPressed: () {
-                    FrontUtil.showConfirmDialog(context, FrontUtil.textColor,
-                        '確定追蹤該傷口嗎?', null, '取消', '確定', () {
+                    final members = Provider.of<FamilyProvider>(context, listen: false).members;
+                    UserFamily selectedMember = members[0];
+                    for (var member in members) {
+                      if (member.memberId == widget.report.memberId) {
+                        selectedMember = member;
+                      }
+                      break;
+                    }
+                    FrontUtil.showConfirmDialog(
+                        context, FrontUtil.textColor, '確定追蹤該傷口嗎?', null, '取消', '確定', () {
+                      // showDialog(
+                      //   context: context,
+                      //   builder: (context) => MemberDialog(
+                      //     userFamily: members,
+                      //     next: true,
+                      //     isExtra: true,
+                      //   ),
+                      // );
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (_) => CameraPage(
                                     isExtra: true,
                                     id: widget.report.id,
-                                    report:widget.report
+                                    report: widget.report,
+                                    member: selectedMember.role,
                                   )));
                     });
                   },

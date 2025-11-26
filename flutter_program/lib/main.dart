@@ -1,5 +1,6 @@
 import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/services/google_map.dart';
+import 'package:drw/backend/viewmodels/family_view_model.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
 import 'package:drw/backend/provider/remind_provider.dart'; //
 import 'package:drw/backend/provider/report_provider.dart'; //
@@ -32,6 +33,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => Report()),
+        ChangeNotifierProvider(create: (_) => Family()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ReportProvider()),
         ChangeNotifierProvider(create: (_) => RemindProvider()),

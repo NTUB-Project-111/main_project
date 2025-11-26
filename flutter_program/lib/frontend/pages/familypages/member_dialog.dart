@@ -2,14 +2,20 @@ import 'package:drw/backend/models/family.dart';
 import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/services/family_service.dart';
 import 'package:drw/frontend/pages/registerpages/birthday_year_selector_part.dart';
+import 'package:drw/frontend/pages/tabs/camera_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MemberDialog extends StatefulWidget {
   final List<UserFamily> userFamily;
-  final Widget? nextPage;
-  const MemberDialog({super.key, required this.userFamily, this.nextPage});
+  // final Widget? nextPage;
+
+  // final Widget Function(String member)? nextPage;
+  final bool next;
+  final bool? isExtra;
+  // const MemberDialog({super.key, required this.userFamily, this.nextPage});
+  const MemberDialog({super.key, required this.userFamily, required this.next, this.isExtra});
 
   @override
   State<MemberDialog> createState() => _MemberDialogState();
@@ -41,10 +47,13 @@ class _MemberDialogState extends State<MemberDialog> {
   List<String> selectedSymptoms = [];
   String selectedDiseaseText = '未填寫';
   FamilyService familyService = FamilyService();
-  List<String> members = [];
+  List<String> members = ['全部'];
   @override
   void initState() {
     super.initState();
+    if (widget.isExtra != null) {
+      members.clear();
+    }
     for (var member in widget.userFamily) {
       members.add(member.role);
     }
@@ -95,22 +104,26 @@ class _MemberDialogState extends State<MemberDialog> {
               itemBuilder: (context, index) {
                 final member = members[index];
                 return InkWell(
-                  // onTap: () {
-                  //   widget.nextPage == null
-                  //       ? {debugPrint(member), Navigator.pop(context)}
-                  //       : Navigator.push(
-                  //           context,
-                  //           MaterialPageRoute(builder: (context) => widget.nextPage!),
-                  //         );
-                  // },
                   onTap: () {
-                    if (widget.nextPage == null) {
-                      Navigator.pop(context, member); // ← 回傳角色名稱
-                    } else {
+                    // if (widget.nextPage == null) {
+                    //   Navigator.pop(context, member); // ← 回傳角色名稱
+                    // } else {
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(builder: (context) => widget.nextPage!),
+                    //   );
+                    // }
+                    if (widget.next) {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => widget.nextPage!),
+                        MaterialPageRoute(
+                            builder: (context) => CameraPage(
+                                  isExtra: widget.isExtra ?? false,
+                                  member: member,
+                                )),
                       );
+                    } else {
+                      Navigator.pop(context, member); // ← 回傳角色名稱
                     }
                   },
 
@@ -299,7 +312,7 @@ class _MemberDialogState extends State<MemberDialog> {
                               final response = await familyService.addMember(
                                   userId: widget.userFamily[0].userId,
                                   role: nameController.text,
-                                  birthyear: selectedYear,
+                                  birthyear: int.tryParse(selectedYearText) ?? selectedYear,
                                   disease: selectedDiseaseText,
                                   freq: habitfreq);
                               final familyProvider = context.read<FamilyProvider>();

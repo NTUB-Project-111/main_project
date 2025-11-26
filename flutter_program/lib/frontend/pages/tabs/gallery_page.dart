@@ -117,14 +117,22 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                 physics: const NeverScrollableScrollPhysics(),
                 controller: _tabController,
                 children: [
-                  _buildImagePage(userReports.reversed.toList()),
-                  _buildImagePage(cuts.reversed.toList()),
-                  _buildImagePage(abrasions.reversed.toList()),
-                  _buildImagePage(bruises.reversed.toList()),
-                  _buildImagePage(burns.reversed.toList()),
-                  _buildImagePage(stabs.reversed.toList()),
-                  _buildImagePage(surgicals.reversed.toList()),
-                  _buildImagePage(seriours.reversed.toList()),
+                  // _buildImagePage(userReports.reversed.toList()),
+                  // _buildImagePage(cuts.reversed.toList()),
+                  // _buildImagePage(abrasions.reversed.toList()),
+                  // _buildImagePage(bruises.reversed.toList()),
+                  // _buildImagePage(burns.reversed.toList()),
+                  // _buildImagePage(stabs.reversed.toList()),
+                  // _buildImagePage(surgicals.reversed.toList()),
+                  // _buildImagePage(seriours.reversed.toList()),
+                  _buildImagePage(userReports),
+                  _buildImagePage(cuts),
+                  _buildImagePage(abrasions),
+                  _buildImagePage(bruises),
+                  _buildImagePage(burns),
+                  _buildImagePage(stabs),
+                  _buildImagePage(surgicals),
+                  _buildImagePage(seriours),
                 ],
               ),
             ),
@@ -134,8 +142,8 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
 
   Widget _buildImagePage(List<UserReport> reports) {
     Gallery gallery = Gallery();
-    gallery.sortReports(reports);
-
+    gallery.setGroup(reports);
+    final recentReports = gallery.sortReport(reports, descending: true).take(4).toList();
     // 取得所有年份 (有紀錄的年份才會出現)
     final years = reports
         .map((r) => r.date.substring(0, 4)) // 取出前四碼當年份
@@ -158,11 +166,11 @@ class _GalleryPageState extends State<GalleryPage> with SingleTickerProviderStat
                 height: 3,
               ),
             ),
-            reports.isNotEmpty
+            recentReports.isNotEmpty
                 ? SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: [for (var report in reports) _buildRecentImage(report)],
+                      children: [for (var report in recentReports) _buildRecentImage(report)],
                     ),
                   )
                 : const SizedBox(

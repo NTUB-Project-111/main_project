@@ -20,27 +20,12 @@ class FamilyPage extends StatefulWidget {
   State<FamilyPage> createState() => _FamilyPageState();
 }
 
-//--------------假資料 (之後記得刪掉------------------------
-// final List<Map<String, String>> reportList = [
-//   {'imageUrl': '', 'date': '10.25', 'woundType': '手術傷口', 'role': '媽'},
-//   {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
-//   {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
-//   {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
-//   {'imageUrl': '', 'date': '10.25', 'woundType': '割傷', 'role': '媽'},
-//   {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
-//   {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
-//   {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
-//   {'imageUrl': '', 'date': '10.25', 'woundType': '割傷', 'role': '媽'},
-//   {'imageUrl': '', 'date': '10.26', 'woundType': '燙傷', 'role': '爸'},
-//   {'imageUrl': '', 'date': '10.27', 'woundType': '擦傷', 'role': '妹'},
-//   {'imageUrl': '', 'date': '10.28', 'woundType': '割傷', 'role': '弟'},
-// ];
-
 //----------------------------------------
 class _FamilyPageState extends State<FamilyPage> {
   int _selectedTopIndex = 0;
   List<UserReport> selectedReports = [];
   UserFamily? selectedMember;
+  String selectedRole = '全部';
 
   @override
   Widget build(BuildContext context) {
@@ -128,20 +113,24 @@ class _FamilyPageState extends State<FamilyPage> {
                           context: context,
                           builder: (context) => MemberDialog(
                             userFamily: members,
+                            next: false,
                           ),
                         );
+                        selectedRole = responseMember ?? '全部';
                         if (responseMember != null) {
                           for (var member in members) {
                             if (member.role == responseMember) {
                               selectedMember = member;
                               for (var report in reports) {
                                 if (report.memberId == member.memberId) {
+                                  debugPrint(report.date);
                                   selectedReports.add(report);
                                 }
                               }
                               break;
                             }
                           }
+
                           setState(() {});
                         }
                         // showDialog(
@@ -161,18 +150,25 @@ class _FamilyPageState extends State<FamilyPage> {
 
           // 主體內容區
           Expanded(
-            child: _selectedTopIndex == 0
-                ? selectedReports.isEmpty
-                    ? _buildReportGrid(reports, members, selectedMember)
-                    : _buildReportGrid(selectedReports, members, selectedMember)
-                : _selectedTopIndex == 1
-                    ? selectedReports.isEmpty
-                        ? const RemindPart()
-                        : RemindPart(
-                            selectedMember: selectedMember!.memberId,
-                            selectedRole: selectedMember!.role,
-                          )
-                    : const HealedPart(),
+            child:
+                // _selectedTopIndex == 0
+                //     ? selectedReports.isEmpty
+                //         ? _buildReportGrid(reports, members, selectedMember)
+                //         : _buildReportGrid(selectedReports, members, selectedMember)
+                _selectedTopIndex == 0
+                    ? selectedRole == '全部'
+                        ? _buildReportGrid(reports, members, null)
+                        : selectedReports.isEmpty
+                            ? _buildReportGrid(reports, members, selectedMember)
+                            : _buildReportGrid(selectedReports, members, selectedMember)
+                    : _selectedTopIndex == 1
+                        ? selectedReports.isEmpty
+                            ? const RemindPart()
+                            : RemindPart(
+                                selectedMember: selectedMember!.memberId,
+                                selectedRole: selectedMember!.role,
+                              )
+                        : const HealedPart(),
           ),
 
           // 底部三個 icon + 文字按鈕

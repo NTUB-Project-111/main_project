@@ -1,3 +1,4 @@
+import 'package:drw/backend/models/family.dart';
 import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/viewmodels/report_view_model.dart';
@@ -17,7 +18,8 @@ class ReportPage extends StatefulWidget {
   final bool isExtra;
   final int? id;
   final UserReport? report;
-  const ReportPage({super.key, required this.isExtra, this.id, this.report});
+  final String? member;
+  const ReportPage({super.key, required this.isExtra, this.id, this.report, this.member});
 
   @override
   State<ReportPage> createState() => _ReportPageState();
@@ -44,15 +46,30 @@ class _ReportPageState extends State<ReportPage> {
       final report = Provider.of<Report>(context, listen: false);
       final familyProvider = Provider.of<FamilyProvider>(context, listen: false);
       final members = familyProvider.members;
+      UserFamily selectedMember = members[0];
       report.isLoading = true; // <-- 這行很關鍵！每次都要先設為 loading
+      for (var member in members) {
+        if (member.role == widget.member) {
+          selectedMember = member;
+          break;
+        }
+      }
       await report.loadData(
-          members[0].userId,
-          members[0].memberId,
-          members[0].birthyear.toString(),
-          members[0].disease,
-          members[0].freq,
+          selectedMember.userId,
+          selectedMember.memberId,
+          selectedMember.birthyear.toString(),
+          selectedMember.disease,
+          selectedMember.freq,
           widget.isExtra,
-          widget.report); // 這樣 Consumer 才會觸發 CircularProgressIndicator
+          widget.report);
+      // await report.loadData(
+      //     members[0].userId,
+      //     members[0].memberId,
+      //     members[0].birthyear.toString(),
+      //     members[0].disease,
+      //     members[0].freq,
+      //     widget.isExtra,
+      //     widget.report); // 這樣 Consumer 才會觸發 CircularProgressIndicator
     });
   }
 
