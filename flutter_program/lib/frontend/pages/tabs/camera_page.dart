@@ -13,8 +13,8 @@ class CameraPage extends StatefulWidget {
   final bool isExtra;
   final int? id;
   final UserReport? report;
-  const CameraPage(
-      {super.key, required this.isExtra, this.id, this.report});
+  final String? member;
+  const CameraPage({super.key, required this.isExtra, this.id, this.report, this.member});
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -59,10 +59,7 @@ class _CameraPageState extends State<CameraPage> {
           '送出診斷',
           '重新拍攝',
           ReportPage(
-            isExtra: widget.isExtra,
-            id: widget.id,
-            report:widget.report
-          ),
+              isExtra: widget.isExtra, id: widget.id, report: widget.report, member: widget.member),
         );
       } else {
         debugPrint("使用者取消選圖或路徑為空");
@@ -161,6 +158,7 @@ class _CameraPageState extends State<CameraPage> {
           isExtra: widget.isExtra,
           id: widget.id,
           report: widget.report,
+          member: widget.member,
         ),
       );
     } catch (e) {

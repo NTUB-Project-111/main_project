@@ -1,4 +1,6 @@
+import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/provider/user_provider.dart';
+import 'package:drw/frontend/pages/familypages/member_dialog.dart';
 import 'package:drw/frontend/widgets/wound_option_button.dart';
 import 'package:drw/frontend/pages/guestblock_page.dart';
 import 'package:drw/frontend/pages/selectimage_page.dart';
@@ -43,6 +45,8 @@ class _TabsState extends State<Tabs> {
   Widget build(BuildContext context) {
     final userProvider = context.read<UserProvider>();
     final user = userProvider.user;
+    final familyProvider = context.read<FamilyProvider>();
+    final members = familyProvider.members;
 
     return Scaffold(
       resizeToAvoidBottomInset: false, //讓floatingactionbottun不受鍵盤影響位置
@@ -191,12 +195,15 @@ class _TabsState extends State<Tabs> {
                                   borderColor: Colors.transparent,
                                   onPressed: () {
                                     Navigator.pop(context);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const CameraPage(isExtra: false),
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => MemberDialog(
+                                        userFamily: members,
+                                        next: true,
+                                        isExtra: false,
                                       ),
                                     );
+                                    
                                   },
                                 ),
                               ),
