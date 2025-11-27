@@ -7,23 +7,18 @@ import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MemberDialog extends StatefulWidget {
+class FamilyDialog extends StatefulWidget {
   final List<UserFamily> userFamily;
-  // final Widget? nextPage;
-
-  // final Widget Function(String member)? nextPage;
-  final bool next;
+  final bool nextPage;
   final bool? isExtra;
-  // const MemberDialog({super.key, required this.userFamily, this.nextPage});
-  const MemberDialog({super.key, required this.userFamily, required this.next, this.isExtra});
+  const FamilyDialog({super.key, required this.userFamily, required this.nextPage, this.isExtra});
 
   @override
-  State<MemberDialog> createState() => _MemberDialogState();
+  State<FamilyDialog> createState() => _FamilyDialogState();
 }
 
-class _MemberDialogState extends State<MemberDialog> {
+class _FamilyDialogState extends State<FamilyDialog> {
   final TextEditingController nameController = TextEditingController();
-  // List<String> members = ['爸爸', '媽媽', '哥哥', '姊姊', '弟弟', '妹妹'];
   int selectedYear = DateTime.now().year;
   String yearText = '未填寫';
   String selectedYearText = '';
@@ -48,6 +43,7 @@ class _MemberDialogState extends State<MemberDialog> {
   String selectedDiseaseText = '未填寫';
   FamilyService familyService = FamilyService();
   List<String> members = ['全部'];
+  UserFamily? selectedMember;
   @override
   void initState() {
     super.initState();
@@ -105,7 +101,7 @@ class _MemberDialogState extends State<MemberDialog> {
                 final member = members[index];
                 return InkWell(
                   onTap: () {
-                    if (widget.next) {
+                    if (widget.nextPage) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -115,10 +111,15 @@ class _MemberDialogState extends State<MemberDialog> {
                                 )),
                       );
                     } else {
-                      Navigator.pop(context, member); // ← 回傳角色名稱
+                      for (var m in widget.userFamily) {
+                        if (m.role == member) {
+                          selectedMember = m;
+                        }
+                      }
+                      // Navigator.pop(context, member);
+                      Navigator.pop(context, selectedMember);
                     }
                   },
-
                   child: Column(
                     children: [
                       // 熊頭圖片
@@ -161,7 +162,7 @@ class _MemberDialogState extends State<MemberDialog> {
               },
               child: TextButton(
                   onPressed: () {
-                    showAddMemberDialog(context);
+                    showAddFamilyDialog(context);
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -184,7 +185,7 @@ class _MemberDialogState extends State<MemberDialog> {
     );
   }
 
-  void showAddMemberDialog(BuildContext context) {
+  void showAddFamilyDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {

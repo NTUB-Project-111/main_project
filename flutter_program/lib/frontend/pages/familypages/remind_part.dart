@@ -17,68 +17,33 @@ class RemindPart extends StatefulWidget {
 }
 
 class _WoundRemindPageState extends State<RemindPart> {
-  // 模擬今日換藥的資料
-  // List<Map<String, dynamic>> reminders = [];
-  // List<Map<String, dynamic>> recommended = [];
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
-
   @override
   void initState() {
     super.initState();
+    Future.microtask(() {
+      final remindProvider = context.read<RemindProvider>();
+      final familyProvider = context.read<FamilyProvider>();
+      final reportProvider = context.read<ReportProvider>();
+
+      context.read<Family>().setReminders(
+            widget.selectedMember,
+            widget.selectedRole,
+            remindProvider.reminds,
+            familyProvider.members,
+            reportProvider.reports,
+          );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final remindProvider = context.watch<RemindProvider>();
-    final familyProvider = context.watch<FamilyProvider>();
-    final reportProvider = context.watch<ReportProvider>();
+    // final remindProvider = context.watch<RemindProvider>();
+    // final familyProvider = context.watch<FamilyProvider>();
+    // final reportProvider = context.watch<ReportProvider>();
 
-    // reminders.clear();
-    // recommended.clear();
-    // List reminders = [];
-    // List recommended = [];
-
-    // if (widget.selectedMember == null) {
-    //   for (var remind in remindProvider.reminds) {
-    //     // final dateTime = DateTime.parse(remind.date);
-    //     for (var member in familyProvider.members) {
-    //       if (member.memberId == remind.memberId &&
-    //           remind.date ==
-    //               '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}') {
-    //         reminders.add({"time": remind.time, "member": member.role, "done": false});
-    //       }
-    //     }
-    //   }
-    //   for (var report in reportProvider.reports) {
-    //     if (report.ifcall == 'N') {
-    //       final dateTime = DateTime.parse(report.date);
-    //       String date = '${dateTime.month}/${dateTime.day}';
-    //       recommended.add({"date": date, "image": report.photo});
-    //     }
-    //   }
-    // } else {
-    //   for (var remind in remindProvider.reminds) {
-    //     if (widget.selectedMember == remind.memberId &&
-    //         remind.date ==
-    //             '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}') {
-    //       reminders.add({"time": remind.time, "member": widget.selectedRole, "done": false});
-    //     }
-    //   }
-    //   for (var report in reportProvider.reports) {
-    //     if (report.ifcall == 'N' && report.memberId == widget.selectedMember) {
-    //       final dateTime = DateTime.parse(report.date);
-    //       String date = '${dateTime.month}/${dateTime.day}';
-    //       recommended.add({"date": date, "image": report.photo});
-    //     }
-    //   }
-    // }
     Family family = context.watch<Family>();
-    family.setReminders(widget.selectedMember, widget.selectedRole, remindProvider.reminds,
-        familyProvider.members, reportProvider.reports);
+    // family.setReminders(widget.selectedMember, widget.selectedRole, remindProvider.reminds,
+    //     familyProvider.members, reportProvider.reports);
     int total = family.reminders.length;
     int doneCount = family.reminders.where((r) => r["done"]).length;
 
@@ -106,14 +71,32 @@ class _WoundRemindPageState extends State<RemindPart> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              // Text(
+              //   "$doneCount / $total",
+              //   style: const TextStyle(
+              //     color: Color(0xFF9FBABB),
+              //     fontSize: 13,
+              //     fontWeight: FontWeight.bold,
+              //   ),
+              // ),
+              // Consumer<Family>(builder: (context, family, _) {
+              //   return Text(
+              //     "${family.count} / $total",
+              //     style: const TextStyle(
+              //       color: Color(0xFF9FBABB),
+              //       fontSize: 13,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   );
+              // }),
               Text(
-                "$doneCount / $total",
+                "${family.count} / $total",
                 style: const TextStyle(
                   color: Color(0xFF9FBABB),
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                 ),
-              ),
+              )
             ],
           ),
           const SizedBox(height: 8),
@@ -121,7 +104,7 @@ class _WoundRemindPageState extends State<RemindPart> {
           // 今日換藥列表（固定高度 + 可滑動）
           // 希望可以在點擊單個提醒時跳出對應的診斷報告
           Consumer<Family>(
-            builder: (context, family, child) {
+            builder: (context, family, _) {
               return SizedBox(
                 height: listHeight,
                 child: ListView.builder(
@@ -133,7 +116,7 @@ class _WoundRemindPageState extends State<RemindPart> {
 
                     final remind = source[index];
 
-                    debugPrint('==== ${family.reminders.toString()} ====');
+                    // debugPrint('==== ${family.reminders.toString()} ====');
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                       margin: const EdgeInsets.only(bottom: 6),
@@ -165,7 +148,7 @@ class _WoundRemindPageState extends State<RemindPart> {
                             activeColor: const Color(0xFF669FA5),
                             onChanged: (val) {
                               family.updateReminder(index, val!);
-                              debugPrint(family.reminders.toString());
+                              // debugPrint(family.reminders.toString());
                             },
                           ),
                         ],
@@ -176,54 +159,6 @@ class _WoundRemindPageState extends State<RemindPart> {
               );
             },
           ),
-
-          //  SizedBox(
-          //       height: listHeight,
-          //       child: ListView.builder(
-          //         itemCount: family.reminders.length,
-          //         itemBuilder: (context, index) {
-          //           final remind = family.reminders[index];
-          //           return Container(
-          //             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-          //             margin: const EdgeInsets.only(bottom: 6),
-          //             decoration: BoxDecoration(
-          //               color: Colors.white,
-          //               borderRadius: BorderRadius.circular(10),
-          //               boxShadow: const [
-          //                 BoxShadow(
-          //                   color: Colors.black12,
-          //                   blurRadius: 3,
-          //                   offset: Offset(0, 2),
-          //                 ),
-          //               ],
-          //             ),
-          //             child: Row(
-          //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //               children: [
-          //                 Row(
-          //                   children: [
-          //                     const Icon(Icons.access_time, size: 18, color: Color(0xFF9FBABB)),
-          //                     const SizedBox(width: 8),
-          //                     Text("換藥時間：${remind["time"]}"),
-          //                     const SizedBox(width: 20),
-          //                     Text("家人：${remind["member"]}"),
-          //                   ],
-          //                 ),
-          //                 Checkbox(
-          //                   value: remind["done"],
-          //                   activeColor: const Color(0xFF669FA5),
-          //                   onChanged: (val) {
-          //                     // setState(() => remind["done"] = val);
-          //                     family.updateReminder(index, val!);
-          //                   },
-          //                 ),
-          //               ],
-          //             ),
-          //           );
-          //         },
-          //       ),
-          //     ),
-
           const SizedBox(height: 25),
 
           // ===== 推薦開啟提醒區塊 =====
