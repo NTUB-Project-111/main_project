@@ -1,147 +1,184 @@
-// import 'package:drw/frontend/pages/familypages/family_images.dart';
-// import 'package:drw/frontend/utility/front_util.dart';
-// import 'package:flutter/material.dart';
+import 'package:drw/backend/models/family.dart';
+import 'package:drw/backend/models/report.dart';
+import 'package:drw/frontend/utility/front_util.dart';
+import 'package:flutter/material.dart';
 
-// class ReportImagePart extends StatefulWidget {
-//   const ReportImagePart({super.key});
+class ReportPart extends StatefulWidget {
+  final List<UserReport> reports;
+  final List<UserFamily> members;
+  final UserFamily? selectedMember;
+  const ReportPart({super.key, required this.reports, required this.members, this.selectedMember});
 
-//   @override
-//   State<ReportImagePart> createState() => _ReportImagePartState();
-// }
+  @override
+  State<ReportPart> createState() => _ReportPartState();
+}
 
-// class _ReportImagePartState extends State<ReportImagePart> {
-//   @override
-//   Widget build(BuildContext context) {
-    
-//     return SingleChildScrollView(
-//         child: Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         _buildSectionTitle('本週診斷報告', () {
-//           Navigator.push(
-//             context,
-//             MaterialPageRoute(
-//                 builder: (context) => const FamilyImagesPage(
-//                       title: '本週診斷報告',
-//                     )),
-//           );
-//         }),
-//         _buildImageSection([]),
-//         _buildSectionTitle('割傷', () {
-//           Navigator.push(
-//             context,
-//             MaterialPageRoute(
-//                 builder: (context) => const FamilyImagesPage(
-//                       title: '割傷診斷報告',
-//                     )),
-//           );
-//         }),
-//         _buildImageSection([]),
-//       ],
-//     ));
-//   }
 
-//   static Widget _buildSectionTitle(String title, VoidCallback onMorePressed) {
-//     return Padding(
-//       padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-//       child: Row(
-//         children: [
-//           const SizedBox(
-//             height: 15,
-//           ),
-//           Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-//           const Spacer(),
-//           TextButton(
-//               onPressed: onMorePressed,
-//               child: Row(
-//                 children: [
-//                   Text('更多', style: TextStyle(color: FrontUtil.textColor)),
-//                   Icon(Icons.arrow_forward_ios, size: 12, color: FrontUtil.textColor),
-//                 ],
-//               ))
-//         ],
-//       ),
-//     );
-//   }
 
-//   static Widget _buildImageSection(List<String> imagePaths) {
-//     return Padding(
-//       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-//       child: Row(
-//         children: [
-//           imagePaths.isEmpty
-//               ? Container(
-//                   height: 220,
-//                   width: 159, //176
-//                   margin: const EdgeInsets.only(right: 10),
-//                   decoration: BoxDecoration(
-//                       color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-//                 )
-//               : ClipRRect(
-//                   child: Image.network(
-//                     '',
-//                     fit: BoxFit.cover,
-//                     height: 220,
-//                     width: 159,
-//                   ),
-//                 ),
-//           Column(
-//             children: [
-//               imagePaths.isEmpty
-//                   ? Container(
-//                       height: 105,
-//                       width: 159,
-//                       margin: const EdgeInsets.only(bottom: 10),
-//                       decoration: BoxDecoration(
-//                           color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-//                     )
-//                   : ClipRRect(
-//                       child: Image.network(
-//                         '',
-//                         fit: BoxFit.cover,
-//                         height: 105,
-//                         width: 159,
-//                       ),
-//                     ),
-//               Row(
-//                 children: [
-//                   imagePaths.isEmpty
-//                       ? Container(
-//                           height: 105,
-//                           width: 74, //83
-//                           margin: const EdgeInsets.only(right: 10),
-//                           decoration: BoxDecoration(
-//                               color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-//                         )
-//                       : ClipRRect(
-//                           child: Image.network(
-//                             '',
-//                             fit: BoxFit.cover,
-//                             height: 105,
-//                             width: 74,
-//                           ),
-//                         ),
-//                   imagePaths.isEmpty
-//                       ? Container(
-//                           height: 105,
-//                           width: 74,
-//                           decoration: BoxDecoration(
-//                               color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-//                         )
-//                       : ClipRRect(
-//                           child: Image.network(
-//                             '',
-//                             fit: BoxFit.cover,
-//                             height: 105,
-//                             width: 74,
-//                           ),
-//                         )
-//                 ],
-//               )
-//             ],
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }
+class _ReportPartState extends State<ReportPart> {
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      padding: const EdgeInsets.only(top: 8, left: 20, right: 20, bottom: 25),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: 0.72,
+      ),
+      itemCount: widget.reports.length,
+      itemBuilder: (context, index) {
+        final report = widget.reports[index];
+        final dateTime = DateTime.parse(report.date);
+        String date = '${dateTime.month}/${dateTime.day}';
+
+        // 找出角色
+        String role = '';
+        for (var member in widget.members) {
+          if (member.memberId == report.memberId) {
+            role = member.role;
+            break; // 記得 break 提升效率
+          }
+        }
+
+        return _buildFamilyRecordCard(
+          report.photo,
+          date,
+          report.type,
+          role,
+        );
+      },
+    );
+  }
+
+  Widget _buildFamilyRecordCard(String imageUrl, String date, String woundType, String role) {
+    return SizedBox(
+      width: 120,
+      child: Stack(
+        clipBehavior: Clip.none, // ✅ 允許超出邊界
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF90A4AE).withOpacity(0.3), // 💡柔藍灰陰影
+                  blurRadius: 8,
+                  offset: const Offset(2, 4), // 陰影方向與距離
+                ),
+              ],
+            ),
+            child: Card(
+              elevation: 0,
+              color: const Color.fromARGB(255, 248, 254, 255),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  // mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: imageUrl.isNotEmpty
+                            ? Image.network(imageUrl, fit: BoxFit.cover)
+                            : Container(
+                                color: const Color.fromARGB(255, 146, 146, 146),
+                                child: const Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  size: 36,
+                                  color: Colors.white,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // 改為不使用 Flexible（在未被限制的 Column 中可能會導致 overflow）
+                    Text(
+                      '拍攝日：$date',
+                      style: TextStyle(fontSize: 12, color: FrontUtil.textColor),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '類型：$woundType',
+                      style: TextStyle(fontSize: 12, color: FrontUtil.textColor),
+                    ),
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   mainAxisSize: MainAxisSize.min,
+                    //   children: [
+
+                    //   ],
+                    // ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // 右上角，角色標籤
+          Positioned(
+            top: -6, // 向上凸出
+            right: -6, // 向右凸出
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color.fromARGB(255, 163, 193, 209).withOpacity(0.4),
+                    blurRadius: 4,
+                    offset: const Offset(1, 2),
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 16,
+                backgroundColor: Colors.white, // ✅ 外層白邊
+                child: CircleAvatar(
+                  radius: 14, // 內層顏色圈稍微小一點
+                  backgroundColor: _getRoleColor(role),
+                  child: Text(
+                    role[0],
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getRoleColor(String role) {
+    switch (role[0]) {
+      case '爺':
+        return const Color(0xFF8D6E63); // 棕灰色
+      case '奶':
+        return const Color(0xFF8D6E63); // 棕灰色
+      case '爸':
+        return const Color.fromARGB(255, 119, 87, 119);
+      case '媽':
+        return const Color.fromARGB(255, 119, 87, 119);
+      case '姐':
+      case '姊':
+        return const Color.fromARGB(255, 217, 168, 204);
+      case '妹':
+        return const Color.fromARGB(255, 217, 168, 204);
+      case '哥':
+        return const Color.fromARGB(255, 163, 189, 228);
+      case '弟':
+        return const Color.fromARGB(255, 163, 189, 228);
+      default:
+        return const Color(0xFFB0BEC5); // 預設灰藍
+    }
+  }
+}

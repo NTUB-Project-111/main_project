@@ -7,11 +7,14 @@ class Family extends ChangeNotifier {
   List<Map<String, dynamic>> reminders = [];
   List<Map<String, dynamic>> recommended = [];
   List<Map<String, dynamic>> newReminders = [];
+  int count = 0;
+  // int? countRemind;
 
   void setReminders(int? selectedMember, String? selectedRole, List<UserRemind> reminds,
       List<UserFamily> members, List<UserReport> reports) {
     reminders.clear();
     recommended.clear();
+    count = 0;
     if (selectedMember == null) {
       for (var remind in reminds) {
         // final dateTime = DateTime.parse(remind.date);
@@ -50,10 +53,15 @@ class Family extends ChangeNotifier {
   }
 
   void updateReminder(int index, bool value) {
-    newReminders = reminders.map((item) => Map<String, dynamic>.from(item)).toList();
-
+    newReminders = newReminders.isEmpty
+        ? reminders.map((item) => Map<String, dynamic>.from(item)).toList()
+        : newReminders.map((item) => Map<String, dynamic>.from(item)).toList();
     newReminders[index]['done'] = value;
-    // debugPrint(reminders.toString());
+    // count = countRemind ?? count;
+    count = newReminders.where((r) => r["done"]).length;
+
+    // countRemind = count;
+    debugPrint(count.toString());
     notifyListeners();
   }
 }

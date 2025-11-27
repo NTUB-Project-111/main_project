@@ -7,6 +7,7 @@ import 'package:drw/frontend/pages/familypages/healed_part.dart';
 import 'package:drw/frontend/pages/familypages/member_dialog.dart';
 // import 'package:drw/frontend/pages/familypages/member_dialog.dart';
 import 'package:drw/frontend/pages/familypages/remind_part.dart';
+import 'package:drw/frontend/pages/familypages/report_part.dart';
 // import 'package:drw/frontend/pages/familypages/report_part.dart';
 import 'package:drw/frontend/utility/family_record_util.dart';
 import 'package:drw/frontend/utility/front_util.dart';
@@ -121,9 +122,10 @@ class _FamilyPageState extends State<FamilyPage> {
                           for (var member in members) {
                             if (member.role == responseMember) {
                               selectedMember = member;
+                              selectedReports = [];
                               for (var report in reports) {
                                 if (report.memberId == member.memberId) {
-                                  debugPrint(report.date);
+                                  // debugPrint(report.date);
                                   selectedReports.add(report);
                                 }
                               }
@@ -149,26 +151,43 @@ class _FamilyPageState extends State<FamilyPage> {
           const SizedBox(height: 10),
 
           // 主體內容區
+          // Expanded(
+          //   child: _selectedTopIndex == 0
+          //       ? selectedRole == '全部'
+          //           ? _buildReportGrid(reports, members, null)
+          //           : selectedReports.isEmpty
+          //               ? _buildReportGrid(reports, members, selectedMember)
+          //               : _buildReportGrid(selectedReports, members, selectedMember)
+          //       : _selectedTopIndex == 1
+          //           ? selectedReports.isEmpty
+          //               ? const RemindPart()
+          //               : RemindPart(
+          //                   selectedMember: selectedMember!.memberId,
+          //                   selectedRole: selectedMember!.role,
+          //                 )
+          //           : const HealedPart(),
+          // ),
           Expanded(
-            child:
-                // _selectedTopIndex == 0
-                //     ? selectedReports.isEmpty
-                //         ? _buildReportGrid(reports, members, selectedMember)
-                //         : _buildReportGrid(selectedReports, members, selectedMember)
-                _selectedTopIndex == 0
-                    ? selectedRole == '全部'
-                        ? _buildReportGrid(reports, members, null)
-                        : selectedReports.isEmpty
-                            ? _buildReportGrid(reports, members, selectedMember)
-                            : _buildReportGrid(selectedReports, members, selectedMember)
-                    : _selectedTopIndex == 1
-                        ? selectedReports.isEmpty
-                            ? const RemindPart()
-                            : RemindPart(
-                                selectedMember: selectedMember!.memberId,
-                                selectedRole: selectedMember!.role,
-                              )
-                        : const HealedPart(),
+            child: _selectedTopIndex == 0
+                ? selectedRole == '全部'
+                    ? ReportPart(reports: reports, members: members, selectedMember: null)
+                    // : selectedReports.isEmpty
+                    //     ? ReportPart(
+                    //         reports: reports, members: members, selectedMember: selectedMember)
+                    //     : ReportPart(
+                    //         reports: selectedReports,
+                    //         members: members,
+                    //         selectedMember: selectedMember)
+                    : ReportPart(
+                        reports: selectedReports, members: members, selectedMember: selectedMember)
+                : _selectedTopIndex == 1
+                    ? selectedReports.isEmpty
+                        ? const RemindPart()
+                        : RemindPart(
+                            selectedMember: selectedMember!.memberId,
+                            selectedRole: selectedMember!.role,
+                          )
+                    : const HealedPart(),
           ),
 
           // 底部三個 icon + 文字按鈕
@@ -236,36 +255,36 @@ class _FamilyPageState extends State<FamilyPage> {
   }
 
   // 報告頁 GridView
-  Widget _buildReportGrid(List<UserReport> reports, List<UserFamily>? members, UserFamily? member) {
-    return GridView.builder(
-      padding: const EdgeInsets.only(top: 8, left: 20, right: 20, bottom: 25),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: 0.72,
-      ),
-      itemCount: reports.length,
-      itemBuilder: (context, index) {
-        final report = reports[index];
-        final dateTime = DateTime.parse(report.date);
-        String date = '${dateTime.month}/${dateTime.day}';
-        String role = '';
-        if (members != null) {
-          for (var member in members) {
-            if (member.memberId == report.memberId) {
-              role = member.role;
-            }
-          }
-        }
+  // Widget _buildReportGrid(List<UserReport> reports, List<UserFamily>? members, UserFamily? member) {
+  //   return GridView.builder(
+  //     padding: const EdgeInsets.only(top: 8, left: 20, right: 20, bottom: 25),
+  //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+  //       crossAxisCount: 3,
+  //       mainAxisSpacing: 10,
+  //       crossAxisSpacing: 10,
+  //       childAspectRatio: 0.72,
+  //     ),
+  //     itemCount: reports.length,
+  //     itemBuilder: (context, index) {
+  //       final report = reports[index];
+  //       final dateTime = DateTime.parse(report.date);
+  //       String date = '${dateTime.month}/${dateTime.day}';
+  //       String role = '';
+  //       if (members != null) {
+  //         for (var member in members) {
+  //           if (member.memberId == report.memberId) {
+  //             role = member.role;
+  //           }
+  //         }
+  //       }
 
-        return FamilyRecordCard(
-          imageUrl: report.photo,
-          date: date,
-          woundType: report.type,
-          role: members != null ? role[0] : member!.role,
-        );
-      },
-    );
-  }
+  //       return FamilyRecordCard(
+  //         imageUrl: report.photo,
+  //         date: date,
+  //         woundType: report.type,
+  //         role: members != null ? role[0] : member!.role,
+  //       );
+  //     },
+  //   );
+  // }
 }
