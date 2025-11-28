@@ -1,6 +1,4 @@
-import 'package:drw/backend/models/report.dart';
-import 'package:drw/backend/provider/family_provider.dart';
-import 'package:drw/backend/provider/report_provider.dart';
+import 'package:drw/backend/viewmodels/family_view_model.dart';
 import 'package:drw/frontend/pages/familypages/family_images.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
@@ -14,158 +12,133 @@ class HealedPart extends StatefulWidget {
 }
 
 class _HealedPartState extends State<HealedPart> {
-  bool isEditing = false;
+  // bool isEditing = false;
 
   /// 成員選擇狀態
-  int selectedMember = 0;
+  // int selectedMember = 0;
 
-  /// 成員資料
-  List<Map<String, dynamic>> userMembers = [];
-  Map<String, List<String>> memberImages = {};
+  // /// 成員資料
+  // List<Map<String, dynamic>> userMembers = [];
+  // Map<String, List<String>> memberImages = {};
 
-  void setMemberImages(List<UserReport> reports, int memberId) {
-    memberImages.clear();
+  // void setMemberImages(List<UserReport> reports, int memberId) {
+  //   memberImages.clear();
 
-    for (var report in reports) {
-      if (report.memberId == memberId) {
-        final dateList = report.date.split('-'); // yyyy-mm-dd
-        final month = dateList[1];
+  //   for (var report in reports) {
+  //     if (report.memberId == memberId) {
+  //       final dateList = report.date.split('-'); // yyyy-mm-dd
+  //       final month = dateList[1];
 
-        // 如果這個月份還沒有初始化，就先建立空的 List
-        memberImages.putIfAbsent(month, () => []);
+  //       // 如果這個月份還沒有初始化，就先建立空的 List
+  //       memberImages.putIfAbsent(month, () => []);
 
-        // 加入照片路徑
-        memberImages[month]!.add(report.photo);
-      }
-    }
-  }
+  //       // 加入照片路徑
+  //       memberImages[month]!.add(report.photo);
+  //     }
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
-
-    // 等待 provider 完成後再抓資料
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final familyProvider = context.read<FamilyProvider>();
-      final reportProvider = context.read<ReportProvider>();
-
-      final members = familyProvider.members;
-      final reports = reportProvider.reports;
-
-      if (members.isNotEmpty) {
-        setState(() {
-          setMemberImages(reports, members[0].memberId);
-        });
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    userMembers.clear();
-    final familyProvider = context.watch<FamilyProvider>();
-    final reportProvider = context.watch<ReportProvider>();
-    final members = familyProvider.members;
-    final reports = reportProvider.reports;
-    for (var member in members) {
-      userMembers.add(
-          {"memberId": member.memberId, "name": member.role, "image": "images/register_icon.png"});
-    }
+    // final family = context.watch<Family>();
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 10),
-            _buildMemberSelector(reports),
-            const SizedBox(height: 10),
-            for (var entry in memberImages.entries) ...[
-              _buildSectionTitle(
-                '2025年 ${entry.key}月',
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => FamilyImagesPage(
-                        title: '2025年${entry.key}月_已癒合',
-                        images: entry.value, // <-- 把該月份圖片傳進去
-                      ),
-                    ),
-                  );
-                },
-              ),
-
-              _buildImageSection(entry.value), // <-- 放圖片 List
-            ],
-          ],
-        ),
-      ),
+          padding: const EdgeInsets.symmetric(horizontal: 25),
+          child: Consumer<Family>(builder: (context, family, _) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                for (var reportImages in family.selectedReportImages) ...[
+                  _buildSectionTitle(
+                    '${reportImages["year"]}年 ${reportImages["month"]}月',
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FamilyImagesPage(
+                            title: '${reportImages["year"]}年 ${reportImages["month"]}月_已癒合',
+                            images: reportImages["images"], // <-- 把該月份圖片傳進去
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildImageSection(reportImages["images"]), // <-- 放圖片 List
+                ],
+              ],
+            );
+          })),
     );
   }
 
   // ===========================================================================
   // 成員卡片列
   // ===========================================================================
-  Widget _buildMemberSelector(List<UserReport> reports) {
-    return SizedBox(
-      height: 120,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: userMembers.length,
-        padding: const EdgeInsets.symmetric(vertical: 6), // 左右一致
-        itemBuilder: (context, index) {
-          bool isSelected = index == selectedMember;
+  // Widget _buildMemberSelector(List<UserReport> reports) {
+  //   return SizedBox(
+  //     height: 120,
+  //     child: ListView.builder(
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: userMembers.length,
+  //       padding: const EdgeInsets.symmetric(vertical: 6), // 左右一致
+  //       itemBuilder: (context, index) {
+  //         bool isSelected = index == selectedMember;
 
-          return SizedBox(
-            width: MediaQuery.of(context).size.width / 3 - 25,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedMember = index;
-                  final memberId = userMembers[index]['memberId'] as int;
-                  setMemberImages(reports, memberId);
-                });
-              },
-              child: Container(
-                margin: const EdgeInsets.only(right: 16),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFFE0F2F3) : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.15),
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      userMembers[index]["image"]!,
-                      width: 55,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      userMembers[index]["name"]!,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF669FA5),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
+  //         return SizedBox(
+  //           width: MediaQuery.of(context).size.width / 3 - 25,
+  //           child: GestureDetector(
+  //             onTap: () {
+  //               setState(() {
+  //                 selectedMember = index;
+  //                 final memberId = userMembers[index]['memberId'] as int;
+  //                 setMemberImages(reports, memberId);
+  //               });
+  //             },
+  //             child: Container(
+  //               margin: const EdgeInsets.only(right: 16),
+  //               padding: const EdgeInsets.symmetric(vertical: 10),
+  //               decoration: BoxDecoration(
+  //                 color: isSelected ? const Color(0xFFE0F2F3) : Colors.white,
+  //                 borderRadius: BorderRadius.circular(20),
+  //                 boxShadow: [
+  //                   BoxShadow(
+  //                     color: Colors.grey.withOpacity(0.15),
+  //                     blurRadius: 6,
+  //                     offset: const Offset(0, 3),
+  //                   ),
+  //                 ],
+  //               ),
+  //               child: Column(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: [
+  //                   Image.asset(
+  //                     userMembers[index]["image"]!,
+  //                     width: 55,
+  //                   ),
+  //                   const SizedBox(height: 8),
+  //                   Text(
+  //                     userMembers[index]["name"]!,
+  //                     style: const TextStyle(
+  //                       fontSize: 13,
+  //                       fontWeight: FontWeight.w600,
+  //                       color: Color(0xFF669FA5),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
 // ===========================================================================
 // 標題列 + 更多按鈕

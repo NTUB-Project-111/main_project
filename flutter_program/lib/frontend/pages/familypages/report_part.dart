@@ -1,7 +1,9 @@
 import 'package:drw/backend/models/family.dart';
 import 'package:drw/backend/models/report.dart';
+import 'package:drw/backend/viewmodels/family_view_model.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ReportPart extends StatefulWidget {
   final List<UserReport> reports;
@@ -13,45 +15,35 @@ class ReportPart extends StatefulWidget {
   State<ReportPart> createState() => _ReportPartState();
 }
 
-
-
 class _ReportPartState extends State<ReportPart> {
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.only(top: 8, left: 20, right: 20, bottom: 25),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: 0.72,
-      ),
-      itemCount: widget.reports.length,
-      itemBuilder: (context, index) {
-        final report = widget.reports[index];
-        final dateTime = DateTime.parse(report.date);
-        String date = '${dateTime.month}/${dateTime.day}';
-
-        // 找出角色
-        String role = '';
-        for (var member in widget.members) {
-          if (member.memberId == report.memberId) {
-            role = member.role;
-            break; // 記得 break 提升效率
-          }
-        }
-
-        return _buildFamilyRecordCard(
-          report.photo,
-          date,
-          report.type,
-          role,
+    return Consumer<Family>(
+      builder: (context, family, _) {
+        return GridView.builder(
+          padding: const EdgeInsets.only(top: 8, left: 20, right: 20, bottom: 25),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 0.72,
+          ),
+          itemCount: family.selectedReports.length,
+          itemBuilder: (context, index) {
+            final report = family.selectedReports[index];
+            return _buildFamilyRecordCard(
+              report["role"],
+              report["image"],
+              report["date"],
+              report["type"],
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildFamilyRecordCard(String imageUrl, String date, String woundType, String role) {
+  Widget _buildFamilyRecordCard(String role, String imageUrl, String date, String woundType) {
     return SizedBox(
       width: 120,
       child: Stack(

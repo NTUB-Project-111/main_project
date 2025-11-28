@@ -1,15 +1,13 @@
 import 'package:drw/backend/models/family.dart';
 import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/provider/family_provider.dart';
+import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
-// import 'package:drw/frontend/pages/familypages/family_dialog.dart';
+import 'package:drw/backend/viewmodels/family_view_model.dart';
 import 'package:drw/frontend/pages/familypages/healed_part.dart';
 import 'package:drw/frontend/pages/familypages/member_dialog.dart';
-// import 'package:drw/frontend/pages/familypages/member_dialog.dart';
 import 'package:drw/frontend/pages/familypages/remind_part.dart';
 import 'package:drw/frontend/pages/familypages/report_part.dart';
-// import 'package:drw/frontend/pages/familypages/report_part.dart';
-import 'package:drw/frontend/utility/family_record_util.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,12 +27,23 @@ class _FamilyPageState extends State<FamilyPage> {
   String selectedRole = '全部';
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     final reportProvider = context.read<ReportProvider>();
-    final reports = reportProvider.reports;
+    final remindProvider = context.read<RemindProvider>();
     final familyProvider = context.read<FamilyProvider>();
-    final members = familyProvider.members;
+    final family = context.read<Family>();
+    family.setData(
+      true,
+      reportProvider.reports,
+      remindProvider.reminds,
+      familyProvider.members,
+    );
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    final family = context.watch<Family>();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -101,7 +110,7 @@ class _FamilyPageState extends State<FamilyPage> {
                               color: Color(0xFF589399)),
                         ),
                         Text(
-                          '家庭人數：${members.length}',
+                          '家庭人數：${family.allMembers.length}',
                           style: TextStyle(color: FrontUtil.textColor),
                         ),
                       ],
@@ -113,32 +122,30 @@ class _FamilyPageState extends State<FamilyPage> {
                         String? responseMember = await showDialog(
                           context: context,
                           builder: (context) => MemberDialog(
-                            userFamily: members,
+                            userFamily: family.allMembers,
                             next: false,
                           ),
                         );
-                        selectedRole = responseMember ?? '全部';
-                        if (responseMember != null) {
-                          for (var member in members) {
-                            if (member.role == responseMember) {
-                              selectedMember = member;
-                              selectedReports = [];
-                              for (var report in reports) {
-                                if (report.memberId == member.memberId) {
-                                  // debugPrint(report.date);
-                                  selectedReports.add(report);
-                                }
-                              }
-                              break;
-                            }
-                          }
+                        selectedRole = responseMember ?? selectedRole;
+                        debugPrint('選擇的角色：$selectedRole');
+                        family.setRole(selectedRole);
+                        // if (responseMember != null) {
+                        //   for (var member in family.allMembers) {
+                        //     if (member.role == responseMember) {
+                        //       selectedMember = member;
+                        //       break;
+                        //     }
+                        //   }
+                        //   if (selectedMember != null) {
+                        //     for (var report in family.allReports) {
+                        //       if (report.memberId == selectedMember!.memberId) {
+                        //         selectedReports.add(report);
+                        //       }
+                        //     }
+                        //   }
 
-                          setState(() {});
-                        }
-                        // showDialog(
-                        //   context:context,
-                        //   builder:(context) => const MemberDialog()
-                        // );
+                        //   setState(() {});
+                        // }
                       },
                       icon: Icon(Icons.groups_rounded, color: FrontUtil.textColor),
                     ),
@@ -151,42 +158,15 @@ class _FamilyPageState extends State<FamilyPage> {
           const SizedBox(height: 10),
 
           // 主體內容區
-          // Expanded(
-          //   child: _selectedTopIndex == 0
-          //       ? selectedRole == '全部'
-          //           ? _buildReportGrid(reports, members, null)
-          //           : selectedReports.isEmpty
-          //               ? _buildReportGrid(reports, members, selectedMember)
-          //               : _buildReportGrid(selectedReports, members, selectedMember)
-          //       : _selectedTopIndex == 1
-          //           ? selectedReports.isEmpty
-          //               ? const RemindPart()
-          //               : RemindPart(
-          //                   selectedMember: selectedMember!.memberId,
-          //                   selectedRole: selectedMember!.role,
-          //                 )
-          //           : const HealedPart(),
-          // ),
           Expanded(
             child: _selectedTopIndex == 0
-                ? selectedRole == '全部'
-                    ? ReportPart(reports: reports, members: members, selectedMember: null)
-                    // : selectedReports.isEmpty
-                    //     ? ReportPart(
-                    //         reports: reports, members: members, selectedMember: selectedMember)
-                    //     : ReportPart(
-                    //         reports: selectedReports,
-                    //         members: members,
-                    //         selectedMember: selectedMember)
-                    : ReportPart(
-                        reports: selectedReports, members: members, selectedMember: selectedMember)
+                ? ReportPart(
+                    reports: family.allReports, members: family.allMembers, selectedMember: null)
                 : _selectedTopIndex == 1
-                    ? selectedReports.isEmpty
-                        ? const RemindPart()
-                        : RemindPart(
-                            selectedMember: selectedMember!.memberId,
-                            selectedRole: selectedMember!.role,
-                          )
+                    ? RemindPart(
+                        selectedMember: selectedMember == null ? 0 : selectedMember!.memberId,
+                        selectedRole: selectedMember == null ? '全部' : selectedMember!.role,
+                      )
                     : const HealedPart(),
           ),
 
