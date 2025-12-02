@@ -1,4 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:drw/backend/provider/family_provider.dart';
 import 'package:drw/backend/viewmodels/reminder_view_model.dart';
 import 'package:drw/backend/provider/remind_provider.dart';
 import 'package:drw/backend/provider/report_provider.dart';
@@ -50,9 +51,13 @@ class _RemindPageState extends State<RemindPage> {
   Future<void> loadReminders() async {
     final reports = Provider.of<ReportProvider>(context, listen: false).reports;
     final reminds = Provider.of<RemindProvider>(context, listen: false).reminds;
+    final members = Provider.of<FamilyProvider>(context, listen: false).members;
     for (var report in reports) {
       for (var remind in reminds) {
-        if (report.id == remind.recordId && report.ifcall == 'Y' && report.oktime != '傷口已痊癒') {
+        if (report.id == remind.recordId &&
+            report.ifcall == 'Y' &&
+            report.oktime != '傷口已痊癒' &&
+            members[0].memberId == report.memberId) {
           reminders.add(Reminder(
               date: report.date,
               userId: report.userId,

@@ -788,33 +788,67 @@ class _ShowReportPageState extends State<ShowReportPage> {
     return StatefulBuilder(
       builder: (context, setState) => Column(
         children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 5),
-            padding: const EdgeInsets.fromLTRB(20, 0, 5, 0),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x4D000000),
-                  blurRadius: 1,
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                IconButton(
-                  onPressed: () {
-                    setState(() => show = !show);
-                  },
-                  icon: Icon(show ? Icons.arrow_drop_up : Icons.arrow_drop_down),
-                ),
-              ],
+          // Container(
+          //   margin: const EdgeInsets.symmetric(vertical: 5),
+          //   padding: const EdgeInsets.fromLTRB(20, 0, 5, 0),
+          //   width: double.infinity,
+          //   decoration: BoxDecoration(
+          //     color: Colors.white,
+          //     borderRadius: BorderRadius.circular(15),
+          //     boxShadow: const [
+          //       BoxShadow(
+          //         color: Color(0x4D000000),
+          //         blurRadius: 1,
+          //       ),
+          //     ],
+          //   ),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          //       IconButton(
+          //         onPressed: () {
+          //           setState(() => show = !show);
+          //         },
+          //         icon: Icon(show ? Icons.arrow_drop_up : Icons.arrow_drop_down),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          GestureDetector(
+            onTap: () {
+              setState(() => show = !show);
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              padding: const EdgeInsets.fromLTRB(20, 0, 15, 0),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x4D000000),
+                    blurRadius: 1,
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.bold,height: 3.5),
+                  ),
+                  Icon(
+                    show ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    color: const Color(0xFF589399),
+                  ),
+                ],
+              ),
             ),
           ),
+
           if (show)
             Container(
               width: double.infinity,

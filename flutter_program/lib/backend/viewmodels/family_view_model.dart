@@ -148,7 +148,7 @@ class Family extends ChangeNotifier {
     final Map<String, Map<String, dynamic>> grouped = {};
 
     for (var report in allReports) {
-      if (selectedRole == '全部') {
+      if (selectedRole == '全部' && report.oktime == '傷口已痊癒') {
         final dateTime = DateTime.parse(report.date);
         final year = dateTime.year;
         final month = dateTime.month;
@@ -166,7 +166,9 @@ class Family extends ChangeNotifier {
         grouped[key]!["images"].add(report.photo);
       } else {
         for (var member in allMembers) {
-          if (member.role == selectedRole && member.memberId == report.memberId) {
+          if (member.role == selectedRole &&
+              member.memberId == report.memberId &&
+              report.oktime == '傷口已痊癒') {
             final dateTime = DateTime.parse(report.date);
             final year = dateTime.year;
             final month = dateTime.month;
