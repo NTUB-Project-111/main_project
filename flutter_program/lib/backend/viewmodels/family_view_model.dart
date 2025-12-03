@@ -41,7 +41,8 @@ class Family extends ChangeNotifier {
     selectedReports = [];
     for (var report in allReports) {
       final dateTime = DateTime.parse(report.date);
-      String date = '${dateTime.month}/${dateTime.day}';
+      String date =
+          '${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')}';
       for (var member in allMembers) {
         if (selectedRole == '全部') {
           if (member.memberId == report.memberId) {
@@ -52,6 +53,7 @@ class Family extends ChangeNotifier {
               "image": report.photo,
               "date": date,
               "type": report.type,
+              "report": report,
             });
             break;
           }
@@ -64,6 +66,7 @@ class Family extends ChangeNotifier {
               "image": report.photo,
               "date": date,
               "type": report.type,
+              "report": report,
             });
             break;
           }
@@ -80,7 +83,8 @@ class Family extends ChangeNotifier {
           String today =
               '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}';
           final dateTime = DateTime.parse(remind.date);
-          String remindDate = '${dateTime.year}-${dateTime.month}-${dateTime.day}';
+          String remindDate =
+              '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
           if (member.memberId == remind.memberId && today == remindDate) {
             String role = member.role;
             selectedReminds.add({
@@ -101,7 +105,9 @@ class Family extends ChangeNotifier {
             String today =
                 '${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}';
             final dateTime = DateTime.parse(remind.date);
-            String remindDate = '${dateTime.year}-${dateTime.month}-${dateTime.day}';
+            String remindDate =
+                '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
+
             if (today == remindDate) {
               String role = member.role;
               selectedReminds.add({
@@ -123,18 +129,22 @@ class Family extends ChangeNotifier {
     selectedRecommends = [];
     for (var report in allReports) {
       final dateTime = DateTime.parse(report.date);
-      String date = '${dateTime.month}/${dateTime.day}';
+      String date =
+          '${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')}';
       for (var member in allMembers) {
         if (selectedRole == '全部') {
-          if (member.memberId == report.memberId && report.ifcall == 'N') {
-            selectedRecommends.add({"date": date, "image": report.photo});
+          if (member.memberId == report.memberId &&
+              report.ifcall == 'N' &&
+              report.oktime != '傷口已痊癒') {
+            selectedRecommends.add({"date": date, "image": report.photo, "report": report});
             break;
           }
         } else {
           if (member.memberId == report.memberId &&
               member.role == selectedRole &&
-              report.ifcall == 'N') {
-            selectedRecommends.add({"date": date, "image": report.photo});
+              report.ifcall == 'N' &&
+              report.oktime != '傷口已痊癒') {
+            selectedRecommends.add({"date": date, "image": report.photo, "report": report});
             break;
           }
         }

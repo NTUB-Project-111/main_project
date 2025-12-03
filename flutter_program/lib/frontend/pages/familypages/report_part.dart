@@ -1,6 +1,7 @@
 import 'package:drw/backend/models/family.dart';
 import 'package:drw/backend/models/report.dart';
 import 'package:drw/backend/viewmodels/family_view_model.dart';
+import 'package:drw/frontend/pages/gallerypages/showreport_page.dart';
 import 'package:drw/frontend/utility/front_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +37,7 @@ class _ReportPartState extends State<ReportPart> {
               report["image"],
               report["date"],
               report["type"],
+              report["report"],
             );
           },
         );
@@ -43,70 +45,83 @@ class _ReportPartState extends State<ReportPart> {
     );
   }
 
-  Widget _buildFamilyRecordCard(String role, String imageUrl, String date, String woundType) {
+  Widget _buildFamilyRecordCard(
+      String role, String imageUrl, String date, String woundType, UserReport report) {
     return SizedBox(
       width: 120,
       child: Stack(
         clipBehavior: Clip.none, // ✅ 允許超出邊界
         children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF90A4AE).withOpacity(0.3), // 💡柔藍灰陰影
-                  blurRadius: 8,
-                  offset: const Offset(2, 4), // 陰影方向與距離
-                ),
-              ],
-            ),
-            child: Card(
-              elevation: 0,
-              color: const Color.fromARGB(255, 248, 254, 255),
-              shape: RoundedRectangleBorder(
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ShowReportPage(
+                            report: report,
+                            isExtra: true,
+                          )));
+            },
+            child: Container(
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF90A4AE).withOpacity(0.3), // 💡柔藍灰陰影
+                    blurRadius: 8,
+                    offset: const Offset(2, 4), // 陰影方向與距離
+                  ),
+                ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  // mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: imageUrl.isNotEmpty
-                            ? Image.network(imageUrl, fit: BoxFit.cover)
-                            : Container(
-                                color: const Color.fromARGB(255, 146, 146, 146),
-                                child: const Icon(
-                                  Icons.add_photo_alternate_outlined,
-                                  size: 36,
-                                  color: Colors.white,
+              child: Card(
+                elevation: 0,
+                color: const Color.fromARGB(255, 248, 254, 255),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    // mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: imageUrl.isNotEmpty
+                              ? Image.network(imageUrl, fit: BoxFit.cover)
+                              : Container(
+                                  color: const Color.fromARGB(255, 146, 146, 146),
+                                  child: const Icon(
+                                    Icons.add_photo_alternate_outlined,
+                                    size: 36,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    // 改為不使用 Flexible（在未被限制的 Column 中可能會導致 overflow）
-                    Text(
-                      '拍攝日：$date',
-                      style: TextStyle(fontSize: 12, color: FrontUtil.textColor),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '類型：$woundType',
-                      style: TextStyle(fontSize: 12, color: FrontUtil.textColor),
-                    ),
-                    // Column(
-                    //   crossAxisAlignment: CrossAxisAlignment.start,
-                    //   mainAxisSize: MainAxisSize.min,
-                    //   children: [
+                      const SizedBox(height: 6),
+                      // 改為不使用 Flexible（在未被限制的 Column 中可能會導致 overflow）
 
-                    //   ],
-                    // ),
-                  ],
+                      Text(
+                        '拍攝日：$date',
+                        style: TextStyle(fontSize: 12, color: FrontUtil.textColor),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '類型：$woundType',
+                        style: TextStyle(fontSize: 12, color: FrontUtil.textColor),
+                      ),
+                      // Column(
+                      //   crossAxisAlignment: CrossAxisAlignment.start,
+                      //   mainAxisSize: MainAxisSize.min,
+                      //   children: [
+
+                      //   ],
+                      // ),
+                    ],
+                  ),
                 ),
               ),
             ),

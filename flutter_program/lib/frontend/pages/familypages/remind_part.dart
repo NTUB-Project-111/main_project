@@ -1,4 +1,5 @@
 import 'package:drw/backend/viewmodels/family_view_model.dart';
+import 'package:drw/frontend/pages/gallerypages/showreport_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -136,57 +137,67 @@ class _WoundRemindPageState extends State<RemindPart> {
                 itemCount: family.selectedRecommends.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 5),
                 itemBuilder: (context, index) {
-                  return Container(
-                    width: 110,
-                    padding: const EdgeInsets.all(6),
-                    margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 3,
-                          offset: Offset(0, 2),
+                  return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ShowReportPage(
+                                      report: family.selectedRecommends[index]["report"],
+                                      isExtra: false,
+                                    )));
+                      },
+                      child: Container(
+                        width: 110,
+                        padding: const EdgeInsets.all(6),
+                        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 3,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        family.selectedRecommends[index]["image"] == null
-                            ? Container(
-                                width: 100,
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFD8E6E6),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              )
-                            : Container(
-                                width: 100,
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFD8E6E6),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    family.selectedRecommends[index]["image"].toString(),
-                                    fit: BoxFit.cover,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            family.selectedRecommends[index]["image"] == null
+                                ? Container(
+                                    width: 100,
+                                    height: 70,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFD8E6E6),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  )
+                                : Container(
+                                    width: 100,
+                                    height: 70,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFD8E6E6),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        family.selectedRecommends[index]["image"].toString(),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                        const SizedBox(height: 5),
-                        Text(
-                          "拍攝日：${family.selectedRecommends[index]["date"]}",
-                          style: const TextStyle(fontSize: 12),
-                          textAlign: TextAlign.center,
+                            const SizedBox(height: 5),
+                            Text(
+                              "拍攝日：${family.selectedRecommends[index]["date"]}",
+                              style: const TextStyle(fontSize: 12),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
+                      ));
                 },
               ),
             );
