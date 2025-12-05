@@ -250,6 +250,7 @@ class Report extends ChangeNotifier {
       switch (woundType) {
         case '燒傷':
         case '燙傷':
+        case '燒燙傷':
           imageUrls = [
             'images/burncare1.png',
             'images/burncare2.png',
@@ -311,6 +312,7 @@ class Report extends ChangeNotifier {
       switch (woundType) {
         case '燒傷':
         case '燙傷':
+        case '燒燙傷':
           imageUrls = [
             'images/burn1.png',
             'images/burn2.png',
@@ -450,8 +452,8 @@ class Report extends ChangeNotifier {
   //   imageUrls = await recordService.generateImages(steps);
   // }
 
-  Future<void> loadData(int userId,int memberId, String birthday, String disease, String freq, bool isExtra,
-      UserReport? report) async {
+  Future<void> loadData(int userId, int memberId, String birthday, String disease, String freq,
+      bool isExtra, UserReport? report) async {
     // debugPrint('$birthday\n$disease\n$freq');
     this.userId = userId;
     this.memberId = memberId;
@@ -511,7 +513,7 @@ class Report extends ChangeNotifier {
     }
   }
 
-  Future<bool> addRemind(String userId,int memberId) async {
+  Future<bool> addRemind(String userId, int memberId) async {
     bool result = true;
     _createRemindList();
     for (var remind in remindList) {
@@ -563,7 +565,7 @@ class Report extends ChangeNotifier {
     bool remindResult = true;
     bool groupResult = true;
     recordResult = await addRecord();
-    if (notify) remindResult = await addRemind(userId,memberId);
+    if (notify) remindResult = await addRemind(userId, memberId);
     if (isExtra) {
       //建立群組
       groupResult = await _addGroup(id, report!);
