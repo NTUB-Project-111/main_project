@@ -4,36 +4,65 @@ const router = express.Router();
 const db = require('../config/db');
 const redisClient = require('../config/redis');
 const transporter = require('../utils/mailer');
-const upload = require('../utils/upload');
+// const upload = require('../utils/upload');
+const { upload, uploadToCloudinary } = require('../utils/upload');
 const jwt = require('jsonwebtoken'); //user身分驗證
 
 
 // === 發送驗證碼 ===
+// router.post('/sendCode', async (req, res) => {
+//   const { email } = req.body;
+//   if (!email) return res.status(400).json({ message: '請輸入 Email' });
+//   const rateLimitKey = `rate_limit:${email}`;
+//   const resetCodeKey = `reset_code:${email}`;
+//   if (await redisClient.get(rateLimitKey)) {
+//     return res.status(429).json({ message: '請稍後再試' });
+//   }
+//   const code = Math.floor(100000 + Math.random() * 900000).toString();
+//   try {
+//     await redisClient.setEx(resetCodeKey, 300, code);
+//     await redisClient.setEx(rateLimitKey, 60, '1');
+//     const mailOptions = {
+//       // from: process.env.GMAIL_USER,
+//       from: process.env.SENDGRID_SENDER,
+//       to: email,
+//       subject: '驗證碼',
+//       text: `您好，您的驗證碼是：${code}。\n請於 5 分鐘內輸入以完成驗證。`
+//     };
+//     await transporter.sendMail(mailOptions);
+//     return res.json({ message: '驗證碼已寄出' });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ message: '伺服器錯誤' });
+//   }
+// });
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+// === 發送驗證碼 ===
 router.post('/sendCode', async (req, res) => {
+  console.log("API Key:", process.env.SENDGRID_API_KEY ? "loaded" : "missing");
+  console.log("Sender:", process.env.SENDGRID_SENDER);
   const { email } = req.body;
   if (!email) return res.status(400).json({ message: '請輸入 Email' });
-  const rateLimitKey = `rate_limit:${email}`;
-  const resetCodeKey = `reset_code:${email}`;
-  if (await redisClient.get(rateLimitKey)) {
-    return res.status(429).json({ message: '請稍後再試' });
-  }
+
   const code = Math.floor(100000 + Math.random() * 900000).toString();
+
   try {
-    await redisClient.setEx(resetCodeKey, 300, code);
-    await redisClient.setEx(rateLimitKey, 60, '1');
-    const mailOptions = {
-      from: process.env.GMAIL_USER,
+    await redisClient.setEx(`reset_code:${email}`, 300, code);
+    await sgMail.send({
       to: email,
+      from: process.env.SENDGRID_SENDER, // 需驗證過的寄件人
       subject: '驗證碼',
-      text: `您好，您的驗證碼是：${code}。\n請於 5 分鐘內輸入以完成驗證。`
-    };
-    await transporter.sendMail(mailOptions);
-    return res.json({ message: '驗證碼已寄出' });
+      text: `您好，您的驗證碼是：${code}。\n請於 5 分鐘內輸入以完成驗證。`,
+    });
+    return res.json({ message: '驗證碼已寄出', code });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: '伺服器錯誤' });
   }
 });
+
 
 // === 驗證重設密碼驗證碼 ===
 router.post('/verifyCode', async (req, res) => {
@@ -50,28 +79,70 @@ router.post('/verifyCode', async (req, res) => {
 });
 
 // === 註冊帳號 ===
-router.post('/register', upload.single('picture'), async (req, res) => {
-  const { name, gender, birthday, email, password, disease, freq } = req.body;
-  const picture = req.file ? req.file.path : null;
-  if (!name || !gender || !birthday || !email || !password) {
+// router.post('/register', async (req, res) => {
+//   // 支援可選的 role 欄位
+//   const { name, birthday, email, password, disease, freq, role } = req.body || {};
+
+//   if (!name || !birthday || !email || !password) {
+//     return res.status(400).json({ message: '尚有欄位未填寫' });
+//   }
+
+//   try {
+//     const [existing] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
+//     if (existing.length > 0) {
+//       return res.status(409).json({ message: '此電子郵件已被註冊' });
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     // 若資料表有 role 欄位，將會儲存傳入的 role，否則會儲存 NULL
+//     await db.query(
+//       'INSERT INTO user (name, birthday, email, password, disease, freq, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
+//       [name, birthday, email, hashedPassword, disease, freq, role || null]
+//     );
+
+//     res.status(201).json({ message: '註冊成功' });
+//   } catch (error) {
+//     console.error('註冊錯誤：', error);
+//     res.status(500).json({ message: '伺服器錯誤' });
+//   }
+// });
+router.post('/register', async (req, res) => {
+  // 支援可選的 role 欄位
+  const { name, birthyear, email, password, disease, freq, role } = req.body || {};
+
+  if (!name || !birthyear || !email || !password || !disease || !freq || !role) {
     return res.status(400).json({ message: '尚有欄位未填寫' });
   }
+
   try {
     const [existing] = await db.query('SELECT id FROM user WHERE email = ?', [email]);
     if (existing.length > 0) {
       return res.status(409).json({ message: '此電子郵件已被註冊' });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    await db.query(
-      'INSERT INTO user (name, gender, birthday, picture, email, password, disease, freq) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, gender, birthday, picture, email, hashedPassword, disease, freq]
+
+    const [result] = await db.query(
+      'INSERT INTO user (name, email, password) VALUES (?, ?, ?)',
+      [name, email, hashedPassword]
     );
+
+    const insertedId = result.insertId;
+
+    await db.query(
+      'INSERT INTO family (user_id, role, birthyear, disease, freq) VALUES (?, ?, ?, ?, ?)',
+      [insertedId, role, birthyear, disease, freq]
+    );
+
     res.status(201).json({ message: '註冊成功' });
   } catch (error) {
     console.error('註冊錯誤：', error);
     res.status(500).json({ message: '伺服器錯誤' });
   }
 });
+
+
 
 // === 登入帳號 ===
 router.post('/login', async (req, res) => {

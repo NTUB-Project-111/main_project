@@ -1,5 +1,4 @@
-//API 路由控制器，負責連接資料庫、回傳醫院資料
-
+// module.exports = router;
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
@@ -7,7 +6,6 @@ const db = require('../config/db');
 const axios = require('axios');
 const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
-// 🔹 取得 Google 圖片參考
 async function getPhotoReference(placeName) {
   const url = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json`
     + `?input=${encodeURIComponent(placeName)}&inputtype=textquery&fields=photos&key=${GOOGLE_API_KEY}`;
@@ -15,7 +13,7 @@ async function getPhotoReference(placeName) {
   return res.data.candidates?.[0]?.photos?.[0]?.photo_reference || null;
 }
 
-// 🔹 取得地區清單
+// === 地區清單 ===
 router.get('/getDistricts', async (req, res) => {
   const city = req.query.city;
   if (!city) return res.status(400).json({ error: 'city is required' });
@@ -33,7 +31,7 @@ router.get('/getDistricts', async (req, res) => {
   }
 });
 
-// 🔹 取得科別清單
+// === 科別清單 === 
 router.get('/getDepartments', async (req, res) => {
   const { city, district } = req.query;
   if (!city || !district) {
@@ -60,7 +58,7 @@ router.get('/getDepartments', async (req, res) => {
   }
 });
 
-// 🔹 查詢醫院（依條件）
+// === 醫院查詢 ===
 router.get('/getHospitals', async (req, res) => {
   const { city, district = '', dept = '' } = req.query;
   if (!city) {
@@ -103,7 +101,7 @@ router.get('/getHospitals', async (req, res) => {
   }
 });
 
-// 🔹 查詢距離使用者最近的前 10 間醫院
+// 伺服器端 MySQL 查詢
 router.get('/hospitals/nearby', async (req, res) => {
   const { lat, lng } = req.query;
   if (!lat || !lng) {

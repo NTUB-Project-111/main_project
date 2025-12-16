@@ -1,139 +1,15 @@
 const express = require('express');
 const router = express.Router();
-// const upload = require('../utils/upload');
 const { upload, uploadToCloudinary } = require('../utils/upload');
 const db = require('../config/db');
-
-// // === STABILITY ===
-// const axios = require('axios');
-// const FormData = require('form-data');
-// const STABILITY_API_KEY = process.env.STABILITY_API_KEY;
 
 // === OpenAI DALL·E ===
 const OpenAI = require('openai');
 require('dotenv').config();
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// === Stable Diffusion (Modelslab) ===
-// const USER_KEY = process.env.MODELSLAB_API_KEY || '你的Modelslab Key';
-// const ENDPOINT_URL = 'https://modelslab.com/api/v7/images/text-to-image';
-
-
-// //  === StableDiffusion ===
-// router.post('/generateImage', async (req, res) => {
-//   try {
-//     const { advice } = req.body;
-//     if (!advice) {
-//       return res.status(400).json({ success: false, message: '缺少護理建議' });
-//     }
-
-//     const prompt = `medical illustration, wound care instruction: ${advice}, clear step-by-step, educational, minimal blood, clean design`;
-
-//     const requestBody = {
-//       prompt,
-//       model_id: 'imagen-4',
-//       aspect_ratio: '1:1',
-//       key: USER_KEY
-//     };
-
-//     // Node 18+ 內建 fetch
-//     const response = await fetch(ENDPOINT_URL, {
-//       method: 'POST',
-//       headers: {
-//         'key': USER_KEY,
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify(requestBody)
-//     });
-
-//     let result;
-//     try {
-//       result = await response.json();
-//     } catch (e) {
-//       const text = await response.text();
-//       return res.status(500).json({
-//         success: false,
-//         message: '無法解析 Modelslab 回傳結果',
-//         raw: text
-//       });
-//     }
-
-//     // 檢查回傳是否有圖片
-//     if (!result?.data?.[0]?.b64_json) {
-//       return res.status(500).json({
-//         success: false,
-//         message: 'Modelslab 沒回傳圖片資料或發生錯誤',
-//         raw: result
-//       });
-//     }
-
-//     const b64 = result.data[0].b64_json;
-//     const buffer = Buffer.from(b64, 'base64');
-
-//     // 上傳到 Cloudinary
-//     const cloudResult = await uploadToCloudinary(buffer, `wound_${Date.now()}`);
-//     const imageUrl = cloudResult.secure_url;
-
-//     res.json({ success: true, imageUrl });
-
-//   } catch (err) {
-//     console.error('Stable Diffusion 生成錯誤:', err);
-//     res.status(500).json({
-//       success: false,
-//       message: '圖片生成失敗',
-//       error: err.message
-//     });
-//   }
-// });
-
 
 // === 依據護理建議產生圖片OpenAI DALL·E ===
-// router.post('/generateImage', async (req, res) => {
-//   try {
-//     const { advice } = req.body;
-//     if (!advice) {
-//       return res.status(400).json({ success: false, message: '缺少護理建議' });
-//     }
-
-//     const prompt = `medical illustration of wound care instruction:
-//      ${advice}, single clear image (not split panels), educational style, 
-//      minimal blood, clean medical design, no text, no captions`;
-
-//     // 產生圖片
-//     const result = await openai.images.generate({
-//       model: 'gpt-image-1',
-//       prompt: prompt,
-//       size: '1024x1024',
-//         quality: "low",
-//       n: 1,
-//     });
-
-//     const b64 = result.data[0]?.b64_json;
-//     if (!b64) {
-//       return res.status(500).json({ success: false, message: 'OpenAI 沒回傳圖片資料', raw: result });
-//     }
-
-//     // 將 Base64 轉成 Buffer
-//     const buffer = Buffer.from(b64, 'base64');
-
-//     // 上傳到 Cloudinary，並取得網址
-//     const cloudResult = await uploadToCloudinary(buffer, `wound_${Date.now()}`);
-//     const imageUrl = cloudResult.secure_url;
-
-//     res.json({
-//       success: true,
-//       imageUrl, // 這個就是可公開存取的圖片網址
-//     });
-//   } catch (err) {
-//     console.error('圖片生成錯誤:', err);
-//     res.status(500).json({
-//       success: false,
-//       message: '圖片生成失敗',
-//       error: err.message,
-//       raw: err
-//     });
-//   }
-// });
 router.post('/generateImages', async (req, res) => {
   try {
     const { advices } = req.body; // advices: ["洗手", "止血", "清潔傷口"]
@@ -178,83 +54,46 @@ router.post('/generateImages', async (req, res) => {
   }
 });
 
-
-
-// // ==== 依據護理建議產生圖片 Stability ====
-// router.post('/generateImage', async (req, res) => {
-//   try {
-//     const { advice } = req.body;
-//     if (!advice) {
-//       return res.status(400).json({ success: false, message: '缺少護理建議' });
-//     }
-
-//     const prompt = `medical illustration, wound care instruction: ${advice}, clear step-by-step, educational, minimal blood, clean design`;
-
-//     // 使用 FormData
-//     const form = new FormData();
-//     form.append('prompt', prompt);
-//     form.append('output_format', 'png'); // 可以改成 'webp'
-
-//     // 呼叫 Stability AI v2beta
-//     const response = await axios.post(
-//       'https://api.stability.ai/v2beta/stable-image/generate/core',
-//       form,
-//       {
-//         headers: {
-//           ...form.getHeaders(),
-//           'Authorization': `Bearer ${STABILITY_API_KEY}`,
-//           'Accept': 'image/*',
-//         },
-//         responseType: 'arraybuffer', // 取得圖片二進位資料
-//       }
-//     );
-
-//     const buffer = Buffer.from(response.data, 'binary');
-
-//     // 上傳到 Cloudinary
-//     const cloudResult = await uploadToCloudinary(buffer, `wound_${Date.now()}`);
-//     const imageUrl = cloudResult.secure_url;
-
-//     res.json({
-//       success: true,
-//       imageUrl,
-//     });
-
-//   } catch (err) {
-//     console.error('圖片生成錯誤:', err.response?.data || err.message);
-//     res.status(500).json({
-//       success: false,
-//       message: '圖片生成失敗',
-//       error: err.response?.data || err.message,
-//     });
-//   }
-// });
-
-
+// === 新增診斷報告 ===
 router.post('/addRecord', upload.single('photo'), async (req, res) => {
   try {
-    const { fk_userid, date, type, oktime, caremode, ifcall, choosekind, recording, name } = req.body;
+    // 首先會先將請求端傳入的參數存入變數中
+    const { fk_userid, date, type, oktime, caremode, ifcall, choosekind, recording, name, member_id } = req.body;
+
+    // 檢查是否有收到圖片檔案，若沒有則回傳錯誤
     if (!req.file) {
       return res.status(400).json({ error: '請提供圖片' });
     }
-    // 上傳至 Cloudinary
+
+    // 將圖片上傳至 Cloudinary，檔名以時間戳記命名
     const cloudResult = await uploadToCloudinary(req.file.buffer, Date.now().toString());
+
+    // 取得 Cloudinary 回傳的圖片網址
     const photoUrl = cloudResult.secure_url;
+
+    // 將新紀錄插入資料庫的 record 資料表
     const [result] = await db.query(
       `
       INSERT INTO record 
-      (fk_userid, date, photo, type, oktime, caremode, ifcall, choosekind, recording, name)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (fk_userid, date, photo, type, oktime, caremode, ifcall, choosekind, recording, name, member_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
-      [fk_userid, date, photoUrl, type, oktime, caremode, ifcall, choosekind, recording, name]
+      [fk_userid, date, photoUrl, type, oktime, caremode, ifcall, choosekind, recording, name, member_id]
     );
+
+    // result取得剛插入診斷報告 ID
     const insertedId = result.insertId;
+
+    // 新增成功時印出成功訊息
+    console.log(`新增診斷報告成功，ID: ${insertedId}, UserID: ${fk_userid}`);
+    // 回傳成功訊息，包含新診斷報告的 ID 及圖片網址
     return res.json({
       message: 'Record added successfully',
       id_record: insertedId,
       photoPath: photoUrl, // Cloudinary 圖片網址
     });
   } catch (err) {
+    // 錯誤處理：印出錯誤訊息並回傳錯誤
     console.error('新增錯誤:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -272,7 +111,7 @@ router.get('/getRecords', async (req, res) => {
       id_record, fk_userid,
       DATE_FORMAT(date, '%Y-%m-%d') AS date,
       photo, type, oktime, caremode,
-      ifcall, choosekind, recording, group_id, name
+      ifcall, choosekind, recording, group_id, name, member_id
     FROM record
     WHERE fk_userid = ?
   `;
@@ -298,39 +137,43 @@ router.get('/getRecordRemind', async (req, res) => {
 
   try {
     const [rows] = await db.query(`
-            SELECT
-                r.fk_userid,
-                r.id_record AS reportId,
-                DATE_FORMAT(r.date, '%Y-%m-%d') AS date,
-                r.type,
-                r.oktime,
-                r.caremode,
-                r.ifcall,
-                r.choosekind,
-                r.recording,
-                r.photo,
-                r.name
-                r.group_id,
-                c.fk_user_id,
-                c.id_calls AS remindId,
-                c.fk_record_id,
-                c.time,
-                c.day,
-                c.freq
-            FROM record r
-            LEFT JOIN calls c ON r.id_record = c.fk_record_id
-            WHERE r.fk_userid = ?
-            ORDER BY r.id_record ASC, c.id_calls ASC;
-        `, [userId]);
+      SELECT
+        r.fk_userid,
+        r.id_record,
+        DATE_FORMAT(r.date, '%Y-%m-%d') AS date,
+        r.type,
+        r.oktime,
+        r.caremode,
+        r.ifcall,
+        r.choosekind,
+        r.recording,
+        r.photo,
+        r.name,
+        r.group_id,
+        r.member_id AS record_member_id,
+        c.fk_user_id,
+        c.id_calls,
+        c.fk_record_id,
+        c.time,
+        c.day,
+        c.freq,
+        c.member_id AS call_member_id
+      FROM record r
+      LEFT JOIN calls c ON r.id_record = c.fk_record_id
+      WHERE r.fk_userid = ?
+      ORDER BY r.id_record ASC, c.id_calls ASC;
+    `, [userId]);
 
-    // 整理成巢狀格式
     const reportMap = {};
     const reports = [];
+
     for (const row of rows) {
-      if (!reportMap[row.reportId]) {
-        reportMap[row.reportId] = {
-          id: row.reportId,
-          userId: row.fk_userid,
+
+      if (!reportMap[row.id_record]) {
+        reportMap[row.id_record] = {
+          id_record: row.id_record,
+          fk_userid: row.fk_userid,
+          member_id: row.record_member_id,
           date: row.date,
           type: row.type,
           oktime: row.oktime,
@@ -343,29 +186,33 @@ router.get('/getRecordRemind', async (req, res) => {
           group_id: row.group_id,
           reminds: [],
         };
-        reports.push(reportMap[row.reportId]);
+
+        reports.push(reportMap[row.id_record]);
       }
 
-      if (row.remindId) {
-        reportMap[row.reportId].reminds.push({
-          id: row.remindId,
-          userId: row.fk_user_id,
-          recordId: row.fk_record_id,
-          date: row.day,
+      if (row.id_calls != null) {
+        reportMap[row.id_record].reminds.push({
+          id_calls: row.id_calls,
+          fk_user_id: row.fk_user_id,
+          fk_record_id: row.fk_record_id,
+          day: row.day,
           time: row.time,
           freq: row.freq,
+          member_id: row.call_member_id,
         });
       }
     }
 
-    res.json({ reports });
+    res.json({ reports }); // <-- 正確位置
+
   } catch (err) {
     console.error('資料取得錯誤:', err);
     res.status(500).json({ message: '伺服器錯誤' });
   }
 });
 
-//取得groupId
+
+//取得group
 router.get('/getGroup', async (req, res) => {
   const userId = req.query.userId;
   try {
@@ -412,6 +259,34 @@ router.get('/getGroupId', async (req, res) => {
   }
 });
 
+//取得memberId
+router.get('/getMemberId', async (req, res) => {
+  const userId = req.query.userId;
+
+  if (!userId) {
+    return res.status(400).json({ success: false, message: '缺少 userId ' });
+  }
+
+  try {
+    const [rows] = await db.query(
+      'SELECT DISTINCT r.member_id FROM record r WHERE r.fk_userid = ?',
+      [userId]
+    );
+
+    if (rows.length > 0) {
+      res.status(200).json({
+        success: true,
+        memberId: rows[0].member_id,
+      });
+    } else {
+      res.status(404).json({ success: false, message: '找不到符合條件的紀錄' });
+    }
+  } catch (error) {
+    console.error('查詢 member_id 失敗：', error);
+    res.status(500).json({ success: false, message: '伺服器錯誤' });
+  }
+});
+
 //更新癒合時間
 router.post('/updateOktime', async (req, res) => {
   const { userId, recordId, groupId, oktime } = req.body;
@@ -447,5 +322,52 @@ router.post('/updateOktime', async (req, res) => {
   }
 });
 
+//修改是否開啟護理提醒
+router.post('/updateIfcall', async (req, res) => {
+  const { userId, recordId, ifcall } = req.body;
+  if (!userId || !ifcall) {
+    return res.status(400).json({ success: false, message: '缺少必要參數 (userId 或 oktime)' });
+  }
+  try {
+    let result;
+    if (!recordId) {
+      return res.status(400).json({ success: false, message: 'recordId 為必要參數' });
+    }
+    [result] = await db.query(
+      'UPDATE record SET ifcall = ? WHERE fk_userid = ? AND id_record = ?',
+      [ifcall, userId, recordId]
+    );
+    if (result.affectedRows > 0) {
+      res.status(200).json({ success: true });
+    } else {
+      res.status(404).json({ success: false, message: '找不到符合條件的紀錄' });
+    }
+  } catch (error) {
+    console.error('更新 ifcall 失敗：', error);
+    res.status(500).json({ success: false, message: '伺服器錯誤' });
+  }
+});
+
+//更新groupId
+router.post('/updateGroupId', async (req, res) => {
+  const { userId, recordId1, recordId2, groupId } = req.body;
+  if (!userId || !recordId1 || !recordId2 || groupId === undefined) {
+    return res.status(400).json({ success: false, message: '缺少必要欄位' });
+  }
+  try {
+    const [result] = await db.query(
+      'UPDATE record SET group_id = ? WHERE fk_userid = ? AND id_record IN (?, ?)',
+      [groupId, userId, recordId1, recordId2]
+    );
+    if (result.affectedRows > 0) {
+      res.status(200).json({ success: true, message: '更新成功' });
+    } else {
+      res.status(404).json({ success: false, message: '找不到符合條件的資料' });
+    }
+  } catch (error) {
+    console.error('更新 group_id 失敗：', error);
+    res.status(500).json({ success: false, message: '伺服器錯誤' });
+  }
+});
 
 module.exports = router;

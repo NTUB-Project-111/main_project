@@ -3,7 +3,28 @@ const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
 const router = express.Router();
-const upload = require('../utils/upload');
+// const upload = require('../utils/upload');
+const { upload, uploadToCloudinary } = require('../utils/upload');
+
+
+// === 叫醒伺服器用 ===
+router.get('/ping', async (req, res) => {
+    res.status(200).send('pong');
+});
+
+
+// === 取得所有使用者資料 ===
+router.get('/getUsers', async (req, res) => {
+    try {
+        const [rows] = await db.query(
+            `SELECT * FROM user`
+        );
+        res.json({ users: rows });
+    } catch (err) {
+        console.error('取得所有使用者資料錯誤:', err);
+        res.status(500).json({ message: '伺服器錯誤' });
+    }
+});
 
 // === 取得使用者資料 ===
 router.get('/getUserInfo', async (req, res) => {
@@ -83,31 +104,106 @@ router.post('/updatePassword', async (req, res) => {
 });
 
 // === 更新大頭照 ===
+// router.post('/updateImage', upload.single('picture'), async (req, res) => {
+//     const { id } = req.body;
+//     const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+//     if (!id) {
+//         return res.status(400).json({ error: 'User ID is required' });
+//     }
+//     if (!imagePath) {
+//         return res.status(400).json({ error: 'No image uploaded' });
+//     }
+//     try {
+//         const [result] = await db.query(
+//             'UPDATE user SET picture = ? WHERE id = ?',
+//             [imagePath, id]
+//         );
+//         console.log('圖片更新成功', result);
+//         return res.json({
+//             message: 'User picture updated successfully',
+//             path: imagePath,
+//         });
+//     } catch (err) {
+//         console.error('資料庫錯誤:', err);
+//         return res.status(500).json({ error: 'Database error', details: err });
+//     }
+// });
 router.post('/updateImage', upload.single('picture'), async (req, res) => {
     const { id } = req.body;
-    const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
     if (!id) {
         return res.status(400).json({ error: 'User ID is required' });
     }
-    if (!imagePath) {
+    if (!req.file) {
         return res.status(400).json({ error: 'No image uploaded' });
     }
+
     try {
+        // 上傳至 Cloudinary
+        const cloudResult = await uploadToCloudinary(req.file.buffer, `user_${id}_${Date.now()}`);
+        const imageUrl = cloudResult.secure_url;
+
+        // 更新使用者資料表中的圖片欄位
         const [result] = await db.query(
             'UPDATE user SET picture = ? WHERE id = ?',
-            [imagePath, id]
+            [imageUrl, id]
         );
+
         console.log('圖片更新成功', result);
         return res.json({
             message: 'User picture updated successfully',
-            path: imagePath,
+            path: imageUrl,
         });
     } catch (err) {
-        console.error('資料庫錯誤:', err);
-        return res.status(500).json({ error: 'Database error', details: err });
+        console.error('圖片上傳錯誤:', err);
+        return res.status(500).json({ error: '圖片上傳失敗', details: err });
     }
 });
 
+//取得使用者家庭資訊
+router.get('/getUserFamily', async (req, res) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+
+    if (!token) {
+        return res.status(401).json({ message: '未提供 token' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        const email = decoded.email;
+
+        // 查使用者
+        const [userRows] = await db.query(
+            `SELECT id, email FROM user WHERE email = ?`,
+            [email]
+        );
+
+        if (userRows.length === 0) {
+            return res.status(404).json({ message: '找不到使用者' });
+        }
+
+        const user = userRows[0];
+
+        // 查家庭成員
+        const [rows] = await db.query(`
+            SELECT *
+            FROM family f
+            WHERE f.user_id = ?;
+        `, [user.id]);
+
+        res.status(200).json({ user, family: rows });
+
+    } catch (err) {
+        console.error('資料取得錯誤:', err);
+        if (err.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token 已過期' });
+        }
+        if (err.name === 'JsonWebTokenError') {
+            return res.status(401).json({ message: '無效的 Token' });
+        }
+        res.status(500).json({ message: '伺服器錯誤' });
+    }
+});
 
 //取得使用者所有資訊
 router.get('/getUserDetail', async (req, res) => {
@@ -121,11 +217,13 @@ router.get('/getUserDetail', async (req, res) => {
         const email = decoded.email;
         // 查使用者
         const [userRows] = await db.query(
-            `SELECT id, name, gender, birthday, picture, email ,disease, freq FROM user WHERE email = ?`,
+            `SELECT id, name, birthday, email, disease, freq, role, password FROM user WHERE email = ?`,
             [email]
         );
         if (userRows.length === 0) return res.status(404).json({ message: '找不到使用者' });
         const user = userRows[0];
+        // 移除 gender 與 picture 欄位
+        // 若前端有用到 user.gender 或 user.picture，請一併調整
         // 查診斷報告與護理提醒
         const [rows] = await db.query(`
             SELECT
@@ -159,30 +257,18 @@ router.get('/getUserDetail', async (req, res) => {
         for (const row of rows) {
             if (!reportMap[row.reportId]) {
                 reportMap[row.reportId] = {
-                    id: row.reportId,
-                    userId: row.fk_userid,
-                    date: row.date,
-                    type: row.type,
-                    oktime: row.oktime,
-                    caremode: row.caremode,
-                    ifcall: row.ifcall,
-                    choosekind: row.choosekind,
-                    recording: row.recording,
-                    photo: row.photo,
-                    name: row.name,
-                    group_id:row.group_id,
+                    id: row.reportId, userId: row.fk_userid, date: row.date,
+                    type: row.type, oktime: row.oktime, caremode: row.caremode,
+                    ifcall: row.ifcall, choosekind: row.choosekind, recording: row.recording,
+                    photo: row.photo, name: row.name, group_id: row.group_id,
                     reminds: [],
                 };
                 reports.push(reportMap[row.reportId]);
             }
             if (row.remindId) {
                 reportMap[row.reportId].reminds.push({
-                    id: row.remindId,
-                    userId: row.fk_user_id,
-                    recordId: row.fk_record_id,
-                    date: row.day,
-                    time: row.time,
-                    freq: row.freq,
+                    id: row.remindId, userId: row.fk_user_id, recordId: row.fk_record_id,
+                    date: row.day, time: row.time, freq: row.freq,
                 });
             }
         }
@@ -196,13 +282,38 @@ router.get('/getUserDetail', async (req, res) => {
     }
 });
 
+// === 取得使用者所有資訊(含家庭) ===
+router.get('/fetchUserInfo', async (req, res) => {
+  try {
+    const id = req.query.id || req.body.id;
+    if (!id) return res.status(400).json({ message: '缺少 id 參數' });
+
+    const [userRows] = await db.query(
+      `SELECT * FROM user WHERE id = ?`,
+      [id]
+    );
+    if (userRows.length === 0) return res.status(404).json({ message: '找不到使用者' });
+    const user = userRows[0];
+
+    const [family] = await db.query(`SELECT * FROM family WHERE user_id = ?`, [user.id]);
+    const [reports] = await db.query(`SELECT * FROM record WHERE fk_userid = ? ORDER BY id_record DESC`, [user.id]);
+    const [reminds] = await db.query(`SELECT * FROM calls WHERE fk_user_id = ? ORDER BY id_calls DESC`, [user.id]);
+
+    res.json({ user, family, reports, reminds });
+  } catch (err) {
+    console.error('資料取得錯誤:', err.message);
+    res.status(500).json({ message: '伺服器錯誤', error: err.message });
+  }
+});
+
+
 // === 修改習慣頻率 ===
 router.post('/updateFreq', async (req, res) => {
     const { id, freq } = req.body;
     console.log('接收到請求', req.body);
 
     try {
-        const [result] = await db.query('UPDATE user SET freq = ? WHERE id = ?', [freq, id]);
+        const [result] = await db.query('UPDATE family SET freq = ? WHERE member_id = ?', [freq, id]);
         console.log('更新成功', result);
         return res.json({ message: '更新成功' });
     } catch (err) {
@@ -217,7 +328,7 @@ router.post('/updateDisease', async (req, res) => {
     console.log('接收到請求', req.body);
 
     try {
-        const [result] = await db.query('UPDATE user SET disease = ? WHERE id = ?', [disease, id]);
+        const [result] = await db.query('UPDATE family SET disease = ? WHERE member_id = ?', [disease, id]);
         console.log('更新成功', result);
         return res.json({ message: '更新成功' });
     } catch (err) {
@@ -225,5 +336,7 @@ router.post('/updateDisease', async (req, res) => {
         return res.status(500).json({ error: '資料庫錯誤' });
     }
 });
+
+
 
 module.exports = router;
